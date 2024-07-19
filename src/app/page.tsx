@@ -69,13 +69,11 @@ function CaseStudies({
   return (
     <>
       <SectionIntro
-        title="Harnessing technology for a brighter future"
+        title="Features"
         className="mt-24 sm:mt-32 lg:mt-40"
       >
         <p>
-          We believe technology is the answer to the world’s greatest
-          challenges. It’s also the cause, so we find ourselves in bit of a
-          catch 22 situation.
+        We believe technology holds the key to addressing the world’s most complex challenges. However, it can also contribute to these challenges, placing us in a paradoxical situation.
         </p>
       </SectionIntro>
       <Container className="mt-16">
@@ -84,7 +82,7 @@ function CaseStudies({
             <FadeIn key={caseStudy.href} className="flex">
               <article className="relative flex w-full flex-col rounded-3xl p-6 ring-1 ring-neutral-950/5 transition hover:bg-neutral-50 sm:p-8">
                 <h3>
-                  <Link href={caseStudy.href}>
+                  {/* <Link href={caseStudy.href}> */}
                     <span className="absolute inset-0 rounded-3xl" />
                     <Image
                       src={caseStudy.logo}
@@ -92,9 +90,9 @@ function CaseStudies({
                       className="h-16 w-16"
                       unoptimized
                     />
-                  </Link>
+                  {/* </Link> */}
                 </h3>
-                <p className="mt-6 flex gap-x-2 text-sm text-neutral-950">
+                {/* <p className="mt-6 flex gap-x-2 text-sm text-neutral-950">
                   <time
                     dateTime={caseStudy.date.split('-')[0]}
                     className="font-semibold"
@@ -105,7 +103,7 @@ function CaseStudies({
                     /
                   </span>
                   <span>Case study</span>
-                </p>
+                </p> */}
                 <p className="mt-6 font-display text-2xl font-semibold text-neutral-950">
                   {caseStudy.title}
                 </p>
