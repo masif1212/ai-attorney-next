@@ -28,6 +28,9 @@ export default {
           { fontVariationSettings: '"wdth" 125' },
         ],
       },
+      colors :{
+        buttonHover : "#2e2e2e"
+      }
     },
   },
   plugins: [],

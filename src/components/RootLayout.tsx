@@ -86,7 +86,7 @@ function Header({
           {/* <Button href="/contact" invert={invert}>
             Contact us
           </Button> */}
-          <Button href="/Signin" invert={invert}>
+          <Button href="/signin" invert={invert}>
             Sign in
           </Button>
 
