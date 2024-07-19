@@ -68,6 +68,7 @@ function Header({
           aria-label="Home"
           onMouseEnter={() => setLogoHovered(true)}
           onMouseLeave={() => setLogoHovered(false)}
+          className='flex flex-row justify-start '
         >
           <Logomark
             className="h-8 sm:hidden"
@@ -79,6 +80,7 @@ function Header({
             invert={invert}
             filled={logoHovered}
           />
+          
         </Link>
         <div className="flex items-center gap-x-8">
           <Button href="/contact" invert={invert}>
