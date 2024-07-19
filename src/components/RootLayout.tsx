@@ -83,9 +83,13 @@ function Header({
           
         </Link>
         <div className="flex items-center gap-x-8">
-          <Button href="/contact" invert={invert}>
+          {/* <Button href="/contact" invert={invert}>
             Contact us
+          </Button> */}
+          <Button href="/Signin" invert={invert}>
+            Sign in
           </Button>
+
           <button
             ref={toggleRef}
             type="button"
@@ -150,7 +154,7 @@ function Navigation() {
       </NavigationRow>
       <NavigationRow>
         <NavigationItem href="/process">Our Process</NavigationItem>
-        <NavigationItem href="/blog">Blog</NavigationItem>
+        <NavigationItem href="/contact">Contact Us</NavigationItem>
       </NavigationRow>
     </nav>
   )
