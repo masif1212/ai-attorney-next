@@ -30,7 +30,10 @@ export default {
       },
       colors :{
         buttonHover : "#2e2e2e"
-      }
+      },
+      animation: {
+        fadeInWord: 'fadeInWord 0.5s forwards',
+      },
     },
   },
   plugins: [],
