@@ -1,9 +1,11 @@
+
 import { type Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 
 import { ContactSection } from '@/components/ContactSection'
 import { Container } from '@/components/Container'
+import { Button } from '@/components/Button'
 import { FadeIn, FadeInStagger } from '@/components/FadeIn'
 import { List, ListItem } from '@/components/List'
 import { SectionIntro } from '@/components/SectionIntro'
@@ -19,6 +21,8 @@ import logoPhobiaDark from '@/images/clients/phobia/logo-dark.svg'
 import logoPhobiaLight from '@/images/clients/phobia/logo-light.svg'
 import logoUnseal from '@/images/clients/unseal/logo-light.svg'
 import imageLaptop from '@/images/laptop.jpg'
+import rightarrow from "@/images/clients/arrows/right-arrow.png"
+import TextAnimation from '@/components/TextAnimation'
 import { type CaseStudy, type MDXEntry, loadCaseStudies } from '@/lib/mdx'
 
 const clients = [
@@ -78,6 +82,7 @@ function CaseStudies({
         <p>
         We believe technology holds the key to addressing the world’s most complex challenges. However, it can also contribute to these challenges, placing us in a paradoxical situation.
         </p>
+
       </SectionIntro>
       <Container className="mt-16">
         <FadeInStagger className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -114,18 +119,16 @@ function Services() {
     <>
       <SectionIntro
         eyebrow="Services"
-        title="We help you identify, explore and respond to new opportunities."
+        title="AI Attorney optimizes legal processes with AI technology."
         className="mt-24 sm:mt-32 lg:mt-40"
       >
-        <p>
-          As long as those opportunities involve giving us money to re-purpose
-          old projects — we can come up with an endless number of those.
-        </p>
+
       </SectionIntro>
+      
       <Container className="mt-16">
         <div className="lg:flex lg:items-center lg:justify-end">
           <div className="flex justify-center lg:w-1/2 lg:justify-end lg:pr-12">
-            <FadeIn className="w-[33.75rem] flex-none lg:w-[45rem]">
+            <FadeIn className="w-[33.75rem] flex-none lg:w-[40rem]">
               <StylizedImage
                 src={imageLaptop}
                 sizes="(min-width: 1024px) 41rem, 31rem"
@@ -134,24 +137,17 @@ function Services() {
             </FadeIn>
           </div>
           <List className="mt-16 lg:mt-0 lg:w-1/2 lg:min-w-[33rem] lg:pl-4">
-            <ListItem title="Web development">
-              We specialise in crafting beautiful, high quality marketing pages.
-              The rest of the website will be a shell that uses lorem ipsum
-              everywhere.
+            <ListItem title="AI-Powered Document Generation">
+              Our platform generates precise legal documents, including contracts and agreements, tailored to your specific needs. By automating this process, we save you time and reduce errors, allowing you to focus on strategic legal matters.
             </ListItem>
-            <ListItem title="Application development">
-              We have a team of skilled developers who are experts in the latest
-              app frameworks, like Angular 1 and Google Web Toolkit.
+            <ListItem title="Personalized Legal Advice">
+              AI Attorney provides tailored legal advice by analyzing your situation with AI. Our advice is relevant, up-to-date, and designed to help you make informed decisions without the high costs of traditional consultations.
             </ListItem>
-            <ListItem title="E-commerce">
-              We are at the forefront of modern e-commerce development. Which
-              mainly means adding your logo to the Shopify store template we’ve
-              used for the past six years.
+            <ListItem title="Digital Solutions for Law Firms">
+              We offer digital solutions that streamline law firm operations, from case management to client communication. Our AI tools automate routine tasks, enhance productivity, and help law firms deliver superior service in a competitive legal landscape.
             </ListItem>
-            <ListItem title="Custom content management">
-              At Studio we understand the importance of having a robust and
-              customised CMS. That’s why we run all of our client projects out
-              of a single, enormous Joomla instance.
+            <ListItem title="Summary">
+              AI Attorney harnesses advanced AI technology to offer a comprehensive suite of services, including document generation, personalized legal advice, and digital solutions for law firms. Our goal is to make legal processes more efficient, accurate, and cost-effective, enabling individuals and businesses to navigate legal challenges with confidence.
             </ListItem>
           </List>
         </div>
@@ -169,16 +165,34 @@ export default async function Home() {
   let caseStudies = (await loadCaseStudies()).slice(0, 6)
 
   return (
-    <>
-      <Container className="mt-24 sm:mt-32 md:mt-56">
+    <div>
+      <Container className='mt-10 sm:mt-32 md:mt-52'>
+        <div className=" flex items-center">
+          <TextAnimation />
+        </div>
+      </Container>
+
+      <Container className="mt-10">
         <FadeIn className="max-w-3xl">
-          <h1 className="font-display text-5xl font-medium tracking-tight text-neutral-950 [text-wrap:balance] sm:text-7xl">
-            What is AI Attorney.
-          </h1>
+          {/* <h1 className="font-display text-5xl font-medium tracking-tight text-neutral-950 [text-wrap:balance] sm:text-7xl">
+          Introduction
+        </h1> */}
           <p className="mt-6 text-xl text-neutral-600 text-justify">
-            AI Attorney is a pioneering legal technology company dedicated to revolutionizing the legal industry through the power of artificial intelligence (AI). Our platform utilizes cutting-edge AI algorithms to generate legal documents, draft agreements, and provide tailored legal advice to individuals and businesses. By harnessing the capabilities of AI, we aim to streamline legal processes, enhance efficiency, and provide cost-effective solutions to legal challenges.
+            AI Attorney is a leading legal tech company transforming the legal industry with advanced AI. Our platform generates legal documents, drafts agreements, and offers tailored legal advice for individuals and businesses. We streamline legal processes, boost efficiency, and provide cost-effective legal solutions.
           </p>
         </FadeIn>
+
+        <Button href="" invert={invert} className='mt-5'>
+          Get Started
+          <Image
+          src={rightarrow}
+          unoptimized
+          height={30}
+          width={30}
+          className="ml-2"
+          alt="Arrow"
+        />
+        </Button>
       </Container>
 
       <Clients />
@@ -189,14 +203,12 @@ export default async function Home() {
         className="mt-24 sm:mt-32 lg:mt-40"
         client={{ name: 'Phobia', logo: logoPhobiaDark }}
       >
-        The team at Studio went above and beyond with our onboarding, even
-        finding a way to access the user’s microphone without triggering one of
-        those annoying permission dialogs.
+        The team at Studio went above and beyond with our onboarding, even finding a way to access the user’s microphone without triggering one of those annoying permission dialogs.
       </Testimonial>
 
       <Services />
 
       <ContactSection />
-    </>
+    </div>
   )
 }
