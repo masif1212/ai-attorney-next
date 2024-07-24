@@ -161,7 +161,7 @@ export const metadata: Metadata = {
     'We are a development studio working at the intersection of design and technology.',
 }
 
-export default async function Home() {
+export default async function Home({invert}:{invert:boolean}) {
   let caseStudies = (await loadCaseStudies()).slice(0, 6)
 
   return (
