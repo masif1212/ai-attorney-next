@@ -12,6 +12,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
 import { motion, MotionConfig, useReducedMotion } from 'framer-motion'
+import { useSession, signOut } from 'next-auth/react'
 
 import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
@@ -20,6 +21,7 @@ import { GridPattern } from '@/components/GridPattern'
 import { Logo, Logomark } from '@/components/Logo'
 import { Offices } from '@/components/Offices'
 import { SocialMedia } from '@/components/SocialMedia'
+import ClientSessionProvider from './ClientSessionProvider'
 
 const RootLayoutContext = createContext<{
   logoHovered: boolean
@@ -59,6 +61,7 @@ function Header({
   invert?: boolean
 }) {
   let { logoHovered, setLogoHovered } = useContext(RootLayoutContext)!
+  const { data: session } = useSession()
 
   return (
     <Container>
@@ -83,12 +86,21 @@ function Header({
           
         </Link>
         <div className="flex items-center gap-x-8">
-          {/* <Button href="/contact" invert={invert}>
-            Contact us
-          </Button> */}
-          <Button href="/signin" invert={invert}>
-            Sign in
-          </Button>
+          {session ? (
+            <button
+              onClick={() => signOut()}
+              className={clsx(
+                'flex w-full justify-center rounded-md bg-black px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-buttonHover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600',
+                invert ? 'hover:bg-white/10' : 'hover:bg-neutral-950/10'
+              )}
+            >
+              Sign out
+            </button>
+          ) : (
+            <Button href="/signin" invert={invert}>
+              Sign in
+            </Button>
+          )}
 
           <button
             ref={toggleRef}
@@ -293,7 +305,9 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <RootLayoutContext.Provider value={{ logoHovered, setLogoHovered }}>
-      <RootLayoutInner key={pathname}>{children}</RootLayoutInner>
+      <ClientSessionProvider>
+        <RootLayoutInner key={pathname}>{children}</RootLayoutInner>
+      </ClientSessionProvider>
     </RootLayoutContext.Provider>
   )
 }
