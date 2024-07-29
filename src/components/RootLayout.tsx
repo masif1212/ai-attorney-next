@@ -167,6 +167,7 @@ function RootLayoutInner({ children }: { children: React.ReactNode }) {
   let closeRef = useRef<React.ElementRef<'button'>>(null)
   let navRef = useRef<React.ElementRef<'div'>>(null)
   let shouldReduceMotion = useReducedMotion()
+  const pathname = usePathname();
 
   useEffect(() => {
     function onClick(event: MouseEvent) {
@@ -184,6 +185,8 @@ function RootLayoutInner({ children }: { children: React.ReactNode }) {
       window.removeEventListener('click', onClick)
     }
   }, [])
+
+  const noFooter = "/chat"
 
   return (
     <MotionConfig transition={shouldReduceMotion ? { duration: 0 } : undefined}>
@@ -276,7 +279,8 @@ function RootLayoutInner({ children }: { children: React.ReactNode }) {
 
           <main className="w-full flex-auto">{children}</main>
 
-          <Footer />
+           <Footer />
+
         </motion.div>
       </motion.div>
     </MotionConfig>
@@ -291,5 +295,5 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
     <RootLayoutContext.Provider value={{ logoHovered, setLogoHovered }}>
       <RootLayoutInner key={pathname}>{children}</RootLayoutInner>
     </RootLayoutContext.Provider>
-  )
+  )
 }

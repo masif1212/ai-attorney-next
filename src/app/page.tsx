@@ -36,7 +36,7 @@ const clients = [
   ['North Adventures', logoNorthAdventures],
   ['Confidential', logoUnseal],
   ['Responsive Solutions', logoUnseal],
-  ['Case Summary', logoUnseal], 
+  ['Case Summary', logoUnseal],
 ]
 
 function Clients() {
@@ -80,7 +80,7 @@ function CaseStudies({
         className="mt-24 sm:mt-32 lg:mt-40"
       >
         <p>
-        We believe technology holds the key to addressing the world’s most complex challenges. However, it can also contribute to these challenges, placing us in a paradoxical situation.
+          We believe technology holds the key to addressing the world’s most complex challenges. However, it can also contribute to these challenges, placing us in a paradoxical situation.
         </p>
 
       </SectionIntro>
@@ -90,13 +90,13 @@ function CaseStudies({
             <FadeIn key={caseStudy.href} className="flex">
               <article className="relative flex w-full flex-col rounded-3xl p-6 ring-1 ring-neutral-950/5 transition hover:bg-neutral-50 sm:p-8">
                 <h3>
-                    <span className="absolute inset-0 rounded-3xl" />
-                    <Image
-                      src={caseStudy.logo}
-                      alt={caseStudy.client}
-                      className="h-16 w-16"
-                      unoptimized
-                    />
+                  <span className="absolute inset-0 rounded-3xl" />
+                  <Image
+                    src={caseStudy.logo}
+                    alt={caseStudy.client}
+                    className="h-16 w-16"
+                    unoptimized
+                  />
 
                 </h3>
                 <p className="mt-6 font-display text-2xl font-semibold text-neutral-950">
@@ -118,13 +118,13 @@ function Services() {
   return (
     <>
       <SectionIntro
-        eyebrow="Services"
-        title="AI Attorney optimizes legal processes with AI technology."
+        eyebrow="Comming Soon"
+        title="Enhancing Your Legal Journey with Innovative AI Solutions."
         className="mt-24 sm:mt-32 lg:mt-40"
       >
 
       </SectionIntro>
-      
+
       <Container className="mt-16">
         <div className="lg:flex lg:items-center lg:justify-end">
           <div className="flex justify-center lg:w-1/2 lg:justify-end lg:pr-12">
@@ -137,18 +137,18 @@ function Services() {
             </FadeIn>
           </div>
           <List className="mt-16 lg:mt-0 lg:w-1/2 lg:min-w-[33rem] lg:pl-4">
-            <ListItem title="AI-Powered Document Generation">
-              Our platform generates precise legal documents, including contracts and agreements, tailored to your specific needs. By automating this process, we save you time and reduce errors, allowing you to focus on strategic legal matters.
+            <ListItem title="Document Review" >
+              Our AI-powered Document Review feature carefully examines your legal documents for accuracy and compliance. It highlights any potential issues, inconsistencies, and risks, providing a detailed review that saves you time and improves the quality of your paperwork. Whether you are dealing with contracts, agreements, or other legal documents, our AI ensures they are thorough and error-free.
             </ListItem>
-            <ListItem title="Personalized Legal Advice">
-              AI Attorney provides tailored legal advice by analyzing your situation with AI. Our advice is relevant, up-to-date, and designed to help you make informed decisions without the high costs of traditional consultations.
+            <ListItem title="Legal Consultation">
+              Our Legal Consultation feature offers personalized legal advice using AI-driven insights. By understanding your unique situation, our platform provides tailored recommendations and guidance to help you navigate complex legal matters. Whether you need advice on legal strategies, compliance, or specific legal questions, our AI consultation service delivers precise and actionable advice, making legal expertise accessible and affordable for both individuals and businesses.
             </ListItem>
-            <ListItem title="Digital Solutions for Law Firms">
-              We offer digital solutions that streamline law firm operations, from case management to client communication. Our AI tools automate routine tasks, enhance productivity, and help law firms deliver superior service in a competitive legal landscape.
+            <ListItem title="Legal Agreement Drafting">
+              Our Legal Consultation feature offers personalized legal advice using AI-driven insights. By understanding your unique situation, our platform provides tailored recommendations and guidance to help you navigate complex legal matters. Whether you need advice on legal strategies, compliance, or specific legal questions, our AI consultation service delivers precise and actionable advice, making legal expertise accessible and affordable for both individuals and businesses.
             </ListItem>
-            <ListItem title="Summary">
+            {/* <ListItem title="Summary">
               AI Attorney harnesses advanced AI technology to offer a comprehensive suite of services, including document generation, personalized legal advice, and digital solutions for law firms. Our goal is to make legal processes more efficient, accurate, and cost-effective, enabling individuals and businesses to navigate legal challenges with confidence.
-            </ListItem>
+            </ListItem> */}
           </List>
         </div>
       </Container>
@@ -161,16 +161,17 @@ export const metadata: Metadata = {
     'We are a development studio working at the intersection of design and technology.',
 }
 
-export default async function Home() {
+export default async function Home({ invert }: { invert: boolean }) {
   let caseStudies = (await loadCaseStudies()).slice(0, 6)
 
   return (
     <div>
-      <Container className='mt-10 sm:mt-32 md:mt-52'>
-        <div className=" flex items-center">
+      <Container className='mt-20 sm:mt-32 md:mt-52'>
+        <div className="flex items-center">
           <TextAnimation />
         </div>
       </Container>
+
 
       <Container className="mt-10">
         <FadeIn className="max-w-3xl">
@@ -182,16 +183,16 @@ export default async function Home() {
           </p>
         </FadeIn>
 
-        <Button href="" invert={invert} className='mt-5'>
+        <Button href="/signup" invert={invert} className='mt-5'>
           Get Started
           <Image
-          src={rightarrow}
-          unoptimized
-          height={30}
-          width={30}
-          className="ml-2"
-          alt="Arrow"
-        />
+            src={rightarrow}
+            unoptimized
+            height={30}
+            width={30}
+            className="ml-2"
+            alt="Arrow"
+          />
         </Button>
       </Container>
 
