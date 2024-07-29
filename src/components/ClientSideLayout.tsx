@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { RootLayout } from '@/components/RootLayout';
+import ClientSessionProvider from './ClientSessionProvider';
 
 
 export default function ClientSideLayout({ children }: { children: React.ReactNode }) {
@@ -10,7 +11,7 @@ export default function ClientSideLayout({ children }: { children: React.ReactNo
     return (
         <>
             {pathname === '/chat' ? (
-                <>{children}</>
+                <ClientSessionProvider>{children}</ClientSessionProvider>
             ) : (
                 <RootLayout>{children}</RootLayout>
             )}

@@ -7,6 +7,10 @@ import ButtonForBlackScreen from './ButtonForBlackScreen';
 import '../styles/custom.css'; // Import the custom CSS file
 
 const chatItems = [
+  { text: 'Modal Message Centering', date: '2024-07-29' },
+  { text: 'Migrate Branch to Main', date: '2024-07-29' },
+  { text: 'Migrate Branch to Main', date: '2024-07-29' },
+  { text: 'Migrate Branch to Main', date: '2024-07-29' },
   { text: 'Header Responsive Design', date: '2024-07-25' },
   { text: 'Dropdown Cutoff Issue', date: '2024-07-25' },
   { text: 'Calendly 15-Minute Setup', date: '2024-07-25' },
@@ -52,12 +56,12 @@ const Sidebar = ({ sidebarVisible, toggleSidebar }: { toggleSidebar: () => void,
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {todaysChats.length > 0 && (
-          <div>
+          <div className='mt-5'>
             <div className="text-sm mb-2 font-bold">Today</div>
             <ul className="space-y-2">
               {todaysChats.map((item, index) => (
                 <li key={index} className='hover:bg-gray-900 rounded px-1 mr-1'>
-                  <button className="flex justify-between text-sm text-gray-400 hover:bg-gray-50 rounded">
+                  <button className="flex justify-between text-sm text-gray-400  rounded">
                     <span className="truncate">{item.text}</span>
                   </button>
                 </li>

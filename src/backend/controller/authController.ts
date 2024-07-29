@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import bcrypt from 'bcryptjs';
 import { RowDataPacket } from 'mysql2';
 import connectToDatabase from '../../lib/db';
+
 export const register = async (req: NextApiRequest, res: NextApiResponse) => {
     const connection = await connectToDatabase();
   
@@ -11,6 +12,9 @@ export const register = async (req: NextApiRequest, res: NextApiResponse) => {
   
     const { email, password } = req.body;
   
+    console.log(email , password);
+
+    
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password are required' });
     }
