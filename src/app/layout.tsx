@@ -1,15 +1,13 @@
-import { type Metadata } from 'next'
-
-import { RootLayout } from '@/components/RootLayout'
-
-import '@/styles/tailwind.css'
+import { type Metadata } from 'next';
+import '@/styles/tailwind.css';
+import { RootLayout } from '@/components/RootLayout';
 
 export const metadata: Metadata = {
   title: {
     template: '%s - Ai Attorney',
     default: ' Ai-Attorney',
   },
-}
+};
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,5 +16,5 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <RootLayout>{children}</RootLayout>
       </body>
     </html>
-  )
+  );
 }
