@@ -7,14 +7,15 @@ import ButtonForBlackScreen from './ButtonForBlackScreen';
 import '../styles/custom.css'; // Import the custom CSS file
 
 const chatItems = [
-  { text: 'Modal Message Centering', date: '2024-07-29' },
-  { text: 'Migrate Branch to Main', date: '2024-07-29' },
-  { text: 'Migrate Branch to Main', date: '2024-07-29' },
-  { text: 'Migrate Branch to Main', date: '2024-07-29' },
+  { text: 'New chat', date: '2024-07-30' },
+  { text: 'Modal Message Centering', date: '2024-07-30' },
+  { text: 'Dropdown Positioning Fix', date: '2024-07-30' },
+  { text: 'Migrate Branch to Main', date: '2024-07-30' },
+  { text: 'Migrate Branch to Main', date: '2024-07-30' },
   { text: 'Header Responsive Design', date: '2024-07-25' },
   { text: 'Dropdown Cutoff Issue', date: '2024-07-25' },
   { text: 'Calendly 15-Minute Setup', date: '2024-07-25' },
-  { text: 'New chat', date: '2024-07-22' },
+  
   { text: 'FormData Type Handling', date: '2024-07-21' },
   { text: 'Dropdown Positioning Fix', date: '2024-07-21' },
   { text: 'Creating Logo in Figma', date: '2024-07-20' },
@@ -45,13 +46,17 @@ const Sidebar = ({ sidebarVisible, toggleSidebar }: { toggleSidebar: () => void,
 
   return (
     <div className="w-60 h-screen text-white flex flex-col py-3 px-3 border-black border-2 bg-black">
-      <div className='flex flex-row justify-between'>
+
+      <div className='flex flex-row justify-between font-bold'>
+       
         <ButtonForBlackScreen onClick={toggleSidebar}>
           <RiMenu2Line   size={23} color='#faf5f5' />
         </ButtonForBlackScreen>
+
         <ButtonForBlackScreen>
           <MdOutlineAddComment  size={25} color='#faf5f5' />
         </ButtonForBlackScreen>
+
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
