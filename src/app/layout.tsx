@@ -8,7 +8,6 @@ export const metadata: Metadata = {
     default: 'Ai-Attorney',
   },
 };
-};
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -17,6 +16,5 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <ClientSideLayout>{children}</ClientSideLayout>
       </body>
     </html>
-  );
   );
 }
