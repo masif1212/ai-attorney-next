@@ -1,0 +1,26 @@
+.truncate {
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 190px; /* Set the maximum width to 200px */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 12px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #2a2a2a; /* Dark grey for the track */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #424242; /* Grey for the thumb */
+  border: 2px solid #686868; /* Dark grey for the border */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #686868; /* Lighter grey on hover */
+}
+
+.custom-scrollbar::-webkit-scrollbar-button {
+  background: none; /* Reset background to none */
+}

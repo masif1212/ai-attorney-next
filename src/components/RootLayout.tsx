@@ -86,21 +86,11 @@ function Header({
           
         </Link>
         <div className="flex items-center gap-x-8">
-          {session ? (
-            <button
-              onClick={() => signOut()}
-              className={clsx(
-                'flex w-full justify-center rounded-md bg-black px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-buttonHover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600',
-                invert ? 'hover:bg-white/10' : 'hover:bg-neutral-950/10'
-              )}
-            >
-              Sign out
-            </button>
-          ) : (
+         
             <Button href="/signin" invert={invert}>
               Sign in
             </Button>
-          )}
+    
 
           <button
             ref={toggleRef}
@@ -179,6 +169,7 @@ function RootLayoutInner({ children }: { children: React.ReactNode }) {
   let closeRef = useRef<React.ElementRef<'button'>>(null)
   let navRef = useRef<React.ElementRef<'div'>>(null)
   let shouldReduceMotion = useReducedMotion()
+  const pathname = usePathname();
 
   useEffect(() => {
     function onClick(event: MouseEvent) {
@@ -196,6 +187,8 @@ function RootLayoutInner({ children }: { children: React.ReactNode }) {
       window.removeEventListener('click', onClick)
     }
   }, [])
+
+  const noFooter = "/chat"
 
   return (
     <MotionConfig transition={shouldReduceMotion ? { duration: 0 } : undefined}>
@@ -288,7 +281,8 @@ function RootLayoutInner({ children }: { children: React.ReactNode }) {
 
           <main className="w-full flex-auto">{children}</main>
 
-          <Footer />
+           <Footer />
+
         </motion.div>
       </motion.div>
     </MotionConfig>
@@ -305,5 +299,5 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
         <RootLayoutInner key={pathname}>{children}</RootLayoutInner>
       </ClientSessionProvider>
     </RootLayoutContext.Provider>
-  )
+  )
 }
