@@ -60,6 +60,7 @@ const ChatArea: React.FC<{ toggleSidebar: () => void, sidebarVisible: boolean }>
       </button>
 
       <button
+        onClick={handleSignOut}
         className={clsx(
           'w-full px-4 py-2 text-sm text-white hover:bg-gray-800  flex items-center font-thin'
         )}
