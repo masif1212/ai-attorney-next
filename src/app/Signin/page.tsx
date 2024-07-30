@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -33,19 +33,31 @@ export default function SignIn() {
     }
   };
 
+  // useEffect to clear the serverResponse message after 3 seconds
+  useEffect(() => {
+    if (serverResponse) {
+      const timer = setTimeout(() => {
+        setServerResponse(null);
+      }, 3000); // Change 3000 to the duration you want the message to be visible
+
+      // Cleanup the timer on component unmount or when serverResponse changes
+      return () => clearTimeout(timer);
+    }
+  }, [serverResponse]);
+
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-      {serverResponse && (
-        <div className="flex justify-center ">
-          <div
-            className={`mt-4 p-2 rounded-md ${
-              serverResponse.isError ? 'bg-red-500' : 'bg-green-500'
-            } text-white text-center max-w-sm`}
-          >
-            {serverResponse.message}
+        {serverResponse && (
+          <div className="flex justify-center">
+            <div
+              className={`mt-4 p-2 rounded-md ${
+                serverResponse.isError ? 'bg-red-500' : 'bg-green-500'
+              } text-white text-center max-w-sm`}
+            >
+              {serverResponse.message}
+            </div>
           </div>
-        </div>
         )}
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Sign in to your account
@@ -93,7 +105,7 @@ export default function SignIn() {
             </button>
           </div>
         </form>
-     
+
         <p className="mt-10 text-center text-sm text-gray-500">
           Don't have an account?{' '}
           <Link href="/signup" className="font-semibold leading-6 text-black hover:text-indigo-500">
