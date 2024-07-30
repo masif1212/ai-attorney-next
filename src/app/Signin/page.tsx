@@ -26,7 +26,7 @@ export default function SignIn() {
     if (result?.ok) {
       setServerResponse({ message: 'Logged in successfully!', isError: false });
       setTimeout(() => {
-        router.push('/dashboard');
+        router.push('/chat');
       }, 1500);
     } else {
       setServerResponse({ message: result?.error || 'Something went wrong', isError: true });
