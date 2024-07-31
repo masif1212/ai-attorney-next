@@ -3,6 +3,7 @@ import Image from 'next/image'
 
 import { ContactSection } from '@/components/ContactSection'
 import { Container } from '@/components/Container'
+import { Button } from '@/components/Button'
 import { FadeIn, FadeInStagger } from '@/components/FadeIn'
 import { List, ListItem } from '@/components/List'
 import { SectionIntro } from '@/components/SectionIntro'
@@ -18,6 +19,8 @@ import logoPhobiaDark from '@/images/clients/phobia/logo-dark.svg'
 import logoPhobiaLight from '@/images/clients/phobia/logo-light.svg'
 import logoUnseal from '@/images/clients/unseal/logo-light.svg'
 import imageLaptop from '@/images/laptop.jpg'
+import rightarrow from "@/images/clients/arrows/right-arrow.png"
+import TextAnimation from '@/components/TextAnimation'
 import { type CaseStudy, type MDXEntry, loadCaseStudies } from '@/lib/mdx'
 
 const clients = [
@@ -77,6 +80,7 @@ function CaseStudies({
         <p>
           We believe technology holds the key to addressing the world’s most complex challenges. However, it can also contribute to these challenges, placing us in a paradoxical situation.
         </p>
+
       </SectionIntro>
       <Container className="mt-16">
         <FadeInStagger className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -116,16 +120,13 @@ function Services() {
         title="Enhancing Your Legal Journey with Innovative AI Solutions."
         className="mt-24 sm:mt-32 lg:mt-40"
       >
-        <p>
-          As long as those opportunities involve giving us money to re-purpose
-          old projects — we can come up with an endless number of those.
-        </p>
+
       </SectionIntro>
 
       <Container className="mt-16">
         <div className="lg:flex lg:items-center lg:justify-end">
           <div className="flex justify-center lg:w-1/2 lg:justify-end lg:pr-12">
-            <FadeIn className="w-[33.75rem] flex-none lg:w-[45rem]">
+            <FadeIn className="w-[33.75rem] flex-none lg:w-[40rem]">
               <StylizedImage
                 src={imageLaptop}
                 sizes="(min-width: 1024px) 41rem, 31rem"
@@ -172,11 +173,11 @@ export default async function Home({invert}:{invert: boolean}) {
 
       <Container className="mt-10">
         <FadeIn className="max-w-3xl">
-          <h1 className="font-display text-5xl font-medium tracking-tight text-neutral-950 [text-wrap:balance] sm:text-7xl">
-            What is AI Attorney.
-          </h1>
+          {/* <h1 className="font-display text-5xl font-medium tracking-tight text-neutral-950 [text-wrap:balance] sm:text-7xl">
+          Introduction
+        </h1> */}
           <p className="mt-6 text-xl text-neutral-600 text-justify">
-            AI Attorney is a pioneering legal technology company dedicated to revolutionizing the legal industry through the power of artificial intelligence (AI). Our platform utilizes cutting-edge AI algorithms to generate legal documents, draft agreements, and provide tailored legal advice to individuals and businesses. By harnessing the capabilities of AI, we aim to streamline legal processes, enhance efficiency, and provide cost-effective solutions to legal challenges.
+            AI Attorney is a leading legal tech company transforming the legal industry with advanced AI. Our platform generates legal documents, drafts agreements, and offers tailored legal advice for individuals and businesses. We streamline legal processes, boost efficiency, and provide cost-effective legal solutions.
           </p>
         </FadeIn>
 
@@ -201,14 +202,12 @@ export default async function Home({invert}:{invert: boolean}) {
         className="mt-24 sm:mt-32 lg:mt-40"
         client={{ name: 'Phobia', logo: logoPhobiaDark }}
       >
-        The team at Studio went above and beyond with our onboarding, even
-        finding a way to access the user’s microphone without triggering one of
-        those annoying permission dialogs.
+        The team at Studio went above and beyond with our onboarding, even finding a way to access the user’s microphone without triggering one of those annoying permission dialogs.
       </Testimonial>
 
       <Services />
 
       <ContactSection />
-    </>
-  )
+    </div>
+  )
 }

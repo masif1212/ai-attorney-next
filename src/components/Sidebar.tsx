@@ -15,7 +15,6 @@ const chatItems = [
   { text: 'Header Responsive Design', date: '2024-07-25' },
   { text: 'Dropdown Cutoff Issue', date: '2024-07-25' },
   { text: 'Calendly 15-Minute Setup', date: '2024-07-25' },
-  
   { text: 'FormData Type Handling', date: '2024-07-21' },
   { text: 'Dropdown Positioning Fix', date: '2024-07-21' },
   { text: 'Creating Logo in Figma', date: '2024-07-20' },
@@ -35,7 +34,7 @@ const chatItems = [
   { text: 'Migrate Branch to Main', date: '2024-07-17' },
 ];
 
-const Sidebar = ({ sidebarVisible, toggleSidebar }: { toggleSidebar: () => void, sidebarVisible: boolean }) => {
+const Sidebar = ({ sidebarVisible, toggleSidebar, onChatSelect }: { toggleSidebar: () => void, sidebarVisible: boolean, onChatSelect: (chatText: string) => void }) => {
   const today = format(new Date(), 'yyyy-MM-dd');
   const todaysChats = chatItems.filter(item => item.date === today);
   const previousChats = chatItems.filter(item => item.date !== today);
@@ -66,7 +65,7 @@ const Sidebar = ({ sidebarVisible, toggleSidebar }: { toggleSidebar: () => void,
             <ul className="space-y-2">
               {todaysChats.map((item, index) => (
                 <li key={index} className='hover:bg-gray-900 rounded px-1 mr-1'>
-                  <button className="flex justify-between text-sm text-gray-400  rounded">
+                  <button onClick={() => onChatSelect(item.text)} className="flex justify-between text-sm text-gray-400  rounded">
                     <span className="truncate">{item.text}</span>
                   </button>
                 </li>
@@ -80,7 +79,7 @@ const Sidebar = ({ sidebarVisible, toggleSidebar }: { toggleSidebar: () => void,
             <ul className="space-y-2">
               {previousChats.map((item, index) => (
                 <li key={index} className=' hover:bg-gray-900 rounded px-1 mr-1'>
-                  <button className="flex justify-between text-sm text-gray-400 ">
+                  <button onClick={() => onChatSelect(item.text)} className="flex justify-between text-sm text-gray-400 ">
                     <span className="truncate">{item.text}</span>
                   </button>
                 </li>

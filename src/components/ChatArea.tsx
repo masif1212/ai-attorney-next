@@ -30,7 +30,7 @@ const useDropdown = () => {
   return { isOpen, toggleDropdown, closeDropdown };
 };
 
-const ChatArea: React.FC<{ toggleSidebar: () => void, sidebarVisible: boolean }> = ({ toggleSidebar, sidebarVisible }) => {
+const ChatArea: React.FC<{ toggleSidebar: () => void, sidebarVisible: boolean, selectedChat: string | null }> = ({ toggleSidebar, sidebarVisible, selectedChat }) => {
   const { data: session } = useSession();
   const router = useRouter();
   const { isOpen, toggleDropdown, closeDropdown } = useDropdown();
@@ -143,14 +143,20 @@ const ChatArea: React.FC<{ toggleSidebar: () => void, sidebarVisible: boolean }>
 
       <div className="flex-1 w-full flex flex-col">
         <div className="flex-1 flex justify-center items-center">
-          <div className="text-center flex flex-col h-full justify-center">
-            <div className="flex items-center justify-center">
-              <Image src={Logo} alt="Ai-Attorney Logo" width={200} height={200} />
+          {selectedChat ? (
+            <div className="text-center flex flex-col h-full justify-center">
+              <div className="text-2xl font-bold">{selectedChat}</div>
             </div>
-            <div className="flex flex-wrap justify-center space-x-4">
-              <h1 className="m-2 rounded font-bold text-3xl md:text-4xl">Ai-Attorney</h1>
+          ) : (
+            <div className="text-center flex flex-col h-full justify-center">
+              <div className="flex items-center justify-center">
+                <Image src={Logo} alt="Ai-Attorney Logo" width={200} height={200} />
+              </div>
+              <div className="flex flex-wrap justify-center space-x-4">
+                <h1 className="m-2 rounded font-bold text-3xl md:text-4xl">Ai-Attorney</h1>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {previews.length > 0 && (

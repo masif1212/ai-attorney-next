@@ -6,6 +6,7 @@ import ChatArea from '@/components/ChatArea';
 
 export default function Chat() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [isInitialRender, setIsInitialRender] = useState(true);
 
   useEffect(() => {
@@ -31,6 +32,10 @@ export default function Chat() {
     setSidebarVisible(!sidebarVisible);
   };
 
+  const handleChatSelect = (chatText: string) => {
+    setSelectedChat(chatText);
+  };
+
   if (isInitialRender) {
     return null; // Prevent rendering during the initial check
   }
@@ -39,10 +44,10 @@ export default function Chat() {
     <div className="relative flex flex-col md:flex-row h-screen overflow-hidden bg-back">
       <div className={`fixed inset-0 bg-gray-900 bg-opacity-75 z-10 md:hidden ${sidebarVisible ? 'block' : 'hidden'}`} onClick={toggleSidebar}></div>
       <div className={`fixed inset-y-0 left-0 transform md:transform-none md:static transition-transform duration-300 ease-in-out z-20 ${sidebarVisible ? 'translate-x-0' : '-translate-x-full'}`}>
-        <Sidebar sidebarVisible={sidebarVisible} toggleSidebar={toggleSidebar} />
+        <Sidebar sidebarVisible={sidebarVisible} toggleSidebar={toggleSidebar} onChatSelect={handleChatSelect} />
       </div>
       <div className="flex-grow h-full overflow-hidden">
-        <ChatArea toggleSidebar={toggleSidebar} sidebarVisible={sidebarVisible} />
+        <ChatArea toggleSidebar={toggleSidebar} sidebarVisible={sidebarVisible} selectedChat={selectedChat} />
       </div>
     </div>
   );

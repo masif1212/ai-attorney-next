@@ -22,6 +22,8 @@ import { Logo, Logomark } from '@/components/Logo'
 import { Offices } from '@/components/Offices'
 import { SocialMedia } from '@/components/SocialMedia'
 import ClientSessionProvider from './ClientSessionProvider'
+import LogoImage from "@/images/logo/logo-black.png"
+import Image from 'next/image'
 
 const RootLayoutContext = createContext<{
   logoHovered: boolean
@@ -45,6 +47,8 @@ function MenuIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   )
 }
 
+
+
 function Header({
   panelId,
   icon: Icon,
@@ -63,28 +67,32 @@ function Header({
   let { logoHovered, setLogoHovered } = useContext(RootLayoutContext)!
   const { data: session } = useSession()
 
+
   return (
     <Container>
-      <div className="flex items-center justify-between">
-        <Link
-          href="/"
-          aria-label="Home"
-          onMouseEnter={() => setLogoHovered(true)}
-          onMouseLeave={() => setLogoHovered(false)}
-          className='flex flex-row justify-start '
-        >
-          <Logomark
-            className="h-8 sm:hidden"
-            invert={invert}
-            filled={logoHovered}
-          />
-          <Logo
-            className="hidden h-8 sm:block"
-            invert={invert}
-            filled={logoHovered}
-          />
-          
-        </Link>
+      <div className="flex items-center justify-between ">
+      <div className=''>
+      <Link
+      href="/"
+      aria-label="Home"
+      onMouseEnter={() => setLogoHovered(true)}
+      onMouseLeave={() => setLogoHovered(false)}
+      className="flex items-center space-x-2"
+    >
+
+      <Image src={LogoImage} width={36} height={25} alt="Logo" 
+        className={clsx(
+          'font-bold text-xl transition-all duration-300',
+          invert ? 'fill-white' : 'fill-neutral-950'
+        )}
+      />
+      <Logo
+        className="hidden h-8 sm:block"
+        invert={invert}
+        filled={logoHovered}
+      />
+    </Link>
+    </div>
         <div className="flex items-center gap-x-8">
          
             <Button href="/signin" invert={invert}>
