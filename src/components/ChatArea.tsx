@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import Logo from "@/images/logo/logo-black.png"
+import Logo from "@/images/logo/logo-black.png";
 import { BsFillSendFill } from "react-icons/bs";
 import { CgAttachment } from "react-icons/cg";
 import { RiMenu3Fill } from "react-icons/ri";
@@ -15,6 +15,7 @@ import { VscSettingsGear } from "react-icons/vsc";
 import { MdOutlinePayment } from "react-icons/md";
 import { FaRegFileImage } from "react-icons/fa";
 import { FaRegFileAlt } from "react-icons/fa";
+import '../styles/custom.css'; // Import the custom CSS file
 
 const useDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,6 +39,8 @@ const ChatArea: React.FC<{ toggleSidebar: () => void, sidebarVisible: boolean, s
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isMessageSent, setIsMessageSent] = useState(false);
+  const [casesToShow, setCasesToShow] = useState<any[]>([]);
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
@@ -72,6 +75,50 @@ const ChatArea: React.FC<{ toggleSidebar: () => void, sidebarVisible: boolean, s
     setFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
     setPreviews(prevPreviews => prevPreviews.filter((_, i) => i !== index));
   };
+
+  const handleSend = () => {
+    setIsMessageSent(true);
+    setCasesToShow(cases); // Show cases when the message is sent
+  };
+
+  const cases = [
+    {
+      title: "Brown v. Board of Education (1954) - United States",
+      summary: "This landmark Supreme Court case declared state laws establishing separate public schools for black and white students to be unconstitutional. It overturned the Plessy v. Ferguson decision of 1896, which allowed state-sponsored segregation.",
+      significance: "It was a major victory in the Civil Rights Movement and paved the way for integration and the civil rights legislation of the 1960s."
+    },
+    {
+      title: "Roe v. Wade (1973) - United States",
+      summary: "The Supreme Court ruled that a state law that banned abortions (except to save the life of the mother) was unconstitutional. The decision legalized abortion nationwide, establishing a woman's right to choose as protected under the right to privacy.",
+      significance: "This case has been a focal point in the debate over reproductive rights and continues to be a contentious issue in American politics."
+    },
+    {
+      title: "Miranda v. Arizona (1966) - United States",
+      summary: "The Supreme Court held that detained criminal suspects must be informed of their rights to an attorney and against self-incrimination prior to police questioning.",
+      significance: "This case led to the creation of the 'Miranda Rights' that must be recited by law enforcement officers when arresting someone."
+    },
+    {
+      title: "The People v. O.J. Simpson (1995) - United States",
+      summary: "Former NFL player O.J. Simpson was tried and acquitted for the murders of his ex-wife, Nicole Brown Simpson, and her friend, Ronald Goldman.",
+      significance: "This case was highly publicized and raised issues regarding race, celebrity, and the criminal justice system in the United States."
+    },
+    {
+      title: "The People v. O.J. Simpson (1995) - United States",
+      summary: "Former NFL player O.J. Simpson was tried and acquitted for the murders of his ex-wife, Nicole Brown Simpson, and her friend, Ronald Goldman.",
+      significance: "This case was highly publicized and raised issues regarding race, celebrity, and the criminal justice system in the United States."
+    },
+    {
+      title: "The People v. O.J. Simpson (1995) - United States",
+      summary: "Former NFL player O.J. Simpson was tried and acquitted for the murders of his ex-wife, Nicole Brown Simpson, and her friend, Ronald Goldman.",
+      significance: "This case was highly publicized and raised issues regarding race, celebrity, and the criminal justice system in the United States."
+    },
+    {
+      title: "The People v. O.J. Simpson (1995) - United States",
+      summary: "Former NFL player O.J. Simpson was tried and acquitted for the murders of his ex-wife, Nicole Brown Simpson, and her friend, Ronald Goldman.",
+      significance: "This case was highly publicized and raised issues regarding race, celebrity, and the criminal justice system in the United States."
+    },
+
+  ];
 
   const name = session?.user?.email?.slice(0, 1).toLocaleUpperCase();
 
@@ -108,10 +155,11 @@ const ChatArea: React.FC<{ toggleSidebar: () => void, sidebarVisible: boolean, s
   );
 
   return (
-    <div className="flex-1 bg-white text-black h-screen flex flex-col relative p-5">
+    <div className="flex-1 bg-white text-black h-screen flex flex-col relative ">
+
       <div className="flex justify-between items-center">
         {!sidebarVisible && (
-          <div className="text-lg font-bold flex space-x-2">
+          <div className="text-lg font-bold flex space-x-2 pt-3 pl-2">
             <button onClick={toggleSidebar} className="p-2 bg-white hover:bg-gray-200 rounded">
               <RiMenu3Fill size={25} color="#000" />
             </button>
@@ -119,9 +167,9 @@ const ChatArea: React.FC<{ toggleSidebar: () => void, sidebarVisible: boolean, s
         )}
 
         {session && (
-          <div className={clsx("relative", sidebarVisible ? "ml-auto" : "")}>
+          <div className={clsx("relative pr-4", sidebarVisible ? "ml-auto pr-4 pt-3" : "")}>
             <button
-              className='flex items-center justify-center border-black rounded-full w-10 h-10 bg-black hover:bg-gray-700'
+              className='flex items-center justify-center border-black rounded-full w-8 h-8 bg-black hover:bg-gray-700'
               onClick={toggleDropdown}
             >
               <p className='text-white'>{name}</p>
@@ -141,70 +189,73 @@ const ChatArea: React.FC<{ toggleSidebar: () => void, sidebarVisible: boolean, s
         </div>
       )}
 
-      <div className="flex-1 w-full flex flex-col">
-        <div className="flex-1 flex justify-center items-center">
-          {selectedChat ? (
-            <div className="text-center flex flex-col h-full justify-center">
-              <div className="text-2xl font-bold">{selectedChat}</div>
-            </div>
-          ) : (
-            <div className="text-center flex flex-col h-full justify-center">
-              <div className="flex items-center justify-center">
-                <Image src={Logo} alt="Ai-Attorney Logo" width={200} height={200} />
-              </div>
-              <div className="flex flex-wrap justify-center space-x-4">
-                <h1 className="m-2 rounded font-bold text-3xl md:text-4xl">Ai-Attorney</h1>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {previews.length > 0 && (
-          <div className="relative w-full max-w-4xl mx-auto border-gray-300 rounded-lg mb-2 flex overflow-x-auto">
-            <div className="flex flex-nowrap">
-              {previews.map((preview, index) => (
-                <div key={index} className="relative p-2 flex items-center border border-gray-300 rounded-lg bg-gray-100 w-40 mr-2">
-                  {files[index].type.startsWith('image/') ? (
-                    <FaRegFileImage size={30} className="mr-2" />
-                  ) : (
-                    <FaRegFileAlt size={30} className="mr-2" />
-                  )}
-                  <div className="flex flex-col overflow-hidden">
-                    <span className="text-sm font-medium truncate">{files[index].name}</span>
-                    <span className="text-xs text-gray-500 truncate">{files[index].type.split('/').pop()?.toUpperCase()}</span>
-                  </div>
-                  <button
-                    className="absolute top-0 right-0 mt-1 mr-1 p-1 bg-black text-white rounded-full hover:bg-gray-700"
-                    onClick={() => handleRemoveFile(index)}
-                  >
-                    <MdOutlineClose size={15} />
-                  </button>
+      <div className="flex-1 w-full flex flex-col justify-center items-center relative">
+        {!isMessageSent ? (
+          <div className="flex flex-col items-center justify-center h-full">
+            <Image src={Logo} alt="Ai-Attorney Logo" width={200} height={200} />
+            <h1 className="m-2 rounded font-bold text-3xl md:text-4xl text-center">Ai-Attorney</h1>
+          </div>
+        ) : (
+          <div className="flex-1 w-full p-5 pr-0 overflow-y-auto" style={{ maxHeight: '84vh' }}>
+            <div className="max-w-4xl mx-auto w-full">
+              {casesToShow.map((caseItem, index) => (
+                <div key={index} className="mb-4">
+                  <h2 className="font-bold">{caseItem.title}</h2>
+                  <p>{caseItem.summary}</p>
+                  <p><em>{caseItem.significance}</em></p>
                 </div>
               ))}
             </div>
           </div>
-        )}
 
-        <div className="w-full flex justify-center items-center">
-          <div className="flex items-center w-full max-w-4xl bg-white rounded-2xl border-black border-2 p-2 space-x-2 relative">
-            <label className="p-2 bg-white hover:bg-gray-200 rounded flex-shrink-0 cursor-pointer">
-              <CgAttachment size={25} color="#000" />
-              <input
-                type="file"
-                multiple
-                className="hidden"
-                onChange={handleFileChange}
-              />
-            </label>
-            <input
-              type="text"
-              placeholder="write here ..."
-              className="flex-grow bg-white outline-none text-gray-900 text-base"
-            />
-            <button className="p-2 bg-white hover:bg-gray-200 rounded flex-shrink-0">
-              <BsFillSendFill size={23} color="#000" />
-            </button>
+        )}
+      </div>
+
+      {previews.length > 0 && (
+        <div className="absolute w-full max-w-4xl mx-auto border-gray-300 rounded-lg flex overflow-x-auto" style={{ top: 'auto', bottom: '5rem' }}>
+          <div className="flex flex-nowrap">
+            {previews.map((preview, index) => (
+              <div key={index} className="relative p-2 flex items-center border border-gray-300 rounded-lg bg-gray-100 w-40 mr-2">
+                {files[index].type.startsWith('image/') ? (
+                  <FaRegFileImage size={30} className="mr-2" />
+                ) : (
+                  <FaRegFileAlt size={30} className="mr-2" />
+                )}
+                <div className="flex flex-col overflow-hidden">
+                  <span className="text-sm font-medium truncate">{files[index].name}</span>
+                  <span className="text-xs text-gray-500 truncate">{files[index].type.split('/').pop()?.toUpperCase()}</span>
+                </div>
+                <button
+                  className="absolute top-0 right-0 mr-1 mt-1 p-1 bg-black text-white rounded-full hover:bg-gray-700"
+                  onClick={() => handleRemoveFile(index)}
+                >
+                  <MdOutlineClose size={10} />
+                </button>
+              </div>
+            ))}
           </div>
+        </div>
+      )}
+
+      <div className="relative w-full flex justify-center items-center z-10 pb-5">
+        <div className="flex items-center w-full max-w-4xl bg-white rounded-2xl border-black border p-2 space-x-2 relative">
+          <label className="p-2 bg-white hover:bg-gray-200 rounded flex-shrink-0 cursor-pointer">
+            <CgAttachment size={25} color="#000" />
+            <input
+              type="file"
+              multiple
+              className="hidden"
+              onChange={handleFileChange}
+            />
+          </label>
+          <input
+            type="text"
+            placeholder="write here ..."
+            className="flex-grow bg-white outline-none text-gray-900 text-base"
+          />
+          <button className="p-2 bg-white hover:bg-gray-200 rounded flex-shrink-0" onClick={handleSend}>
+            <BsFillSendFill size={23} color="#000" />
+          </button>
         </div>
       </div>
     </div>
