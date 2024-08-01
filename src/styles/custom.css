@@ -69,3 +69,38 @@
   100% { opacity: 1; transform: translateY(0); }
 }
 
+/* Add these styles to your custom.css file */
+.response-heading {
+  font-weight: bold;
+  font-size: 1.2em;
+  color: #333; /* Darker color for headings */
+  display: inline; /* Ensure headings are inline with text */
+  margin-right: 0.5em; /* Add space between heading and text */
+}
+
+.response-link {
+  color: #0070f3; /* A distinct color for links */
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.response-link:hover {
+  color: #0056a3; /* Slightly darker color on hover */
+}
+
+.response-text {
+  line-height: 1.6; /* Improve readability with increased line height */
+  color: #555; /* Lighter color for body text */
+  margin-bottom: 1em; /* Add space below text blocks */
+  white-space: pre-wrap; /* Preserve whitespace for formatting */
+}
+
+.response-link {
+  color: #0070f3; /* A distinct color for links */
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.response-link:hover {
+  color: #0056a3; /* Slightly darker color on hover */
+}

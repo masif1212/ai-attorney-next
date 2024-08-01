@@ -12,9 +12,10 @@ const Sidebar = ({ sidebarVisible, toggleSidebar, chatSessions, onSessionSelect,
 
   return (
     <div className="w-60 h-screen text-white flex flex-col py-3 px-3 border-black border-2 bg-black">
+      
       <div className='flex flex-row justify-between font-bold'>
         <ButtonForBlackScreen onClick={toggleSidebar}>
-          <RiMenu2Line size={23} color='#faf5f5' />
+          <RiMenu2Line size={25} color='#faf5f5' />
         </ButtonForBlackScreen>
         <ButtonForBlackScreen onClick={createNewSession}>
           <MdOutlineAddComment size={25} color='#faf5f5' />
