@@ -40,7 +40,13 @@ const ChatArea: React.FC<{ toggleSidebar: () => void, sidebarVisible: boolean, s
   const [previews, setPreviews] = useState<string[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isMessageSent, setIsMessageSent] = useState(false);
-  const [casesToShow, setCasesToShow] = useState<any[]>([]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [apiResponse, setApiResponse] = useState([]);
+  const [chatHistory, setChatHistory] = useState<string[]>([]);
+
+  console.log(apiResponse,'muzamil ')
+
+
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
@@ -76,49 +82,44 @@ const ChatArea: React.FC<{ toggleSidebar: () => void, sidebarVisible: boolean, s
     setPreviews(prevPreviews => prevPreviews.filter((_, i) => i !== index));
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
+    if (!inputMessage.trim()) return;  // Prevent sending empty messages
     setIsMessageSent(true);
-    setCasesToShow(cases); // Show cases when the message is sent
+    try {
+      const response = await fetch('https://516d-2407-aa80-314-fe1a-c0c9-feaf-16df-d8ed.ngrok-free.app/ask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: inputMessage, chat_id: 2 })
+      });
+      const data = await response.json();
+      if (data) {
+        setApiResponse(data.response);  // Handle the specific response for the cases
+        setChatHistory(data.chatHistory);  // Store chat history
+        setInputMessage('');  // Clear the input after sending
+      }
+    } catch (error) {
+      console.error('Failed to fetch cases:', error);
+      setErrorMessage('Failed to load data');
+    }
   };
 
-  const cases = [
-    {
-      title: "Brown v. Board of Education (1954) - United States",
-      summary: "This landmark Supreme Court case declared state laws establishing separate public schools for black and white students to be unconstitutional. It overturned the Plessy v. Ferguson decision of 1896, which allowed state-sponsored segregation.",
-      significance: "It was a major victory in the Civil Rights Movement and paved the way for integration and the civil rights legislation of the 1960s."
-    },
-    {
-      title: "Roe v. Wade (1973) - United States",
-      summary: "The Supreme Court ruled that a state law that banned abortions (except to save the life of the mother) was unconstitutional. The decision legalized abortion nationwide, establishing a woman's right to choose as protected under the right to privacy.",
-      significance: "This case has been a focal point in the debate over reproductive rights and continues to be a contentious issue in American politics."
-    },
-    {
-      title: "Miranda v. Arizona (1966) - United States",
-      summary: "The Supreme Court held that detained criminal suspects must be informed of their rights to an attorney and against self-incrimination prior to police questioning.",
-      significance: "This case led to the creation of the 'Miranda Rights' that must be recited by law enforcement officers when arresting someone."
-    },
-    {
-      title: "The People v. O.J. Simpson (1995) - United States",
-      summary: "Former NFL player O.J. Simpson was tried and acquitted for the murders of his ex-wife, Nicole Brown Simpson, and her friend, Ronald Goldman.",
-      significance: "This case was highly publicized and raised issues regarding race, celebrity, and the criminal justice system in the United States."
-    },
-    {
-      title: "The People v. O.J. Simpson (1995) - United States",
-      summary: "Former NFL player O.J. Simpson was tried and acquitted for the murders of his ex-wife, Nicole Brown Simpson, and her friend, Ronald Goldman.",
-      significance: "This case was highly publicized and raised issues regarding race, celebrity, and the criminal justice system in the United States."
-    },
-    {
-      title: "The People v. O.J. Simpson (1995) - United States",
-      summary: "Former NFL player O.J. Simpson was tried and acquitted for the murders of his ex-wife, Nicole Brown Simpson, and her friend, Ronald Goldman.",
-      significance: "This case was highly publicized and raised issues regarding race, celebrity, and the criminal justice system in the United States."
-    },
-    {
-      title: "The People v. O.J. Simpson (1995) - United States",
-      summary: "Former NFL player O.J. Simpson was tried and acquitted for the murders of his ex-wife, Nicole Brown Simpson, and her friend, Ronald Goldman.",
-      significance: "This case was highly publicized and raised issues regarding race, celebrity, and the criminal justice system in the United States."
-    },
-
-  ];
+  function formatResponseText(inputMessage : any) {
+    const headingPattern = /(Key Facts|Proceedings|Judge's Decision)/g;
+    const quotesPattern = /"([^"]+)"/g;
+    const urlPattern = /(https?:\/\/[^\s]+)/g;
+    const textToRemove = /undefined/g;
+  
+    let formattedText = inputMessage.replace(headingPattern, '\n\n## **$1**');
+    formattedText = formattedText.replace(quotesPattern, '**"$1"**');
+    formattedText = formattedText.replace(urlPattern, `🗂️[***Click Here 👈***]($1)`);
+    formattedText = formattedText.replace(textToRemove, '');
+    formattedText = formattedText.replace(/\n/g, '\n\n');
+  
+    return formattedText;
+  }
+  
 
   const name = session?.user?.email?.slice(0, 1).toLocaleUpperCase();
 
@@ -156,7 +157,6 @@ const ChatArea: React.FC<{ toggleSidebar: () => void, sidebarVisible: boolean, s
 
   return (
     <div className="flex-1 bg-white text-black h-screen flex flex-col relative ">
-
       <div className="flex justify-between items-center">
         {!sidebarVisible && (
           <div className="text-lg font-bold flex space-x-2 pt-3 pl-2">
@@ -198,16 +198,21 @@ const ChatArea: React.FC<{ toggleSidebar: () => void, sidebarVisible: boolean, s
         ) : (
           <div className="flex-1 w-full p-5 pr-0 overflow-y-auto" style={{ maxHeight: '84vh' }}>
             <div className="max-w-4xl mx-auto w-full">
-              {casesToShow.map((caseItem, index) => (
-                <div key={index} className="mb-4">
-                  <h2 className="font-bold">{caseItem.title}</h2>
-                  <p>{caseItem.summary}</p>
-                  <p><em>{caseItem.significance}</em></p>
+              {apiResponse && (
+                <div className="mb-4">
+                  <h2 className="font-bold">Case Details</h2>
+                  <p>{apiResponse}</p>
                 </div>
-              ))}
+              )}
+               {chatHistory.map((chat, index) => (
+               <div key={index} className={`${chat.sender === 'user' ? 'text-left' : 'text-left'}`}>
+          <p className={`${chat.sender === 'user' ? 'font-semibold' : 'text-sm'}`}>
+            {chat.text}
+          </p>
+        </div>
+      ))}
             </div>
           </div>
-
         )}
       </div>
 
@@ -252,6 +257,14 @@ const ChatArea: React.FC<{ toggleSidebar: () => void, sidebarVisible: boolean, s
             type="text"
             placeholder="write here ..."
             className="flex-grow bg-white outline-none text-gray-900 text-base"
+            value={inputMessage}
+            onChange={e => setInputMessage(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && !e.shiftKey) { // Checks if the Enter key is pressed without the Shift key
+                e.preventDefault();  // Prevents the default action of the enter key which is to insert a newline
+                handleSend();        // Calls the send function
+              }
+            }}
           />
           <button className="p-2 bg-white hover:bg-gray-200 rounded flex-shrink-0" onClick={handleSend}>
             <BsFillSendFill size={23} color="#000" />

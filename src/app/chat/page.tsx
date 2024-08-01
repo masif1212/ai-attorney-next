@@ -6,8 +6,9 @@ import ChatArea from '@/components/ChatArea';
 
 export default function Chat() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
-  const [selectedChat, setSelectedChat] = useState<string | null>(null);
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
   const [isInitialRender, setIsInitialRender] = useState(true);
+  const [chatSessions, setChatSessions] = useState<{ id: string, name: string, history: { text: string, details: string }[] }[]>([]); // State to store chat sessions
 
   useEffect(() => {
     const handleResize = () => {
@@ -32,22 +33,31 @@ export default function Chat() {
     setSidebarVisible(!sidebarVisible);
   };
 
-  const handleChatSelect = (chatText: string) => {
-    setSelectedChat(chatText);
+  const handleSessionSelect = (sessionId: string) => {
+    setSelectedSessionId(sessionId);
+  };
+
+  const createNewSession = () => {
+    const newSessionId = `${Date.now()}`;
+    const newSession = { id: newSessionId, name: `Chat ${chatSessions.length + 1}`, history: [] };
+    setChatSessions([...chatSessions, newSession]);
+    setSelectedSessionId(newSessionId);
   };
 
   if (isInitialRender) {
     return null; // Prevent rendering during the initial check
   }
 
+  const selectedSession = chatSessions.find(session => session.id === selectedSessionId);
+
   return (
     <div className="relative flex flex-col md:flex-row h-screen overflow-hidden bg-back">
       <div className={`fixed inset-0 bg-gray-900 bg-opacity-75 z-10 md:hidden ${sidebarVisible ? 'block' : 'hidden'}`} onClick={toggleSidebar}></div>
       <div className={`fixed inset-y-0 left-0 transform md:transform-none md:static transition-transform duration-300 ease-in-out z-20 ${sidebarVisible ? 'translate-x-0' : '-translate-x-full'}`}>
-        <Sidebar sidebarVisible={sidebarVisible} toggleSidebar={toggleSidebar} onChatSelect={handleChatSelect} />
+        <Sidebar sidebarVisible={sidebarVisible} toggleSidebar={toggleSidebar} chatSessions={chatSessions} onSessionSelect={handleSessionSelect} createNewSession={createNewSession} />
       </div>
       <div className="flex-grow h-full overflow-hidden">
-        <ChatArea toggleSidebar={toggleSidebar} sidebarVisible={sidebarVisible} selectedChat={selectedChat} />
+        <ChatArea toggleSidebar={toggleSidebar} sidebarVisible={sidebarVisible} selectedSession={selectedSession} setChatSessions={setChatSessions} />
       </div>
     </div>
   );
