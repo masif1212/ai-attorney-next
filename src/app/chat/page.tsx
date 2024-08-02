@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import ChatArea from '@/components/ChatArea';
+import { v4 as uuidv4 } from 'uuid'; // Import UUID
 
 export default function Chat() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
   const [isInitialRender, setIsInitialRender] = useState(true);
-  const [chatSessions, setChatSessions] = useState<{ id: string, name: string, history: { text: string, details: string }[] }[]>([]); // State to store chat sessions
+  const [chatSessions, setChatSessions] = useState<{ id: string, name: string, history: { sender: string, text: string }[] }[]>([]); // State to store chat sessions
 
   useEffect(() => {
     const handleResize = () => {
@@ -37,9 +38,24 @@ export default function Chat() {
     setSelectedSessionId(sessionId);
   };
 
+  useEffect(() => {
+    // Automatically create a new session if none exists
+    if (chatSessions.length === 0) {
+      createNewSession();
+    }
+  }, []);
+
   const createNewSession = () => {
-    const newSessionId = `${Date.now()}`;
-    const newSession = { id: newSessionId, name: `Chat ${chatSessions.length + 1}`, history: [] };
+    // Check if there is an empty session
+    const existingEmptySession = chatSessions.find(session => session.history.length === 0);
+
+    if (existingEmptySession) {
+      setSelectedSessionId(existingEmptySession.id);
+      return;
+    }
+
+    const newSessionId = uuidv4(); // Use UUID for sessionId
+    const newSession = { id: newSessionId, name: `New Chat`, history: [] };
     setChatSessions([...chatSessions, newSession]);
     setSelectedSessionId(newSessionId);
   };

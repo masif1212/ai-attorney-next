@@ -1,3 +1,5 @@
+// ChatArea.tsx
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -36,9 +38,13 @@ const useDropdown = () => {
 const ChatArea: React.FC<{
   toggleSidebar: () => void;
   sidebarVisible: boolean;
-  selectedChat: string | null;
-}> = ({ toggleSidebar, sidebarVisible, selectedChat }) => {
-  
+  selectedSession: { id: string; name: string; history: Chat[] } | null;
+  setChatSessions: React.Dispatch<
+    React.SetStateAction<
+      { id: string; name: string; history: Chat[] }[]
+    >
+  >;
+}> = ({ toggleSidebar, sidebarVisible, selectedSession, setChatSessions }) => {
   const { data: session } = useSession();
   const router = useRouter();
   const { isOpen, toggleDropdown, closeDropdown } = useDropdown();
@@ -49,9 +55,6 @@ const ChatArea: React.FC<{
   const [isMessageSent, setIsMessageSent] = useState(false);
   const [inputMessage, setInputMessage] = useState("");
   const [apiResponse, setApiResponse] = useState<string>("");
-  const [chatHistory, setChatHistory] = useState<Chat[]>([]);
-
-  console.log("API RESPONSE \n ", apiResponse);
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
@@ -97,27 +100,41 @@ const ChatArea: React.FC<{
   };
 
   const handleSend = async () => {
-    if (!inputMessage.trim()) return; // Prevent sending empty messages
+    if (!inputMessage.trim() || !selectedSession) return; // Ensure there's a session selected
     setIsMessageSent(true);
+    console.log('api is ready to hit')
     try {
       const response = await fetch(
-        "https://f2a7-2407-aa80-314-fe1a-c0c9-feaf-16df-d8ed.ngrok-free.app/ask",
+        "https://91a9-2407-aa80-314-fe1a-5517-b6d9-648b-6321.ngrok-free.app/ask",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ query: inputMessage, chat_id: 2 }),
+          body: JSON.stringify({ query: inputMessage, chat_id: selectedSession.id }), // Ensure chat_id is passed
         }
       );
+  
       const data = await response.json();
-      console.log("API response data:", data);
-
+      console.log("API response data:", data); // Log the entire response
+  
       if (data && typeof data.response === "string") {
         setApiResponse(formatResponseText(data.response));
-        setChatHistory(data.chatHistory);
+        const updatedHistory = [
+          ...selectedSession.history,
+          { sender: "user", text: inputMessage },
+          { sender: "bot", text: data.response },
+        ];
+        setChatSessions((prevSessions) =>
+          prevSessions.map((session) =>
+            session.id === selectedSession.id
+              ? { ...session, history: updatedHistory }
+              : session
+          )
+        );
         setInputMessage("");
       } else {
+        console.error("Unexpected response format:", data); // Log the problematic response
         throw new Error("Unexpected response format");
       }
     } catch (error) {
@@ -125,6 +142,10 @@ const ChatArea: React.FC<{
       setErrorMessage("Failed to load data");
     }
   };
+  
+  
+  
+  
 
   function formatResponseText(inputMessage: string): string {
     const boldPattern = /\*\*(.*?)\*\*/g;
@@ -230,7 +251,7 @@ const ChatArea: React.FC<{
                 </div>
               )}
 
-              {chatHistory.map((chat, index) => (
+              {selectedSession?.history.map((chat, index) => (
                 <div
                   key={index}
                   className={`flex ${
