@@ -39,11 +39,7 @@ const ChatArea: React.FC<{
   toggleSidebar: () => void;
   sidebarVisible: boolean;
   selectedSession: { id: string; name: string; history: Chat[] } | null;
-  setChatSessions: React.Dispatch<
-    React.SetStateAction<
-      { id: string; name: string; history: Chat[] }[]
-    >
-  >;
+  setChatSessions: React.Dispatch<React.SetStateAction<{ id: string; name: string; history: Chat[] }[]>>;
 }> = ({ toggleSidebar, sidebarVisible, selectedSession, setChatSessions }) => {
   const { data: session } = useSession();
   const router = useRouter();
@@ -52,9 +48,12 @@ const ChatArea: React.FC<{
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isMessageSent, setIsMessageSent] = useState(false);
   const [inputMessage, setInputMessage] = useState("");
   const [apiResponse, setApiResponse] = useState<string>("");
+  const [chatHistory, setChatHistory] = useState<Chat[]>([]);
+  const [isLoading, setIsLoading] = useState(false); // Loading state
+
+  console.log("API RESPONSE \n ", chatHistory);
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
@@ -101,8 +100,15 @@ const ChatArea: React.FC<{
 
   const handleSend = async () => {
     if (!inputMessage.trim() || !selectedSession) return; // Ensure there's a session selected
-    setIsMessageSent(true);
-    console.log('api is ready to hit')
+
+    // Immediately add the user's message to the chat history
+    const newChat: Chat = { sender: "user", text: inputMessage };
+    setChatHistory((prevChatHistory) => [...prevChatHistory, newChat]);
+
+    setInputMessage(""); // Clear the input field after sending
+
+    setIsLoading(true); // Start loading
+
     try {
       const response = await fetch(
         "https://91a9-2407-aa80-314-fe1a-5517-b6d9-648b-6321.ngrok-free.app/ask",
@@ -114,10 +120,10 @@ const ChatArea: React.FC<{
           body: JSON.stringify({ query: inputMessage, chat_id: selectedSession.id }), // Ensure chat_id is passed
         }
       );
-  
+
       const data = await response.json();
       console.log("API response data:", data); // Log the entire response
-  
+
       if (data && typeof data.response === "string") {
         setApiResponse(formatResponseText(data.response));
         const updatedHistory = [
@@ -132,7 +138,11 @@ const ChatArea: React.FC<{
               : session
           )
         );
-        setInputMessage("");
+        const newResponseChat: Chat = {
+          sender: "bot",
+          text: data.response,
+        };
+        setChatHistory((prevChatHistory) => [...prevChatHistory, newResponseChat]);
       } else {
         console.error("Unexpected response format:", data); // Log the problematic response
         throw new Error("Unexpected response format");
@@ -140,12 +150,10 @@ const ChatArea: React.FC<{
     } catch (error) {
       console.error("Failed to fetch cases:", error);
       setErrorMessage("Failed to load data");
+    } finally {
+      setIsLoading(false); // Stop loading
     }
   };
-  
-  
-  
-  
 
   function formatResponseText(inputMessage: string): string {
     const boldPattern = /\*\*(.*?)\*\*/g;
@@ -228,7 +236,7 @@ const ChatArea: React.FC<{
       )}
 
       <div className="flex-1 w-full flex flex-col justify-center items-center relative overflow-y-auto">
-        {!isMessageSent ? (
+        {!chatHistory.length ? (
           <div className="flex flex-col items-center justify-center h-full">
             <Image src={Logo} alt="Ai-Attorney Logo" width={200} height={200} />
             <h1 className="m-2 rounded font-bold text-3xl md:text-4xl text-center">
@@ -236,10 +244,7 @@ const ChatArea: React.FC<{
             </h1>
           </div>
         ) : (
-          <div
-            className="flex-1 w-full p-5 pr-0 overflow-y-auto"
-            style={{ maxHeight: "84vh" }}
-          >
+          <div className="flex-1 w-full p-5 pr-0 overflow-y-auto" style={{ maxHeight: "84vh" }}>
             <div className="max-w-4xl mx-auto w-full">
               {apiResponse && (
                 <div className="mb-4">
@@ -254,15 +259,11 @@ const ChatArea: React.FC<{
               {selectedSession?.history.map((chat, index) => (
                 <div
                   key={index}
-                  className={`flex ${
-                    chat.sender === "user" ? "justify-end" : "justify-start"
-                  } mt-1 pt-3`}
+                  className={`flex ${chat.sender === "user" ? "justify-end" : "justify-start"} mt-1 pt-3`}
                 >
                   <div
                     className={`inline-block p-3 rounded-lg max-w-2/3 max-w-full text-chattext text-base ${
-                      chat.sender === "user"
-                        ? "bg-gray-50 border flex justify-end"
-                        : "bg-gray-50 border"
+                      chat.sender === "user" ? "bg-gray-50 border flex justify-end" : "bg-gray-50 border"
                     }`}
                     style={{ width: "auto", maxWidth: "66%", minWidth: "10%" }}
                   >
@@ -282,6 +283,11 @@ const ChatArea: React.FC<{
                 </div>
               ))}
             </div>
+          </div>
+        )}
+        {isLoading && (
+          <div className="absolute bottom-20 left-0 right-0 flex justify-center items-center">
+            <div className="loader"></div>
           </div>
         )}
       </div>
@@ -342,8 +348,8 @@ const ChatArea: React.FC<{
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault(); // Prevents the default action of the enter key which is to insert a newline
-                  handleSend(); // Calls the send function
+                  e.preventDefault();
+                  handleSend();
                 }
               }}
             />
