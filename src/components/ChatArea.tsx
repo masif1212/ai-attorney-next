@@ -1,3 +1,5 @@
+// ChatArea.tsx
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -36,6 +38,13 @@ const useDropdown = () => {
 const ChatArea: React.FC<{
   toggleSidebar: () => void;
   sidebarVisible: boolean;
+  selectedSession: { id: string; name: string; history: Chat[] } | null;
+  setChatSessions: React.Dispatch<
+    React.SetStateAction<
+      { id: string; name: string; history: Chat[] }[]
+    >
+  >;
+}> = ({ toggleSidebar, sidebarVisible, selectedSession, setChatSessions }) => {
   selectedChat: string | null;
 }> = ({ toggleSidebar, sidebarVisible, selectedChat }) => {
   const { data: session } = useSession();
@@ -46,6 +55,7 @@ const ChatArea: React.FC<{
   const [previews, setPreviews] = useState<string[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [inputMessage, setInputMessage] = useState("");
+  const [apiResponse, setApiResponse] = useState<string>("");
   const [chatHistory, setChatHistory] = useState<Chat[]>([]);
   const [isLoading, setIsLoading] = useState(false); // Loading state
 
@@ -95,6 +105,9 @@ const ChatArea: React.FC<{
   };
 
   const handleSend = async () => {
+    if (!inputMessage.trim() || !selectedSession) return; // Ensure there's a session selected
+    setIsMessageSent(true);
+    console.log('api is ready to hit')
     if (!inputMessage.trim()) return; // Prevent sending empty messages
 
     // Immediately add the user's message to the chat history
@@ -108,24 +121,42 @@ const ChatArea: React.FC<{
     try {
       const response = await fetch(
         "https://91a9-2407-aa80-314-fe1a-5517-b6d9-648b-6321.ngrok-free.app/ask",
+        "https://91a9-2407-aa80-314-fe1a-5517-b6d9-648b-6321.ngrok-free.app/ask",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({ query: inputMessage, chat_id: selectedSession.id }), // Ensure chat_id is passed
           body: JSON.stringify({ query: newChat.text, chat_id: 2 }),
         }
       );
+  
       const data = await response.json();
-      console.log("API response data:", data);
-
+      console.log("API response data:", data); // Log the entire response
+  
       if (data && typeof data.response === "string") {
+        setApiResponse(formatResponseText(data.response));
+        const updatedHistory = [
+          ...selectedSession.history,
+          { sender: "user", text: inputMessage },
+          { sender: "bot", text: data.response },
+        ];
+        setChatSessions((prevSessions) =>
+          prevSessions.map((session) =>
+            session.id === selectedSession.id
+              ? { ...session, history: updatedHistory }
+              : session
+          )
+        );
+        setInputMessage("");
         const newResponseChat: Chat = {
           sender: "bot",
           text: data.response,
         };
         setChatHistory((prevChatHistory) => [...prevChatHistory, newResponseChat]);
       } else {
+        console.error("Unexpected response format:", data); // Log the problematic response
         throw new Error("Unexpected response format");
       }
     } catch (error) {
@@ -135,6 +166,10 @@ const ChatArea: React.FC<{
       setIsLoading(false); // Stop loading
     }
   };
+  
+  
+  
+  
 
   function formatResponseText(inputMessage: string): string {
     const boldPattern = /\*\*(.*?)\*\*/g;
@@ -230,6 +265,17 @@ const ChatArea: React.FC<{
             style={{ maxHeight: "84vh" }}
           >
             <div className="max-w-4xl mx-auto w-full">
+              {apiResponse && (
+                <div className="mb-4">
+                  <h2 className="font-bold">Case Details</h2>
+                  <div
+                    className="response-text"
+                    dangerouslySetInnerHTML={{ __html: apiResponse }}
+                  />
+                </div>
+              )}
+
+              {selectedSession?.history.map((chat, index) => (
               {chatHistory.map((chat, index) => (
                 <div
                   key={index}
