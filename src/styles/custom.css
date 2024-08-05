@@ -1,0 +1,123 @@
+.truncate {
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 190px; /* Set the maximum width to 200px */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 12px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #2a2a2a; /* Dark grey for the track */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #424242; /* Grey for the thumb */
+  border: 2px solid #686868; /* Dark grey for the border */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #686868; /* Lighter grey on hover */
+}
+
+.custom-scrollbar::-webkit-scrollbar-button {
+  background: none; /* Reset background to none */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.case-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.case-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 500ms, transform 500ms;
+}
+.case-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+.case-exit-active {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 500ms, transform 500ms;
+}
+
+
+.fade-in {
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Add these styles to your custom.css file */
+.response-heading {
+  font-weight: bold;
+  font-size: 1.2em;
+  color: #333; /* Darker color for headings */
+  display: inline; /* Ensure headings are inline with text */
+  margin-right: 0.5em; /* Add space between heading and text */
+}
+
+.response-link {
+  color: #0070f3; /* A distinct color for links */
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.response-link:hover {
+  color: #0056a3; /* Slightly darker color on hover */
+}
+
+.response-text {
+  line-height: 1.6; /* Improve readability with increased line height */
+  color: #555; /* Lighter color for body text */
+  margin-bottom: 1em; /* Add space below text blocks */
+  white-space: pre-wrap; /* Preserve whitespace for formatting */
+}
+
+.response-link {
+  color: #0070f3; /* A distinct color for links */
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.response-link:hover {
+  color: #0056a3; /* Slightly darker color on hover */
+}
+
+
+/* styles/custom.css */
+.loader {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #000;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

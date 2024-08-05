@@ -1,0 +1,41 @@
+import logo from '@/images/clients/unseal/logomark-dark.svg'
+
+export const caseStudy = {
+  client: 'Confidential',
+  title: 'Secure and Confidential',
+  description:
+    'AI Attorney prioritizes data security and confidentiality, employing robust encryption protocols and strict privacy measures to safeguard user information.',
+  logo,
+  date: '2023-07',
+}
+
+export const metadata = {
+  title: `${caseStudy.client} Case Study`,
+  description: caseStudy.description,
+}
+
+## Overview
+
+Security and confidentiality are paramount in today's digital world. Our platform is designed to offer unparalleled security measures...
+
+## What we did
+
+<TagList>
+  <TagListItem>Security Architecture</TagListItem>
+  <TagListItem>Data Encryption</TagListItem>
+  <TagListItem>Compliance</TagListItem>
+  <TagListItem>Risk Management</TagListItem>
+</TagList>
+
+<Blockquote
+  author={{ name: 'John Doe', role: 'CEO of Confidential Corp' }}
+  image={{ src: logo }}
+>
+  The security provided by the platform is top-notch, ensuring our data is always safe.
+</Blockquote>
+
+<StatList>
+  <StatListItem value="99.9%" label="Uptime" />
+  <StatListItem value="100%" label="Data Encryption" />
+  <StatListItem value="0" label="Data Breaches" />
+</StatList>

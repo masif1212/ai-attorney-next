@@ -3,6 +3,7 @@ import defaultTheme from 'tailwindcss/defaultTheme'
 
 export default {
   content: ['./src/**/*.{js,jsx,mdx,ts,tsx}'],
+
   theme: {
     fontSize: {
       xs: ['0.75rem', { lineHeight: '1rem' }],
@@ -27,6 +28,15 @@ export default {
           ['Mona Sans', ...defaultTheme.fontFamily.sans],
           { fontVariationSettings: '"wdth" 125' },
         ],
+      },
+      colors :{
+        buttonHover : "#2e2e2e",
+        back : "#292928",
+        test : "#faf5f5",
+        chattext : "#555555"
+      },
+      animation: {
+        fadeInWord: 'fadeInWord 0.5s forwards',
       },
     },
   },
