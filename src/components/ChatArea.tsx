@@ -1,8 +1,6 @@
-// ChatArea.tsx
-
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Logo from "@/images/logo/logo-black.png";
 import { BsFillSendFill } from "react-icons/bs";
@@ -21,6 +19,13 @@ interface Chat {
   text: string;
 }
 
+interface ChatAreaProps {
+  toggleSidebar: () => void;
+  sidebarVisible: boolean;
+  selectedSession: { id: string; name: string; history: Chat[] } | null;
+  setChatSessions: React.Dispatch<React.SetStateAction<{ id: string; name: string; history: Chat[] }[]>>;
+}
+
 const useDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -35,12 +40,7 @@ const useDropdown = () => {
   return { isOpen, toggleDropdown, closeDropdown };
 };
 
-const ChatArea: React.FC<{
-  toggleSidebar: () => void;
-  sidebarVisible: boolean;
-  selectedSession: { id: string; name: string; history: Chat[] } | null;
-  setChatSessions: React.Dispatch<React.SetStateAction<{ id: string; name: string; history: Chat[] }[]>>;
-}> = ({ toggleSidebar, sidebarVisible, selectedSession, setChatSessions }) => {
+const ChatArea: React.FC<ChatAreaProps> = ({ toggleSidebar, sidebarVisible, selectedSession, setChatSessions }) => {
   const { data: session } = useSession();
   const router = useRouter();
   const { isOpen, toggleDropdown, closeDropdown } = useDropdown();
@@ -50,10 +50,8 @@ const ChatArea: React.FC<{
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [inputMessage, setInputMessage] = useState("");
   const [apiResponse, setApiResponse] = useState<string>("");
-  const [chatHistory, setChatHistory] = useState<Chat[]>([]);
-  const [isLoading, setIsLoading] = useState(false); // Loading state
-
-  console.log("API RESPONSE \n ", chatHistory);
+  const [isLoading, setIsLoading] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
@@ -99,61 +97,72 @@ const ChatArea: React.FC<{
   };
 
   const handleSend = async () => {
-    if (!inputMessage.trim() || !selectedSession) return; // Ensure there's a session selected
+    if (!inputMessage.trim() || !selectedSession) return;
 
-    // Immediately add the user's message to the chat history
     const newChat: Chat = { sender: "user", text: inputMessage };
-    setChatHistory((prevChatHistory) => [...prevChatHistory, newChat]);
+    const updatedHistory = [...selectedSession.history, newChat];
 
-    setInputMessage(""); // Clear the input field after sending
+    setChatSessions((prevSessions) =>
+      prevSessions.map((session) =>
+        session.id === selectedSession.id
+          ? { ...session, history: updatedHistory }
+          : session
+      )
+    );
 
-    setIsLoading(true); // Start loading
+    setInputMessage("");
+    setIsLoading(true);
 
     try {
       const response = await fetch(
-        "https://91a9-2407-aa80-314-fe1a-5517-b6d9-648b-6321.ngrok-free.app/ask",
+        "https://efe4-2407-aa80-314-8755-a191-c536-5b03-9f37.ngrok-free.app/ask",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ query: inputMessage, chat_id: selectedSession.id }), // Ensure chat_id is passed
+          body: JSON.stringify({ query: inputMessage, chat_id: selectedSession.id }),
         }
       );
 
       const data = await response.json();
-      console.log("API response data:", data); // Log the entire response
+      console.log("API response data:", data);
 
       if (data && typeof data.response === "string") {
-        setApiResponse(formatResponseText(data.response));
-        const updatedHistory = [
-          ...selectedSession.history,
-          { sender: "user", text: inputMessage },
-          { sender: "bot", text: data.response },
-        ];
+        const botResponse: Chat = { sender: "bot", text: data.response };
+        const newHistory = [...updatedHistory, botResponse];
+
         setChatSessions((prevSessions) =>
           prevSessions.map((session) =>
             session.id === selectedSession.id
-              ? { ...session, history: updatedHistory }
+              ? { ...session, history: newHistory }
               : session
           )
         );
-        const newResponseChat: Chat = {
-          sender: "bot",
-          text: data.response,
-        };
-        setChatHistory((prevChatHistory) => [...prevChatHistory, newResponseChat]);
+
+        setApiResponse(formatResponseText(data.response));
       } else {
-        console.error("Unexpected response format:", data); // Log the problematic response
-        throw new Error("Unexpected response format");
+        console.error("Unexpected response format:", data);
+        setErrorMessage("Unexpected response format");
       }
     } catch (error) {
       console.error("Failed to fetch cases:", error);
       setErrorMessage("Failed to load data");
     } finally {
-      setIsLoading(false); // Stop loading
+      setIsLoading(false);
     }
   };
+
+  const adjustTextareaHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'; // Reset height
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 96)}px`; // 96px is 4 lines approximately
+    }
+  };
+
+  useEffect(() => {
+    adjustTextareaHeight(); // Adjust on content change
+  }, [inputMessage]);
 
   function formatResponseText(inputMessage: string): string {
     const boldPattern = /\*\*(.*?)\*\*/g;
@@ -168,9 +177,9 @@ const ChatArea: React.FC<{
       return linkHtml;
     });
 
-    let finalText = formattedText.replace(dashBeforeHeadingPattern, '**$1**');
-    finalText = finalText.replace(boldPattern, '<strong>$1</strong>');
-    finalText = finalText.replace(superBoldPattern, '<strong><span style="font-weight: 900;">$1</span></strong>');
+    let finalText = formattedText.replace(dashBeforeHeadingPattern, "**$1**");
+    finalText = finalText.replace(boldPattern, "<strong>$1</strong>");
+    finalText = finalText.replace(superBoldPattern, "<strong><span style='font-weight: 900;'>$1</span></strong>");
     finalText = finalText.replace(textToRemove, "");
     finalText = finalText.replace(/\n{2,}/g, "\n\n");
     finalText = finalText.replace(/^\n+|\n+$/g, "");
@@ -236,35 +245,24 @@ const ChatArea: React.FC<{
       )}
 
       <div className="flex-1 w-full flex flex-col justify-center items-center relative overflow-y-auto">
-        {!chatHistory.length ? (
+        {!selectedSession?.history.length ? (
           <div className="flex flex-col items-center justify-center h-full">
             <Image src={Logo} alt="Ai-Attorney Logo" width={200} height={200} />
-            <h1 className="m-2 rounded font-bold text-3xl md:text-4xl text-center">
+            {/* <h1 className="m-2 rounded font-bold text-3xl md:text-4xl text-center">
               Ai-Attorney
-            </h1>
+            </h1> */}
           </div>
         ) : (
           <div className="flex-1 w-full p-5 pr-0 overflow-y-auto" style={{ maxHeight: "84vh" }}>
             <div className="max-w-4xl mx-auto w-full">
-              {apiResponse && (
-                <div className="mb-4">
-                  <h2 className="font-bold">Case Details</h2>
-                  <div
-                    className="response-text"
-                    dangerouslySetInnerHTML={{ __html: apiResponse }}
-                  />
-                </div>
-              )}
-
-              {selectedSession?.history.map((chat, index) => (
+              {selectedSession.history.map((chat, index) => (
                 <div
                   key={index}
                   className={`flex ${chat.sender === "user" ? "justify-end" : "justify-start"} mt-1 pt-3`}
                 >
                   <div
-                    className={`inline-block p-3 rounded-lg max-w-2/3 max-w-full text-chattext text-base ${
-                      chat.sender === "user" ? "bg-gray-50 border flex justify-end" : "bg-gray-50 border"
-                    }`}
+                    className={`inline-block p-3 rounded-lg max-w-2/3 max-w-full text-chattext text-base ${chat.sender === "user" ? "bg-gray-50 border flex justify-end" : "bg-gray-50 border"
+                      }`}
                     style={{ width: "auto", maxWidth: "66%", minWidth: "10%" }}
                   >
                     <div className="whitespace-pre-wrap break-words p-2">
@@ -285,6 +283,7 @@ const ChatArea: React.FC<{
             </div>
           </div>
         )}
+
         {isLoading && (
           <div className="absolute bottom-20 left-0 right-0 flex justify-center items-center">
             <div className="loader"></div>
@@ -330,7 +329,8 @@ const ChatArea: React.FC<{
 
       <div className="relative w-full flex justify-center items-center z-10 pb-5">
         <div className="flex items-center w-full max-w-4xl bg-white rounded-2xl border border-black p-1 relative mx-5">
-          <label className="p-2 bg-white hover:bg-gray-200 rounded flex-shrink-0 cursor-pointer">
+          
+          {/* <label className="p-2 bg-white hover:bg-gray-200 rounded flex-shrink-0 cursor-pointer">
             <CgAttachment size={25} color="#000" />
             <input
               type="file"
@@ -338,12 +338,13 @@ const ChatArea: React.FC<{
               className="hidden"
               onChange={handleFileChange}
             />
-          </label>
+          </label> */}
+
           <div className="flex-grow">
-            <input
-              type="text"
+            <textarea
+              ref={textareaRef}
               placeholder="write here ..."
-              className="w-full bg-white outline-none text-gray-900 text-base sm:px-2 md:px-2 lg:px-2"
+              className="w-full bg-white outline-none text-gray-900 text-base sm:px-2 md:px-2 lg:px-2 resize-none overflow-y-auto"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyDown={(e) => {
@@ -352,6 +353,8 @@ const ChatArea: React.FC<{
                   handleSend();
                 }
               }}
+              rows={1}
+              style={{ height: 'auto', minHeight: '1.5rem', maxHeight: '6rem', paddingTop: 5, paddingLeft: 20 }} 
             />
           </div>
           <button

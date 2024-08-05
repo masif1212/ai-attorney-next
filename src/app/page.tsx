@@ -116,10 +116,13 @@ function Services() {
   return (
     <>
       <SectionIntro
-        eyebrow="Comming Soon"
-        title="Enhancing Your Legal Journey with Innovative AI Solutions."
-        className="mt-24 sm:mt-32 lg:mt-40"
+        // eyebrow="Comming Soon"
+        title="Comming Soon"
+        className="mt-24 sm:mt-32 lg:mt-40 text-2xl"
       >
+        <p>
+          Enhancing Your Legal Journey with Innovative AI Solutions.
+        </p>
 
       </SectionIntro>
 
@@ -135,7 +138,7 @@ function Services() {
             </FadeIn>
           </div>
           <List className="mt-16 lg:mt-0 lg:w-1/2 lg:min-w-[33rem] lg:pl-4">
-            <ListItem title="Document Review" >
+            <ListItem title="Digital solution for law firms" >
               Our AI-powered Document Review feature carefully examines your legal documents for accuracy and compliance. It highlights any potential issues, inconsistencies, and risks, providing a detailed review that saves you time and improves the quality of your paperwork. Whether you are dealing with contracts, agreements, or other legal documents, our AI ensures they are thorough and error-free.
             </ListItem>
             <ListItem title="Legal Consultation">
@@ -159,8 +162,8 @@ export const metadata: Metadata = {
     'We are a development studio working at the intersection of design and technology.',
 }
 
-export default async function Home({invert}:{invert: boolean}) {
-  let caseStudies = (await loadCaseStudies()).slice(0, 6)
+export default async function Home({ invert }: { invert: boolean }) {
+  let caseStudies = (await loadCaseStudies()).slice(0, 3)
 
   return (
     <div>
@@ -208,6 +211,6 @@ export default async function Home({invert}:{invert: boolean}) {
       <Services />
 
       <ContactSection />
-    </div>
-  )
+    </div>
+  )
 }

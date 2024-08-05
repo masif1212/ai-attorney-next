@@ -12,6 +12,7 @@ type Inputs = {
 };
 
 export default function SignIn() {
+
   const { register, handleSubmit, formState: { errors } } = useForm<Inputs>();
   const [serverResponse, setServerResponse] = useState<{ message: string; isError: boolean } | null>(null);
   const router = useRouter();
@@ -25,25 +26,24 @@ export default function SignIn() {
 
     if (result?.ok) {
       setServerResponse({ message: 'Logged in successfully!', isError: false });
-      setTimeout(() => {
-        router.push('/chat');
-      }, 1500);
+      router.push('/chat');
     } else {
       setServerResponse({ message: result?.error || 'Something went wrong', isError: true });
     }
   };
 
   // useEffect to clear the serverResponse message after 3 seconds
-  useEffect(() => {
-    if (serverResponse) {
-      const timer = setTimeout(() => {
-        setServerResponse(null);
-      }, 3000); // Change 3000 to the duration you want the message to be visible
+  // useEffect(() => {
+  //   if (serverResponse) {
+  //     const timer = setTimeout(() => {
+  //       setServerResponse(null);
+  //     }, 3000); // Change 3000 to the duration you want the message to be visible
 
-      // Cleanup the timer on component unmount or when serverResponse changes
-      return () => clearTimeout(timer);
-    }
-  }, [serverResponse]);
+  //     // Cleanup the timer on component unmount or when serverResponse changes
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [serverResponse]);
+
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -51,9 +51,8 @@ export default function SignIn() {
         {serverResponse && (
           <div className="flex justify-center">
             <div
-              className={`mt-4 p-2 rounded-md ${
-                serverResponse.isError ? 'bg-red-500' : 'bg-green-500'
-              } text-white text-center max-w-sm`}
+              className={`mt-4 p-2 rounded-md ${serverResponse.isError ? 'bg-red-500' : 'bg-green-500'
+                } text-white text-center max-w-sm`}
             >
               {serverResponse.message}
             </div>
