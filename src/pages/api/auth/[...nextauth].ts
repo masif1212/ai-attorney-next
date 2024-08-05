@@ -1,51 +1,43 @@
-
+import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import prisma from '../../../lib/prisma';
+import { PrismaClient } from '@prisma/client';
+import { verifyPassword } from '../../../lib/auth';
 
-import NextAuth, { DefaultSession, DefaultUser } from "next-auth";
-
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string;
-    } & DefaultSession["user"];
-  }
-
-  interface User extends DefaultUser {
-    id: string;
-  }
-}
+const prisma = new PrismaClient();
 
 export default NextAuth({
-  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'text' },
+        password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
         const user = await prisma.user.findUnique({
-          where: { email: credentials?.email },
+          where: { email: credentials.email }
         });
 
-        if (user) {
-          // Validate the password and other credentials
-          // if (isValidPassword(credentials?.password, user.password)) {
-          return user;
-          // }
+        if (!user) {
+          throw new Error('No user found with the given email');
         }
-        return null;
-      },
-    }),
-  ],
-  callbacks: {
-    async session({ session, token, user }) {
-      if (session.user) {
-        session.user.id = user.id;
+
+        const isValid = await verifyPassword(credentials.password, user.password);
+
+        if (!isValid) {
+          throw new Error('Invalid password');
+        }
+
+        return { id: user.id, email: user.email };
       }
-      return session;
-    },
+    })
+  ],
+  session: {
+    jwt: true
   },
+  secret: process.env.NEXTAUTH_SECRET,
+  pages: {
+    signIn: '/signin',
+    error: '/auth/error'
+  }
 });

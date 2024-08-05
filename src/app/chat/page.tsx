@@ -1,15 +1,15 @@
-// pages/chat.tsx
 "use client";
-import { useState, useEffect } from "react";
-import Sidebar from "@/components/Sidebar";
-import ChatArea from "@/components/ChatArea";
-import { useSession } from "next-auth/react";
+
+import { useState, useEffect } from 'react';
+import Sidebar from '@/components/Sidebar';
+import ChatArea from '@/components/ChatArea';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function Chat() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
   const [isInitialRender, setIsInitialRender] = useState(true);
-  const [activeChatId, setActiveChatId] = useState<string | null>(null);
-  
+  const [chatSessions, setChatSessions] = useState<{ id: string, name: string, history: { sender: string, text: string }[] }[]>([]); // State to store chat sessions
 
   useEffect(() => {
     const handleResize = () => {
@@ -19,72 +19,61 @@ export default function Chat() {
         setSidebarVisible(false);
       }
     };
-    handleResize();
+
+    handleResize(); // Call initially to set the correct sidebar state based on the initial window size
     setIsInitialRender(false);
-    window.addEventListener("resize", handleResize);
+
+    window.addEventListener('resize', handleResize);
+
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('resize', handleResize);
     };
-  }, []);
-
-
-  useEffect(() => {
-    const storedChatId = localStorage.getItem("activeChatId");
-    if (storedChatId) {
-      setActiveChatId(storedChatId);
-    }
   }, []);
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
 
-  // const handleNewChat = async () => {
-  //   try {
-  //     const newChatResponse = await fetch("/api/chats/create", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
+  const handleSessionSelect = (sessionId: string) => {
+    setSelectedSessionId(sessionId);
+  };
 
-  //     const newChatData = await newChatResponse.json();
-  //     setActiveChatId(newChatData.chatId);
-  //     localStorage.setItem("activeChatId", newChatData.chatId);
-  //   } catch (error) {
-  //     console.error("Error creating chat:", error);
-  //   }
-  // };
+  useEffect(() => {
+    // Automatically create a new session if none exists
+    if (chatSessions.length === 0) {
+      createNewSession();
+    }
+  }, []);
+
+  const createNewSession = () => {
+    // Check if there is an empty session
+    const existingEmptySession = chatSessions.find(session => session.history.length === 0);
+
+    if (existingEmptySession) {
+      setSelectedSessionId(existingEmptySession.id);
+      return;
+    }
+
+    const newSessionId = uuidv4(); // Use UUID for sessionId
+    const newSession = { id: newSessionId, name: `New Chat`, history: [] };
+    setChatSessions([...chatSessions, newSession]);
+    setSelectedSessionId(newSessionId);
+  };
 
   if (isInitialRender) {
-    return null;
+    return null; // Prevent rendering during the initial check
   }
+
+  const selectedSession = chatSessions.find(session => session.id === selectedSessionId);
 
   return (
     <div className="relative flex flex-col md:flex-row h-screen overflow-hidden bg-back">
-      <div
-        className={`fixed inset-0 bg-gray-900 bg-opacity-75 z-10 md:hidden ${
-          sidebarVisible ? "block" : "hidden"
-        }`}
-        onClick={toggleSidebar}
-      ></div>
-      <div
-        className={`fixed inset-y-0 left-0 transform md:transform-none md:static transition-transform duration-300 ease-in-out z-20 ${
-          sidebarVisible ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <Sidebar
-          sidebarVisible={sidebarVisible}
-          toggleSidebar={toggleSidebar}
-          setActiveChatId={setActiveChatId}
-        />
+      <div className={`fixed inset-0 bg-gray-900 bg-opacity-75 z-10 md:hidden ${sidebarVisible ? 'block' : 'hidden'}`} onClick={toggleSidebar}></div>
+      <div className={`fixed inset-y-0 left-0 transform md:transform-none md:static transition-transform duration-300 ease-in-out z-20 ${sidebarVisible ? 'translate-x-0' : '-translate-x-full'}`}>
+        <Sidebar sidebarVisible={sidebarVisible} toggleSidebar={toggleSidebar} chatSessions={chatSessions} onSessionSelect={handleSessionSelect} createNewSession={createNewSession} />
       </div>
       <div className="flex-grow h-full overflow-hidden">
-        <ChatArea
-          toggleSidebar={toggleSidebar}
-          sidebarVisible={sidebarVisible}
-          activeChatId={activeChatId}
-        />
+        <ChatArea toggleSidebar={toggleSidebar} sidebarVisible={sidebarVisible} selectedSession={selectedSession} setChatSessions={setChatSessions} />
       </div>
     </div>
   );

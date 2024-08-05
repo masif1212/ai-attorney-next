@@ -33,8 +33,7 @@ export function Offices({
     <ul role="list" {...props}>
       <li>
         <Office name="Pakistan" invert={invert}>
-        
-        Building 184, 3rd Floor, Spring North, Near Shaheen Chowk, Baharia Town Phase 7, Islamabad
+        Office 1, Building 13A, Sector F, Commercial
           <br />
           DHA I, Islamabad
         </Office>
