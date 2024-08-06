@@ -32,13 +32,18 @@ const ChatArea: React.FC<{
   sidebarVisible: boolean;
   activeChatId: string | null;
   onNewChatCreated: () => void;
-}> = ({ toggleSidebar, sidebarVisible, activeChatId,onNewChatCreated  }) => {
+}> = ({ toggleSidebar, sidebarVisible, activeChatId, onNewChatCreated }) => {
+
   const router = useRouter();
   const { isOpen, toggleDropdown, closeDropdown } = useDropdown();
   const [message, setMessage] = useState('');
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+
+
+
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
@@ -69,60 +74,25 @@ const ChatArea: React.FC<{
     }
   };
 
-  const handleSendMessage = async () => {
-    if (!activeChatId || !message.trim()) return;
-    const token = localStorage.getItem('token');
+  const handleSendMessage = () => {
+    if (!message.trim()) return;
 
-    const newUserMessage = {
-      senderType: 'user',
-      content: message,
-    };
+    setLoading(true);
 
-    setChatMessages((prev) => [...prev, newUserMessage]);
-    setMessage(''); // Clear the input field after sending
+    // Simulate message sending
+    setTimeout(() => {
+      console.log('Sending message:', message);
+      setMessage(''); // Clear input
+      setLoading(false);
+    }, 1000);
+  };
 
-    try {
-      setLoading(true);
-      const response = await fetch('/api/chat/sendMessage', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          chatId: activeChatId,
-          content: message,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (result && result.pair) {
-        const { userMessage, aiMessage } = result.pair;
-        onNewChatCreated();
-        setChatMessages((prev) => [
-          ...prev.map((msg) =>
-            msg === newUserMessage
-              ? {
-                  ...msg,
-                  content: userMessage.content || 'Message sent',
-                }
-              : msg,
-          ),
-          {
-            senderType: 'AI',
-            content: aiMessage.content || 'Loading response...',
-          },
-        ]);
-      } else {
-        console.error('Unexpected API response format', result);
-      }
-    } catch (error) {
-      console.error('Error sending message:', error);
-    } finally {
-      setLoading(false); // Reset loading to false once API call is complete
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
     }
   };
+
 
   const scrollToBottom = () => {
     messagesEndRef?.current?.scrollIntoView({ behavior: 'smooth' });
@@ -171,31 +141,32 @@ const ChatArea: React.FC<{
   );
 
   return (
-    <div className="relative flex h-screen flex-1 flex-col bg-test p-5 text-black">
+    <div className="relative flex h-screen flex-1 flex-col bg-white p-5 text-black ">
+
       <div className="flex items-center justify-between">
         {!sidebarVisible && (
           <div className="flex space-x-2 text-lg font-bold">
             <button
               onClick={toggleSidebar}
-              className="rounded bg-white p-2 hover:bg-gray-300"
+              className="rounded bg-white p-1 hover:bg-gray-300"
             >
               <RiMenu3Fill size={25} color="#000" />
             </button>
           </div>
         )}
 
-        <div className={clsx('relative', sidebarVisible ? 'ml-auto' : '')}>
+        <div className={clsx('relative ', sidebarVisible ? 'ml-auto' : '')}>
           <button
-            className="flex h-10 w-10 items-center justify-center rounded-full border-black bg-black hover:bg-buttonHover"
+            className="flex h-9 w-9 items-center justify-center rounded-full border-black bg-black hover:bg-buttonHover"
             onClick={toggleDropdown}
           >
-            <p className="text-white">User</p>
+            <p className="text-white">M</p>
           </button>
           {isOpen && dropDown()}
         </div>
       </div>
 
-      <div className="flex w-full flex-1 flex-col overflow-y-auto">
+      <div className="flex w-full flex-1 flex-col overflow-y-auto mt-2 pr-2">
         {chatMessages?.length === 0 ? (
           <div className="flex flex-1 items-center justify-center">
             <div className="flex h-full flex-col justify-center text-center">
@@ -217,20 +188,19 @@ const ChatArea: React.FC<{
         ) : (
           <div className="flex flex-grow flex-col overflow-y-auto p-4 items-center">
             <div className="flex-col w-5/6 pl-5 space-y-4">
+
               {chatMessages?.map((msg, index) => (
                 <div
                   key={index}
-                  className={`flex ${
-                    msg?.senderType === 'AI' ? 'justify-end' : 'justify-start'
-                  }`}
+                  className={`flex ${msg?.senderType === 'AI' ? 'justify-end' : 'justify-start'
+                    }`}
                 >
                   <div>
                     <div
-                      className={`rounded-lg p-2 ${
-                        msg?.senderType === 'AI'
-                          ? 'flex justify-end bg-gray-100 text-black shadow-lg'
-                          : 'bg-black text-white text-md'
-                      }`}
+                      className={`rounded-lg p-2 ${msg?.senderType === 'AI'
+                        ? 'flex justify-end bg-gray-100 text-black shadow-lg'
+                        : 'bg-black text-white text-md'
+                        }`}
                     >
                       {msg?.content}
                     </div>
@@ -239,7 +209,7 @@ const ChatArea: React.FC<{
               ))}
               {loading && (
                 <div className="flex justify-end">
-                  <div className="rounded-lg bg-blue-500 p-2 text-white">
+                  <div className="rounded-lg bg-gray-100 p-2 text-black">
                     Loading...
                   </div>
                 </div>
@@ -250,26 +220,31 @@ const ChatArea: React.FC<{
         )}
 
         <div className="flex w-full items-center justify-center p-4">
-          <div className="flex w-full max-w-4xl items-center space-x-2 rounded-2xl border-2 border-black bg-white px-2 py-2">
-            <button className="flex-shrink-0 rounded bg-white p-1 hover:bg-gray-300">
-              <CgAttachment size={25} color="#000" />
-            </button>
+          <div className="flex w-full max-w-5xl items-center space-x-2 rounded-2xl border-2 border-black bg-white px-2 py-2">
+
+            {/* Uncomment if needed for attachments
+        <button className="flex-shrink-0 rounded bg-white p-1 hover:bg-gray-300">
+          <CgAttachment size={25} color="#000" />
+        </button> */}
+
             <input
               type="text"
               placeholder="Write here ..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="flex-grow bg-white text-base text-gray-900 outline-none"
+              onKeyDown={handleKeyDown}
+              className="flex-grow bg-white text-base text-gray-900 outline-none ml-4"
             />
             <button
               onClick={handleSendMessage}
-              className="flex-shrink-0 rounded bg-white p-1 hover:bg-gray-300"
+              className="flex items-center justify-center rounded bg-white p-2 hover:bg-gray-300"
               disabled={loading}
             >
-              <BsFillSendFill size={23} color="#000" />
+              <BsFillSendFill size={20} color="#000" />
             </button>
           </div>
         </div>
+
       </div>
     </div>
   );
