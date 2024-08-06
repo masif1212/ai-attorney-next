@@ -1,59 +1,39 @@
-import { PrismaClient } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { hashPassword } from '../../../lib/auth';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import prisma from '../../../lib/prisma';
 
-const prisma = new PrismaClient();
+const JWT_SECRET = process.env.JWT_SECRET || 'default_fallback_secret';
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method === 'POST') {
-    const { name, email, phone, password, linkedinUrl, facebookUrl }: { 
-      name: string, 
-      email: string, 
-      phone: string, 
-      password: string, 
-      linkedinUrl?: string, 
-      facebookUrl?: string 
-    } = req.body;
-
-    let existingUser;
-    try {
-      existingUser = await prisma.user.findUnique({ where: { email } });
-    } catch (error) {
-      res.status(500).json({ message: 'Internal server error' });
-      return;
-    }
-
-    if (existingUser) {
-      res.status(422).json({ message: 'User already exists!' });
-      return;
-    }
-
-    let hashedPassword;
-    try {
-      hashedPassword = await hashPassword(password);
-    } catch (error) {
-      res.status(500).json({ message: 'Internal server error' });
-      return;
-    }
-
-    try {
-      await prisma.user.create({
-        data: {
-          name,
-          email,
-          phone,
-          password: hashedPassword,
-          linkedinUrl,
-          facebookUrl
-        }
-      });
-    } catch (error) {
-      res.status(500).json({ message: 'Internal server error' });
-      return;
-    }
-
-    res.status(201).json({ message: 'User created successfully!' });
-  } else {
-    res.status(405).json({ message: 'Method not allowed' });
+export default async function register(req: NextApiRequest, res: NextApiResponse) {
+  const { email, password, name, phone } = req.body;
+  if (!email || !password || !name || !phone) {
+    return res.status(400).json({ message: 'All fields are required' });
   }
-};
+  try {
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        phone,
+        password: hashedPassword,
+        isEmailVerified: false, 
+        settings: {},
+      },
+    });
+
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
+    console.log('User created successfully:', user);
+    res.status(201).json({ message: 'User registered successfully', user, token });
+  } catch (error) {
+    console.error('Error registering user:', error);
+    res.status(500).json({ message: 'Error registering user', error: error });
+  }
+}
