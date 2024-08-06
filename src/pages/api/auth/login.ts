@@ -1,45 +1,49 @@
-import { PrismaClient, User } from '@prisma/client';
+// /pages/api/auth/login.ts
 import { NextApiRequest, NextApiResponse } from 'next';
-import { verifyPassword } from '../../../lib/auth';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import prisma from '../../../lib/prisma'; // Import your Prisma client
+import dotenv from 'dotenv';
 
-const prisma = new PrismaClient();
+dotenv.config();
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method === 'POST') {
-    const { email, password }: { email: string, password: string } = req.body;
+const JWT_SECRET = process.env.JWT_SECRET || 'default_fallback_secret';
 
-    let user: User | null;
-
-    try {
-      user = await prisma.user.findUnique({
-        where: { email }
-      });
-    } catch (error) {
-      res.status(500).json({ message: 'Internal server error' });
-      return;
-    }
-
-    if (!user) {
-      res.status(401).json({ message: 'Invalid email or password!' });
-      return;
-    }
-
-    let isValid: boolean;
-
-    try {
-      isValid = await verifyPassword(password, user.password);
-    } catch (error) {
-      res.status(500).json({ message: 'Internal server error' });
-      return;
-    }
-
-    if (!isValid) {
-      res.status(401).json({ message: 'Invalid email or password!' });
-      return;
-    }
-
-    res.status(200).json({ message: 'Logged in successfully!' });
-  } else {
-    res.status(405).json({ message: 'Method not allowed' });
+export default async function login(req: NextApiRequest, res: NextApiResponse) {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
   }
-};
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    // Find or create a chat for the user
+    let chat = await prisma.chat.findFirst({
+      where: { userId: user.id },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!chat) {
+      chat = await prisma.chat.create({
+        data: {
+          userId: user.id,
+        },
+      });
+    }
+
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
+    res.status(200).json({ message: 'Logged in successfully', userId: user.id, token, chatId: chat.id });
+  } catch (error) {
+    console.error('Error logging in:', error);
+    res.status(500).json({ message: 'Error logging in', error: error });
+  }
+}

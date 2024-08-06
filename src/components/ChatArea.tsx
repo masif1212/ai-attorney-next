@@ -1,30 +1,17 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useRef } from "react";
-import Image from "next/image";
-import Logo from "@/images/logo/logo-black.png";
-import { BsFillSendFill } from "react-icons/bs";
-import { CgAttachment } from "react-icons/cg";
-import { RiMenu3Fill } from "react-icons/ri";
-import { MdOutlineClose, MdOutlineLogout, MdOutlinePayment } from "react-icons/md";
-import clsx from "clsx";
-import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { VscSettingsGear } from "react-icons/vsc";
-import { FaRegFileImage, FaRegFileAlt } from "react-icons/fa";
-import "../styles/custom.css";
-
-interface Chat {
-  sender: string;
-  text: string;
-}
-
-interface ChatAreaProps {
-  toggleSidebar: () => void;
-  sidebarVisible: boolean;
-  selectedSession: { id: string; name: string; history: Chat[] } | null;
-  setChatSessions: React.Dispatch<React.SetStateAction<{ id: string; name: string; history: Chat[] }[]>>;
-}
+import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
+import Logo from '@/images/logo/logo.svg';
+import { BsFillSendFill } from 'react-icons/bs';
+import { CgAttachment } from 'react-icons/cg';
+import { RiMenu3Fill } from 'react-icons/ri';
+import clsx from 'clsx';
+import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { MdOutlineLogout } from 'react-icons/md';
+import { VscSettingsGear } from 'react-icons/vsc';
+import { MdOutlinePayment } from 'react-icons/md';
 
 const useDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,183 +27,142 @@ const useDropdown = () => {
   return { isOpen, toggleDropdown, closeDropdown };
 };
 
-const ChatArea: React.FC<ChatAreaProps> = ({ toggleSidebar, sidebarVisible, selectedSession, setChatSessions }) => {
-  const { data: session } = useSession();
+const ChatArea: React.FC<{
+  toggleSidebar: () => void;
+  sidebarVisible: boolean;
+  activeChatId: string | null;
+  onNewChatCreated: () => void;
+}> = ({ toggleSidebar, sidebarVisible, activeChatId,onNewChatCreated  }) => {
   const router = useRouter();
   const { isOpen, toggleDropdown, closeDropdown } = useDropdown();
-
-  const [files, setFiles] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [inputMessage, setInputMessage] = useState("");
-  const [apiResponse, setApiResponse] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const [message, setMessage] = useState('');
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
-    router.push("/");
+    router.push('/');
+  };
+
+  const fetchMessages = async (chatId: string) => {
+    if (!chatId) return;
+    const token = localStorage.getItem('token');
+
+    try {
+      const response = await fetch(`/api/chat/messages/${chatId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch chat messages');
+      }
+
+      const data = await response.json();
+      setChatMessages(data.messages);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (!activeChatId || !message.trim()) return;
+    const token = localStorage.getItem('token');
+
+    const newUserMessage = {
+      senderType: 'user',
+      content: message,
+    };
+
+    setChatMessages((prev) => [...prev, newUserMessage]);
+    setMessage(''); // Clear the input field after sending
+
+    try {
+      setLoading(true);
+      const response = await fetch('/api/chat/sendMessage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          chatId: activeChatId,
+          content: message,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result && result.pair) {
+        const { userMessage, aiMessage } = result.pair;
+        onNewChatCreated();
+        setChatMessages((prev) => [
+          ...prev.map((msg) =>
+            msg === newUserMessage
+              ? {
+                  ...msg,
+                  content: userMessage.content || 'Message sent',
+                }
+              : msg,
+          ),
+          {
+            senderType: 'AI',
+            content: aiMessage.content || 'Loading response...',
+          },
+        ]);
+      } else {
+        console.error('Unexpected API response format', result);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+    } finally {
+      setLoading(false); // Reset loading to false once API call is complete
+    }
   };
 
   const scrollToBottom = () => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    messagesEndRef?.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
-    scrollToBottom(); 
-  }, [selectedSession?.history]);
-
-
-
-  // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const selectedFiles = Array.from(event.target.files || []);
-  //   const validTypes = [
-  //     "image/png",
-  //     "image/jpeg",
-  //     "image/jpg",
-  //     "application/pdf",
-  //     "application/msword",
-  //     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  //   ];
-
-  //   const newFiles = selectedFiles.filter((file) =>
-  //     validTypes.includes(file.type)
-  //   );
-  //   const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
-
-  //   if (newFiles.length !== selectedFiles.length) {
-  //     setErrorMessage("Please select a valid format (image, PDF, or DOC)");
-  //   }
-
-  //   setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-  //   setPreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
-  // };
+    if (activeChatId) {
+      fetchMessages(activeChatId);
+    }
+  }, [activeChatId]);
 
   useEffect(() => {
-    if (errorMessage) {
-      const timer = setTimeout(() => {
-        setErrorMessage(null);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [errorMessage]);
-
-  const handleRemoveFile = (index: number) => {
-    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-    setPreviews((prevPreviews) => prevPreviews.filter((_, i) => i !== index));
-  };
-
-  const handleSend = async () => {
-    if (!inputMessage.trim() || !selectedSession) return;
-
-    const newChat: Chat = { sender: "user", text: inputMessage };
-    const updatedHistory = [...selectedSession.history, newChat];
-
-    setChatSessions((prevSessions) =>
-      prevSessions.map((session) =>
-        session.id === selectedSession.id
-          ? { ...session, history: updatedHistory }
-          : session
-      )
-    );
-
-    setInputMessage("");
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(
-        "https://efe4-2407-aa80-314-8755-a191-c536-5b03-9f37.ngrok-free.app/ask",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ query: inputMessage, chat_id: selectedSession.id }),
-        }
-      );
-
-      const data = await response.json();
-      console.log("API response data:", data);
-
-      if (data && typeof data.response === "string") {
-        const botResponse: Chat = { sender: "bot", text: data.response };
-        const newHistory = [...updatedHistory, botResponse];
-
-        setChatSessions((prevSessions) =>
-          prevSessions.map((session) =>
-            session.id === selectedSession.id
-              ? { ...session, history: newHistory }
-              : session
-          )
-        );
-
-        setApiResponse(formatResponseText(data.response));
-      } else {
-        console.error("Unexpected response format:", data);
-        setErrorMessage("Unexpected response format");
-      }
-    } catch (error) {
-      console.error("Failed to fetch cases:", error);
-      setErrorMessage("Failed to load data");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const adjustTextareaHeight = () => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto'; // Reset height
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 96)}px`; // 96px is 4 lines approximately
-    }
-  };
-
-  useEffect(() => {
-    adjustTextareaHeight(); // Adjust on content change
-  }, [inputMessage]);
-
-  function formatResponseText(inputMessage: string): string {
-    const boldPattern = /\*\*(.*?)\*\*/g;
-    const superBoldPattern = /###\s*(.*?)(?=\n|$)/g;
-    const dashBeforeHeadingPattern = /-\s*\*\*(.*?)\*\*/g;
-    const textToRemove = /undefined/g;
-
-    let urlIndex = 1;
-    const formattedText = inputMessage.replace(/(https?:\/\/[^\s]+)/g, (match) => {
-      const linkHtml = `<a class="response-link" href="${match}" target="_blank">Link ${urlIndex}</a>`;
-      urlIndex++;
-      return linkHtml;
-    });
-
-    let finalText = formattedText.replace(dashBeforeHeadingPattern, "**$1**");
-    finalText = finalText.replace(boldPattern, "<strong>$1</strong>");
-    finalText = finalText.replace(superBoldPattern, "<strong><span style='font-weight: 900;'>$1</span></strong>");
-    finalText = finalText.replace(textToRemove, "");
-    finalText = finalText.replace(/\n{2,}/g, "\n\n");
-    finalText = finalText.replace(/^\n+|\n+$/g, "");
-
-    return finalText;
-  }
-
-  const name = session?.user?.email?.slice(0, 1).toLocaleUpperCase();
+    scrollToBottom();
+  }, [chatMessages, loading]);
 
   const dropDown = () => (
-    <div className="absolute right-0 mt-2 w-40 bg-black border border-gray-900 rounded-md shadow-lg z-10">
-      <button className="w-full px-4 py-2 text-sm text-white hover:bg-gray-800 flex items-center border-b border-gray-600 font-thin">
+    <div className="w absolute right-0 z-10 mt-2 rounded-md border border-gray-900 bg-black shadow-lg">
+      <button
+        className={clsx(
+          'flex w-32 items-center border-b-2 border-gray-600 px-4 py-2 text-sm font-thin text-white hover:bg-gray-800',
+        )}
+      >
         <MdOutlinePayment size={18} className="mr-2" />
         Plans
       </button>
 
-      <button className="w-full px-4 py-2 text-sm text-white hover:bg-gray-800 flex items-center border-b border-gray-600 font-thin">
+      <button
+        className={clsx(
+          'flex w-full items-center border-b-2 border-gray-600 px-4 py-2 text-sm font-thin text-white hover:bg-gray-800',
+        )}
+      >
         <VscSettingsGear size={18} className="mr-2" />
         Settings
       </button>
 
       <button
         onClick={handleSignOut}
-        className="w-full px-4 py-2 text-sm text-white hover:bg-gray-800 flex items-center font-thin"
+        className={clsx(
+          'flex w-full items-center px-4 py-2 text-sm font-thin text-white hover:bg-gray-800',
+        )}
       >
         <MdOutlineLogout size={18} className="mr-2" />
         Sign out
@@ -225,144 +171,104 @@ const ChatArea: React.FC<ChatAreaProps> = ({ toggleSidebar, sidebarVisible, sele
   );
 
   return (
-    <div className="flex-1 bg-white text-black h-screen flex flex-col relative">
-      <div className="flex justify-between items-center p-3">
+    <div className="relative flex h-screen flex-1 flex-col bg-test p-5 text-black">
+      <div className="flex items-center justify-between">
         {!sidebarVisible && (
-          <button
-            onClick={toggleSidebar}
-            className="p-2 bg-white hover:bg-gray-200 rounded"
-          >
-            <RiMenu3Fill size={23} color="#000" />
-          </button>
-        )}
-
-        {session && (
-          <div className={clsx("relative", sidebarVisible ? "ml-auto" : "")}>
+          <div className="flex space-x-2 text-lg font-bold">
             <button
-              className="p-2 flex items-center justify-center rounded-full w-10 h-10 bg-black hover:bg-gray-700 border-2 border-black"
-              onClick={toggleDropdown}
+              onClick={toggleSidebar}
+              className="rounded bg-white p-2 hover:bg-gray-300"
             >
-              <p className="text-white">{name}</p>
+              <RiMenu3Fill size={25} color="#000" />
             </button>
-            {isOpen && dropDown()}
           </div>
         )}
+
+        <div className={clsx('relative', sidebarVisible ? 'ml-auto' : '')}>
+          <button
+            className="flex h-10 w-10 items-center justify-center rounded-full border-black bg-black hover:bg-buttonHover"
+            onClick={toggleDropdown}
+          >
+            <p className="text-white">User</p>
+          </button>
+          {isOpen && dropDown()}
+        </div>
       </div>
 
-      {errorMessage && (
-        <div className="flex justify-center items-center w-full">
-          <div className="w-1/4 bg-red-400 text-white text-center p-2 rounded absolute z-10">
-            {errorMessage}
-          </div>
-        </div>
-      )}
-
-      <div className="flex-1 w-full flex flex-col justify-center items-center relative overflow-y-auto">
-        {!selectedSession?.history.length ? (
-          <div className="flex flex-col items-center justify-center h-full">
-            <Image src={Logo} alt="Ai-Attorney Logo" width={200} height={200} />
+      <div className="flex w-full flex-1 flex-col overflow-y-auto">
+        {chatMessages?.length === 0 ? (
+          <div className="flex flex-1 items-center justify-center">
+            <div className="flex h-full flex-col justify-center text-center">
+              <div className="flex items-center justify-center">
+                <Image
+                  src={Logo}
+                  alt="Ai-Attorney Logo"
+                  width={200}
+                  height={200}
+                />
+              </div>
+              <div className="flex flex-wrap justify-center space-x-4">
+                <h1 className="m-2 rounded p-4 text-3xl font-bold md:text-5xl">
+                  Ai-Attorney
+                </h1>
+              </div>
+            </div>
           </div>
         ) : (
-          <div className="flex-1 w-full p-5 pr-0 overflow-y-auto" style={{ maxHeight: "84vh" }}>
-            <div className="max-w-4xl mx-auto w-full">
-              {selectedSession.history.map((chat, index) => (
+          <div className="flex flex-grow flex-col overflow-y-auto p-4 items-center">
+            <div className="flex-col w-5/6 pl-5 space-y-4">
+              {chatMessages?.map((msg, index) => (
                 <div
                   key={index}
-                  className={`flex ${chat.sender === "user" ? "justify-end" : "justify-start"} mt-1 pt-3`}
+                  className={`flex ${
+                    msg?.senderType === 'AI' ? 'justify-end' : 'justify-start'
+                  }`}
                 >
-                  <div
-                    className={`inline-block p-3 rounded-lg max-w-2/3 max-w-full text-chattext text-base ${chat.sender === "user" ? "bg-gray-50 border flex justify-end" : "bg-gray-50 border"
+                  <div>
+                    <div
+                      className={`rounded-lg p-2 ${
+                        msg?.senderType === 'AI'
+                          ? 'flex justify-end bg-gray-100 text-black shadow-lg'
+                          : 'bg-black text-white text-md'
                       }`}
-                    style={{ width: "auto", maxWidth: "66%", minWidth: "10%" }}
-                  >
-                    <div className="whitespace-pre-wrap break-words p-2">
-                      {chat.sender === "user" ? (
-                        chat.text
-                      ) : (
-                        <div
-                          className="response-text"
-                          dangerouslySetInnerHTML={{
-                            __html: formatResponseText(chat.text),
-                          }}
-                        />
-                      )}
+                    >
+                      {msg?.content}
                     </div>
                   </div>
                 </div>
               ))}
-              <div ref={chatEndRef} /> {/* This div acts as a target to scroll into view */}
+              {loading && (
+                <div className="flex justify-end">
+                  <div className="rounded-lg bg-blue-500 p-2 text-white">
+                    Loading...
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
             </div>
           </div>
         )}
 
-        {isLoading && (
-          <div className="absolute bottom-20 left-0 right-0 flex justify-center items-center">
-            <div className="loader"></div>
-          </div>
-        )}
-      </div>
-
-      {previews.length > 0 && (
-        <div
-          className="absolute w-full max-w-4xl mx-auto border-gray-300 rounded-lg flex overflow-x-auto"
-          style={{ top: "auto", bottom: "5rem" }}
-        >
-          <div className="flex flex-nowrap">
-            {previews.map((preview, index) => (
-              <div
-                key={index}
-                className="relative p-2 flex items-center border border-gray-300 rounded-lg bg-gray-100 w-40 mr-2"
-              >
-                {files[index].type.startsWith("image/") ? (
-                  <FaRegFileImage size={30} className="mr-2" />
-                ) : (
-                  <FaRegFileAlt size={30} className="mr-2" />
-                )}
-                <div className="flex flex-col overflow-hidden">
-                  <span className="text-sm font-medium truncate">
-                    {files[index].name}
-                  </span>
-                  <span className="text-xs text-gray-500 truncate">
-                    {files[index].type.split("/").pop()?.toUpperCase()}
-                  </span>
-                </div>
-                <button
-                  className="absolute top-0 right-0 mr-1 mt-1 p-1 bg-black text-white rounded-full hover:bg-gray-700"
-                  onClick={() => handleRemoveFile(index)}
-                >
-                  <MdOutlineClose size={10} />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div className="relative w-full flex justify-center items-center z-10 pb-5">
-        <div className="flex items-center w-full max-w-4xl bg-white rounded-2xl border border-black p-1 relative mx-5">
-          <div className="flex-grow">
-            <textarea
-              ref={textareaRef}
-              placeholder="write here ..."
-              className="w-full bg-white outline-none text-gray-900 text-base sm:px-2 md:px-2 lg:px-2 resize-none overflow-y-auto"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSend();
-                }
-              }}
-              rows={1}
-              style={{ height: 'auto', minHeight: '1.5rem', maxHeight: '6rem', paddingTop: 5, paddingLeft: 20 }} 
+        <div className="flex w-full items-center justify-center p-4">
+          <div className="flex w-full max-w-4xl items-center space-x-2 rounded-2xl border-2 border-black bg-white px-2 py-2">
+            <button className="flex-shrink-0 rounded bg-white p-1 hover:bg-gray-300">
+              <CgAttachment size={25} color="#000" />
+            </button>
+            <input
+              type="text"
+              placeholder="Write here ..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="flex-grow bg-white text-base text-gray-900 outline-none"
             />
+            <button
+              onClick={handleSendMessage}
+              className="flex-shrink-0 rounded bg-white p-1 hover:bg-gray-300"
+              disabled={loading}
+            >
+              <BsFillSendFill size={23} color="#000" />
+            </button>
           </div>
-          <button
-            className="p-2 bg-white hover:bg-gray-200 rounded flex-shrink-0"
-            onClick={handleSend}
-          >
-            <BsFillSendFill size={23} color="#000" />
-          </button>
         </div>
       </div>
     </div>
