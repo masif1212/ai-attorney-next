@@ -9,6 +9,11 @@ export default function Chat() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [isInitialRender, setIsInitialRender] = useState(true);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [chats , setChats] = useState([])
+  const token = localStorage.getItem('token')
+  const userId = localStorage.getItem('activeUserId')
+
+  
 
   useEffect(() => {
     const handleResize = () => {
@@ -55,9 +60,26 @@ export default function Chat() {
   //   }
   // };
 
+    // This function is called whenever a new chat is created
+    const handleNewChatCreated = () => {
+      fetch(`/api/chat/history/${userId}`, { // make sure `userId` is correctly set
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      }).then(response => response.json())
+        .then(data => {
+          // Assuming `setChats` updates a state that holds all chats
+          setChats(data); // You might need to add a state in this component that holds all chats
+        })
+        .catch(console.error);
+    };
+  
+
   if (isInitialRender) {
     return null;
   }
+
+  
 
   return (
     <div className="relative flex flex-col md:flex-row h-screen overflow-hidden bg-back">
@@ -76,6 +98,7 @@ export default function Chat() {
           sidebarVisible={sidebarVisible}
           toggleSidebar={toggleSidebar}
           setActiveChatId={setActiveChatId}
+          chats= {chats}
         />
       </div>
       <div className="flex-grow h-full overflow-hidden">
@@ -83,6 +106,7 @@ export default function Chat() {
           toggleSidebar={toggleSidebar}
           sidebarVisible={sidebarVisible}
           activeChatId={activeChatId}
+          onNewChatCreated={handleNewChatCreated} 
         />
       </div>
     </div>

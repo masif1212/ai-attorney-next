@@ -31,7 +31,8 @@ const ChatArea: React.FC<{
   toggleSidebar: () => void;
   sidebarVisible: boolean;
   activeChatId: string | null;
-}> = ({ toggleSidebar, sidebarVisible, activeChatId }) => {
+  onNewChatCreated: () => void;
+}> = ({ toggleSidebar, sidebarVisible, activeChatId,onNewChatCreated  }) => {
   const router = useRouter();
   const { isOpen, toggleDropdown, closeDropdown } = useDropdown();
   const [message, setMessage] = useState('');
@@ -81,8 +82,7 @@ const ChatArea: React.FC<{
     setMessage(''); // Clear the input field after sending
 
     try {
-      setLoading(true); // Set loading to true when API call starts
-
+      setLoading(true);
       const response = await fetch('/api/chat/sendMessage', {
         method: 'POST',
         headers: {
@@ -99,7 +99,7 @@ const ChatArea: React.FC<{
 
       if (result && result.pair) {
         const { userMessage, aiMessage } = result.pair;
-
+        onNewChatCreated();
         setChatMessages((prev) => [
           ...prev.map((msg) =>
             msg === newUserMessage

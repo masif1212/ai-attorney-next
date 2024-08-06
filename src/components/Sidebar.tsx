@@ -10,6 +10,7 @@ interface SidebarProps {
   sidebarVisible: boolean
   toggleSidebar: () => void
   setActiveChatId: (chatId: string) => void
+  chat: any[]
 }
 
 interface ChatItem {
@@ -23,6 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   sidebarVisible,
   toggleSidebar,
   setActiveChatId,
+  chats
 }) => {
   const [chatItems, setChatItems] = useState<ChatItem[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -31,6 +33,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const token = localStorage.getItem('token')
   const userId = localStorage.getItem('activeUserId')
+
+  console.log(todayChats,'chats from parent componnent')
+
+  
+
 
   const fetchChatHistory = useCallback(async () => {
     if (!userId || !token) {
@@ -98,8 +105,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   }
 
   useEffect(() => {
+    if(chats){
       fetchChatHistory()
-  }, [fetchChatHistory, sidebarVisible]) 
+
+    }
+  }, [fetchChatHistory, sidebarVisible,chats]) 
 
   const closeError = () => {
     setError(null)
@@ -108,6 +118,12 @@ const Sidebar: React.FC<SidebarProps> = ({
   if (!sidebarVisible) {
     return null
   }
+
+  // Sidebar Component
+useEffect(() => {
+  fetchChatHistory(); // Ensure it refetches whenever chats update, which should be in its dependency array
+}, [fetchChatHistory]); // Assuming `chats` is passed as a prop now
+
 
   return (
     <div className="flex h-screen w-60 flex-col border-2 border-black bg-black px-3 py-3 text-white">
@@ -120,11 +136,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         </ButtonForBlackScreen>
       </div>
       <div className="custom-scrollbar flex-1 overflow-y-auto">
-        {todayChats.length > 0 && (
+        {todayChats?.length > 0 && (
           <div className="mt-5">
             <div className="mb-2 text-sm font-bold">Today</div>
             <ul className="space-y-2">
-              {todayChats.map((item, index) => (
+              {todayChats?.map((item, index) => (
                 <li
                   key={index}
                   className="mr-1 rounded px-1 hover:bg-gray-900"
