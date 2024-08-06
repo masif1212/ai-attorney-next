@@ -52,35 +52,48 @@ const ChatArea: React.FC<ChatAreaProps> = ({ toggleSidebar, sidebarVisible, sele
   const [apiResponse, setApiResponse] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
     router.push("/");
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(event.target.files || []);
-    const validTypes = [
-      "image/png",
-      "image/jpeg",
-      "image/jpg",
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
-
-    const newFiles = selectedFiles.filter((file) =>
-      validTypes.includes(file.type)
-    );
-    const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
-
-    if (newFiles.length !== selectedFiles.length) {
-      setErrorMessage("Please select a valid format (image, PDF, or DOC)");
+  const scrollToBottom = () => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    setPreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
   };
+
+  useEffect(() => {
+    scrollToBottom(); 
+  }, [selectedSession?.history]);
+
+
+
+  // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const selectedFiles = Array.from(event.target.files || []);
+  //   const validTypes = [
+  //     "image/png",
+  //     "image/jpeg",
+  //     "image/jpg",
+  //     "application/pdf",
+  //     "application/msword",
+  //     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  //   ];
+
+  //   const newFiles = selectedFiles.filter((file) =>
+  //     validTypes.includes(file.type)
+  //   );
+  //   const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
+
+  //   if (newFiles.length !== selectedFiles.length) {
+  //     setErrorMessage("Please select a valid format (image, PDF, or DOC)");
+  //   }
+
+  //   setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+  //   setPreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
+  // };
 
   useEffect(() => {
     if (errorMessage) {
@@ -248,9 +261,6 @@ const ChatArea: React.FC<ChatAreaProps> = ({ toggleSidebar, sidebarVisible, sele
         {!selectedSession?.history.length ? (
           <div className="flex flex-col items-center justify-center h-full">
             <Image src={Logo} alt="Ai-Attorney Logo" width={200} height={200} />
-            {/* <h1 className="m-2 rounded font-bold text-3xl md:text-4xl text-center">
-              Ai-Attorney
-            </h1> */}
           </div>
         ) : (
           <div className="flex-1 w-full p-5 pr-0 overflow-y-auto" style={{ maxHeight: "84vh" }}>
@@ -280,6 +290,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({ toggleSidebar, sidebarVisible, sele
                   </div>
                 </div>
               ))}
+              <div ref={chatEndRef} /> {/* This div acts as a target to scroll into view */}
             </div>
           </div>
         )}
@@ -329,17 +340,6 @@ const ChatArea: React.FC<ChatAreaProps> = ({ toggleSidebar, sidebarVisible, sele
 
       <div className="relative w-full flex justify-center items-center z-10 pb-5">
         <div className="flex items-center w-full max-w-4xl bg-white rounded-2xl border border-black p-1 relative mx-5">
-          
-          {/* <label className="p-2 bg-white hover:bg-gray-200 rounded flex-shrink-0 cursor-pointer">
-            <CgAttachment size={25} color="#000" />
-            <input
-              type="file"
-              multiple
-              className="hidden"
-              onChange={handleFileChange}
-            />
-          </label> */}
-
           <div className="flex-grow">
             <textarea
               ref={textareaRef}
