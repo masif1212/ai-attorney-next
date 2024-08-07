@@ -34,6 +34,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   const token = localStorage.getItem('token')
   const userId = localStorage.getItem('activeUserId')
 
+  // console.log(todayChats.map(item => console.log()), 'Hello')
+
+
+
+
   const fetchChatHistory = useCallback(async () => {
     if (!chats) return;
     if (!userId || !token) {
@@ -105,7 +110,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   }
 
 
-
   const closeError = () => {
     setError(null)
   }
@@ -124,30 +128,38 @@ if (!sidebarVisible) {
 
   return (
     <div className="flex h-screen w-60 flex-col border-2 border-black bg-black px-3 py-3 text-white">
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row justify-between pt-3" >
+
         <ButtonForBlackScreen onClick={toggleSidebar}>
-          <RiMenu2Line size={23} color="#faf5f5" />
+          <RiMenu2Line size={25} color="#faf5f5" />
         </ButtonForBlackScreen>
+
         <ButtonForBlackScreen onClick={handleCreateOrFetchChat}>
           <MdOutlineAddComment size={25} color="#faf5f5" />
         </ButtonForBlackScreen>
+
       </div>
+
       <div className="custom-scrollbar flex-1 overflow-y-auto">
         {todayChats?.length > 0 && (
           <div className="mt-5">
-            <div className="mb-2 text-sm font-bold">Today</div>
-            <ul className="space-y-2">
+            <div className=" text-sm font-bold">Today</div>
+            <ul className=" ">
               {todayChats?.map((item, index) => (
                 <li
                   key={index}
-                  className="mr-1 rounded px-1 hover:bg-gray-900"
+                  className="mr-1 rounded hover:bg-gray-900"
                 >
                   <button
-                    className="flex justify-between rounded text-sm text-gray-400"
+                    className=" rounded text-sm text-gray-400 w-full  "
                     onClick={() => setActiveChatId(item.id)}
                   >
-                    <span className="truncate font-semibold text-slate-100">
-                      {item.latestMessage}...
+                    <span className=" flex justify-start  text-white w-full">
+                      {
+                        item?.fullContext[0]?.content.length <= 25
+                          ? item?.fullContext[0]?.content
+                          : item?.fullContext[0]?.content.substring(0, 25) + "..."
+                      }
                     </span>
                   </button>
                 </li>
@@ -169,7 +181,13 @@ if (!sidebarVisible) {
                     className="flex justify-between text-sm text-gray-400"
                     onClick={() => setActiveChatId(item.id)}
                   >
-                    <span className="truncate">{item.latestMessage}</span>
+                    <span className=" flex justify-start font-semibold text-slate-100 w-full">
+                      {
+                        item?.fullContext[0]?.content.length <= 25
+                          ? item?.fullContext[0]?.content
+                          : item?.fullContext[0]?.content.substring(0, 25) + "..."
+                      }
+                    </span>
                   </button>
                 </li>
               ))}
