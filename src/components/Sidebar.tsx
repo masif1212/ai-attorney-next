@@ -10,7 +10,7 @@ interface SidebarProps {
   sidebarVisible: boolean
   toggleSidebar: () => void
   setActiveChatId: (chatId: string) => void
-  chat: any[]
+  chats: ChatItem[];
 }
 
 interface ChatItem {
@@ -24,7 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   sidebarVisible,
   toggleSidebar,
   setActiveChatId,
-  chats
+  chats 
 }) => {
   const [chatItems, setChatItems] = useState<ChatItem[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -34,12 +34,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const token = localStorage.getItem('token')
   const userId = localStorage.getItem('activeUserId')
 
-  console.log(todayChats,'chats from parent componnent')
-
-  
-
-
   const fetchChatHistory = useCallback(async () => {
+    if (!chats) return;
     if (!userId || !token) {
       setError('User ID or token is not available')
       return
@@ -68,7 +64,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         setError('An unknown error occurred')
       }
     }
-  }, [userId, token])
+  }, [userId, token,chats])
+
+  useEffect(() => {
+      fetchChatHistory()
+  }, [fetchChatHistory, sidebarVisible]) 
 
   const handleCreateOrFetchChat = async () => {
     if (!token) {
@@ -104,25 +104,22 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   }
 
-  useEffect(() => {
-    if(chats){
-      fetchChatHistory()
 
-    }
-  }, [fetchChatHistory, sidebarVisible,chats]) 
 
   const closeError = () => {
     setError(null)
   }
 
-  if (!sidebarVisible) {
-    return null
-  }
 
   // Sidebar Component
 useEffect(() => {
   fetchChatHistory(); // Ensure it refetches whenever chats update, which should be in its dependency array
-}, [fetchChatHistory]); // Assuming `chats` is passed as a prop now
+}, [fetchChatHistory,chats]); // Assuming `chats` is passed as a prop now
+
+if (!sidebarVisible) {
+  return null
+}
+
 
 
   return (
@@ -172,7 +169,7 @@ useEffect(() => {
                     className="flex justify-between text-sm text-gray-400"
                     onClick={() => setActiveChatId(item.id)}
                   >
-                    <span className="truncate">{item.latestMessage}...</span>
+                    <span className="truncate">{item.latestMessage}</span>
                   </button>
                 </li>
               ))}

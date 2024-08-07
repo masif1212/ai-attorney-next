@@ -45,6 +45,7 @@ const ChatArea: React.FC<{
     router.push('/');
   };
 
+
   const fetchMessages = async (chatId: string) => {
     if (!chatId) return;
     const token = localStorage.getItem('token');

@@ -1,5 +1,6 @@
+
 datasource db {
-  provider = "mysql"
+  provider = "mysql" 
   url      = env("DATABASE_URL")
 }
 
@@ -8,11 +9,80 @@ generator client {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
-  name        String
-  email       String   @unique
-  phone       String
-  password    String
-  linkedinUrl String?
-  facebookUrl String?
+  id             String    @id @default(uuid())
+  name           String
+  email          String    @unique
+  isEmailVerified Boolean?
+  phone          String
+  password       String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  lastActiveAt   DateTime?
+  isActive       Boolean   @default(true)
+  chats          Chat[]
+  messages       Message[]
+  settings       Json?  
+
+  @@index([email])
+  Feedback Feedback[]
+}
+
+model Chat {
+   id            String     @id @default(uuid())
+  userId        String
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  endedAt       DateTime?
+  status        ChatStatus @default(ACTIVE)
+  user          User       @relation(fields: [userId], references: [id])
+  messages      Message[]
+  context       Json?    
+  @@index([userId])
+  @@index([status])
+}
+
+model Message {
+  id            String     @id @default(uuid())
+  chatId        String
+  senderId      String?
+  content       String     @db.Text
+  createdAt     DateTime   @default(now())
+  messageType   MessageType
+  isSensitive   Boolean    @default(false)
+  chat          Chat       @relation(fields: [chatId], references: [id])
+  senderUser    User?      @relation(fields: [senderId], references: [id])
+  sequence      Int      
+  parentId      String?    
+  senderType    String     
+  pairId        String     
+  @@index([chatId])
+  @@index([senderId])
+  @@index([messageType])
+  Feedback Feedback[]
+}
+
+
+model Feedback {
+  id            String     @id @default(uuid())
+  messageId     String
+  userId        String
+  rating        Int       
+  comments      String?
+  createdAt     DateTime  @default(now())
+  message       Message   @relation(fields: [messageId], references: [id])
+  user          User      @relation(fields: [userId], references: [id])
+
+  @@index([messageId])
+  @@index([userId])
+}
+
+enum MessageType {
+  QUERY     
+  RESPONSE  
+}
+
+enum ChatStatus {
+  ACTIVE
+  ENDED
+  ARCHIVED
 }
