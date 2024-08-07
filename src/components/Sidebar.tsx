@@ -6,25 +6,35 @@ import ButtonForBlackScreen from './ButtonForBlackScreen'
 import Popup from './Popup'
 import '../styles/custom.css'
 
-interface SidebarProps {
-  sidebarVisible: boolean
-  toggleSidebar: () => void
-  setActiveChatId: (chatId: string) => void
-  chats: ChatItem[];
-}
-
+// Interface for chat items
 interface ChatItem {
   latestMessage: string
   id: string
   createdAt: string
-  messages: any[]
+  messages: Message[]
+  fullContext: { content: string }[]
+}
+
+// Interface for messages within chat items
+interface Message {
+  senderId: string
+  content: string
+  timestamp: string
+}
+
+// Props interface for Sidebar component
+interface SidebarProps {
+  sidebarVisible: boolean
+  toggleSidebar: () => void
+  setActiveChatId: (chatId: string) => void
+  chats: ChatItem[]
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
   sidebarVisible,
   toggleSidebar,
   setActiveChatId,
-  chats 
+  chats
 }) => {
   const [chatItems, setChatItems] = useState<ChatItem[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -34,10 +44,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const token = localStorage.getItem('token')
   const userId = localStorage.getItem('activeUserId')
 
-  // console.log(todayChats.map(item => console.log()), 'Hello')
-
-
-
+  console.log(chats, 'chat from parent component')
 
   const fetchChatHistory = useCallback(async () => {
     if (!chats) return;
@@ -69,11 +76,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         setError('An unknown error occurred')
       }
     }
-  }, [userId, token,chats])
+  }, [userId, token, chats])
 
   useEffect(() => {
-      fetchChatHistory()
-  }, [fetchChatHistory, sidebarVisible]) 
+    fetchChatHistory()
+  }, [fetchChatHistory, sidebarVisible])
 
   const handleCreateOrFetchChat = async () => {
     if (!token) {
@@ -94,7 +101,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       if (response.ok) {
         setActiveChatId(data.chatId)
         localStorage.setItem('activeChatId', data.chatId)
-        await fetchChatHistory() // Ensure this completes before proceeding
+        await fetchChatHistory()
       } else {
         console.error('Error response data:', data)
         setError(data.message || 'Failed to create chat')
@@ -109,27 +116,21 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   }
 
-
   const closeError = () => {
     setError(null)
   }
 
+  useEffect(() => {
+    fetchChatHistory()
+  }, [fetchChatHistory, chats])
 
-  // Sidebar Component
-useEffect(() => {
-  fetchChatHistory(); // Ensure it refetches whenever chats update, which should be in its dependency array
-}, [fetchChatHistory,chats]); // Assuming `chats` is passed as a prop now
-
-if (!sidebarVisible) {
-  return null
-}
-
-
+  if (!sidebarVisible) {
+    return null
+  }
 
   return (
     <div className="flex h-screen w-60 flex-col border-2 border-black bg-black px-3 py-3 text-white">
       <div className="flex flex-row justify-between pt-3" >
-
         <ButtonForBlackScreen onClick={toggleSidebar}>
           <RiMenu2Line size={25} color="#faf5f5" />
         </ButtonForBlackScreen>
@@ -137,28 +138,27 @@ if (!sidebarVisible) {
         <ButtonForBlackScreen onClick={handleCreateOrFetchChat}>
           <MdOutlineAddComment size={25} color="#faf5f5" />
         </ButtonForBlackScreen>
-
       </div>
 
       <div className="custom-scrollbar flex-1 overflow-y-auto">
-        {todayChats?.length > 0 && (
+        {todayChats.length > 0 && (
           <div className="mt-5">
-            <div className=" text-sm font-bold">Today</div>
-            <ul className=" ">
-              {todayChats?.map((item, index) => (
+            <div className="text-sm font-bold">Today</div>
+            <ul>
+              {todayChats.map((item, index) => (
                 <li
                   key={index}
                   className="mr-1 rounded hover:bg-gray-900"
                 >
                   <button
-                    className=" rounded text-sm text-gray-400 w-full  "
+                    className="rounded text-sm text-gray-400 w-full"
                     onClick={() => setActiveChatId(item.id)}
                   >
-                    <span className=" flex justify-start  text-white w-full">
+                    <span className="flex justify-start text-white w-full  px-1">
                       {
-                        item?.fullContext[0]?.content.length <= 25
-                          ? item?.fullContext[0]?.content
-                          : item?.fullContext[0]?.content.substring(0, 25) + "..."
+                        item.fullContext[0]?.content.length <= 25
+                          ? item.fullContext[0]?.content
+                          : item.fullContext[0]?.content.substring(0, 25) + "..."
                       }
                     </span>
                   </button>
@@ -181,11 +181,11 @@ if (!sidebarVisible) {
                     className="flex justify-between text-sm text-gray-400"
                     onClick={() => setActiveChatId(item.id)}
                   >
-                    <span className=" flex justify-start font-semibold text-slate-100 w-full">
+                    <span className="flex justify-start font-semibold text-slate-100 w-full px-1">
                       {
-                        item?.fullContext[0]?.content.length <= 25
-                          ? item?.fullContext[0]?.content
-                          : item?.fullContext[0]?.content.substring(0, 25) + "..."
+                        item.fullContext[0]?.content.length <= 25
+                          ? item.fullContext[0]?.content
+                          : item.fullContext[0]?.content.substring(0, 25) + "..."
                       }
                     </span>
                   </button>

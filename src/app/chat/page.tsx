@@ -12,6 +12,8 @@ export default function Chat() {
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [chats, setChats] = useState ([]); 
 
+  console.log(chats,'in main componenet')
+
 
   
 
@@ -46,24 +48,35 @@ export default function Chat() {
 
     // This function is called whenever a new chat is created
     const handleNewChatCreated = () => {
-      const userId = localStorage.getItem('activeUserId')
-      fetch(`/api/chat/history/${userId}`, { // make sure `userId` is correctly set
+      console.log("handleNewChatCreated function called"); // Check if the function is called
+    
+      const userId = localStorage.getItem('activeUserId');
+      console.log("User ID:", userId); // Verify that userId is not null or undefined
+    
+      fetch(`/api/chat/history/${userId}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      }).then(response => response.json())
-        .then(data => {
-          setChats(data); 
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
+        .then((response) => {
+          console.log("Fetch response:", response); // Log the response
+          return response.json();
         })
-        .catch(console.error);
+        .then((data) => {
+          console.log(data, 'data fetched from fetch history'); // Log the fetched data
+          setChats(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching chat history:", error);
+        });
     };
+    
   
 
   if (isInitialRender) {
     return null;
   }
 
-  
 
   return (
     <div className="relative flex flex-col md:flex-row h-screen overflow-hidden bg-back">
