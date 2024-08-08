@@ -241,37 +241,37 @@ const ChatArea: React.FC<{
             </div>
           </div>
         ) : (
-          <div className="flex flex-grow flex-col overflow-y-auto p-4 items-center">
-            <div className="flex-col w-5/6 pl-5 space-y-4">
-
-              {chatMessages?.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`flex ${msg?.senderType === 'AI' ? 'justify-end' : 'justify-start'
-                    }`}
-                >
-                  <div>
-                    <div
-                      className={`rounded-lg p-2 ${msg?.senderType === 'AI'
-                        ? 'flex justify-end bg-gray-100 text-black shadow-lg'
-                        : 'bg-black text-white text-md'
-                        }`}
-                    >
-                      {msg?.content}
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {loading && (
-                <div className="flex justify-end">
-                  <div className="rounded-lg bg-gray-100 p-2 text-black">
-                    Loading...
-                  </div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
+    <div className="flex flex-grow flex-col overflow-y-auto p-4 items-center">
+      <div className="flex-col w-5/6 pl-5 space-y-4">
+        {chatMessages?.map((msg, index) => (
+          <div
+            key={index}
+            className={`flex ${msg?.senderType === 'AI' ? 'justify-end' : 'justify-start'}`}
+          >
+            <div>
+              <div
+                className={`rounded-lg p-2 ${msg?.senderType === 'AI'
+                  ? 'flex justify-end bg-gray-100 text-black shadow-lg'
+                  : 'bg-black text-white text-md'
+                  }`}
+              >
+                {msg?.content}
+              </div>
             </div>
           </div>
+        ))}
+        {loading && (
+         <div className="flex justify-start w-full">
+         <div className="loading-container flex flex-col w-full">
+           <div className="loading-bar h-3 justify-center"></div>
+           <div className="loading-bar h-3"></div>
+           <div className="loading-bar h-3"></div>
+         </div>
+    </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+    </div>
         )}
 
       <div className="flex w-full items-center justify-center p-4">
