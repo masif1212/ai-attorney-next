@@ -45,6 +45,7 @@ const ChatArea: React.FC<{
     router.push('/');
   };
 
+
   const fetchMessages = async (chatId: string) => {
     if (!chatId) return;
     const token = localStorage.getItem('token');
@@ -69,38 +70,43 @@ const ChatArea: React.FC<{
     }
   };
 
+
   const handleSendMessage = async () => {
     if (!activeChatId || !message.trim()) return;
+  
+    // Logic to determine if a new chat is created  
+      onNewChatCreated();
+    
+  
     const token = localStorage.getItem('token');
-
     const newUserMessage = {
       senderType: 'user',
       content: message,
     };
-
+  
     setChatMessages((prev) => [...prev, newUserMessage]);
     setMessage(''); // Clear the input field after sending
-
+  
     try {
       setLoading(true); // Set loading to true when API call starts
-
+  
       const response = await fetch('/api/chat/sendMessage', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // Corrected syntax
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           chatId: activeChatId,
           content: message,
         }),
       });
-
+  
       const result = await response.json();
-
+  
       if (result && result.pair) {
         const { userMessage, aiMessage } = result.pair;
-
+  
         setChatMessages((prev) => [
           ...prev.map((msg) =>
             msg === newUserMessage
@@ -124,8 +130,9 @@ const ChatArea: React.FC<{
       setLoading(false); // Reset loading to false once API call is complete
     }
   };
+  
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: any) => {
     if (e.key === 'Enter') {
       handleSendMessage();
     }
@@ -177,6 +184,11 @@ const ChatArea: React.FC<{
     </div>
   );
 
+  const handleResize = (e:any) => {
+    e.target.style.height = 'auto'; // Reset the height to auto
+    e.target.style.height = `${e.target.scrollHeight}px`; // Set the height to the scrollHeight
+  };
+
   return (
     <div className="relative flex h-screen flex-1 flex-col bg-white p-5 text-black">
       <div className="flex items-center justify-between">
@@ -222,64 +234,66 @@ const ChatArea: React.FC<{
             </div>
           </div>
         ) : (
-          <div className="flex flex-grow flex-col overflow-y-auto p-4 items-center">
-            <div className="flex-col w-5/6 pl-5 space-y-4">
-              {chatMessages?.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`flex ${
-                    msg?.senderType === 'AI' ? 'justify-end' : 'justify-start'
+    <div className="flex flex-grow flex-col overflow-y-auto p-4 items-center">
+      <div className="flex-col w-5/6 pl-5 space-y-4">
+        {chatMessages?.map((msg, index) => (
+          <div
+            key={index}
+            className={`flex ${msg?.senderType === 'AI' ? 'justify-end' : 'justify-start'}`}
+          >
+            <div>
+              <div
+                className={`rounded-lg p-2 ${msg?.senderType === 'AI'
+                  ? 'flex justify-end bg-gray-100 text-black shadow-lg'
+                  : 'bg-black text-white text-md'
                   }`}
-                >
-                  <div>
-                    <div
-                      className={`rounded-lg p-2 ${
-                        msg?.senderType === 'AI'
-                          ? 'flex justify-end bg-gray-100 text-black shadow-lg'
-                          : 'bg-black text-white text-md'
-                      }`}
-                    >
-                      {msg?.content}
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {loading && (
-                <div className="flex justify-end">
-                  <div className="rounded-lg bg-gray-100 p-2 text-black">
-                    Loading...
-                  </div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
+              >
+                {msg?.content}
+              </div>
             </div>
           </div>
+        ))}
+        {loading && (
+         <div className="flex justify-start w-full">
+         <div className="loading-container flex flex-col w-full">
+           <div className="loading-bar h-3 justify-center"></div>
+           <div className="loading-bar h-3"></div>
+           <div className="loading-bar h-3"></div>
+         </div>
+    </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+    </div>
         )}
 
-        <div className="flex w-full items-center justify-center p-4">
-          <div className="flex w-full max-w-5xl items-center space-x-2 rounded-2xl border-2 border-black bg-white px-2 py-2">
-            {/* Uncomment if needed for attachments
-            <button className="flex-shrink-0 rounded bg-white p-1 hover:bg-gray-300">
-              <CgAttachment size={25} color="#000" />
-            </button> */}
+      <div className="flex w-full items-center justify-center p-4">
+            <div className="flex w-full max-w-5xl items-center space-x-2 rounded-2xl border-2 border-black bg-white px-2 py-2">
+              <textarea
+                placeholder="Write here ..."
+                value={message}
+                onChange={(e) => {
+                  setMessage(e.target.value);
+                  handleResize(e);
+                }}
+                onKeyDown={handleKeyDown}
+                className="flex-grow bg-white text-base text-gray-900 outline-none ml-4 resize-none overflow-y-auto"
+                style={{ height: 'auto', minHeight: '24px', maxHeight: '72px' }} // Adjusted minHeight and maxHeight
+                rows= {1}
+              />
+              <button
+                onClick={handleSendMessage}
+                className="flex items-center justify-center rounded bg-white p-2 hover:bg-gray-300"
+                disabled={message.trim() === ''}
+              >
+                <BsFillSendFill size={20} color="#000" />
+              </button>
+            </div>
+      </div>
 
-            <input
-              type="text"
-              placeholder="Write here ..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="flex-grow bg-white text-base text-gray-900 outline-none ml-4"
-            />
-            <button
-              onClick={handleSendMessage}
-              className="flex items-center justify-center rounded bg-white p-2 hover:bg-gray-300"
-              disabled={loading}
-            >
-              <BsFillSendFill size={20} color="#000" />
-            </button>
-          </div>
-        </div>
+
+
+
       </div>
     </div>
   );

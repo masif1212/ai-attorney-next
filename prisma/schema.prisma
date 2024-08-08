@@ -1,3 +1,4 @@
+
 datasource db {
   provider = "mysql" 
   url      = env("DATABASE_URL")
@@ -83,5 +84,6 @@ enum MessageType {
 enum ChatStatus {
   ACTIVE
   ENDED
-  ARCHIVED
+  ARCHIVED
 }
+

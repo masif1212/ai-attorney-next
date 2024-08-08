@@ -33,7 +33,7 @@ export default function SignIn() {
         setServerResponse({ message: "Logged in successfully!", isError: false });
         setTimeout(() => {
           router.push("/chat");
-        }, 1500);
+        }, 0);
       } else {
         setServerResponse({ message: data.message, isError: true });
       }
