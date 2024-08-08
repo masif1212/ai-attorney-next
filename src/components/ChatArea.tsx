@@ -146,10 +146,10 @@ const ChatArea: React.FC<{
   }, [chatMessages, loading]);
 
   const dropDown = () => (
-    <div className="absolute right-0 z-10 mt-2 w-32 rounded-md border border-gray-900 bg-black shadow-lg">
+    <div className="absolute right-0 z-10 mt-2 w-32 rounded-md border border-gray-900 bg-black shadow-lg ">
       <button
         className={clsx(
-          'flex items-center border-b-2 border-gray-600 px-4 py-2 text-sm font-thin text-white hover:bg-gray-800'
+          'flex w-full items-center border-b-2  px-4 py-2 border-gray-600 text-sm font-thin text-white hover:bg-gray-800 '
         )}
       >
         <MdOutlinePayment size={18} className="mr-2" />
@@ -158,7 +158,7 @@ const ChatArea: React.FC<{
 
       <button
         className={clsx(
-          'flex items-center border-b-2 border-gray-600 px-4 py-2 text-sm font-thin text-white hover:bg-gray-800'
+          'flex w-full items-center border-b-2 border-gray-600 px-4 py-2 text-sm font-thin text-white hover:bg-gray-800'
         )}
       >
         <VscSettingsGear size={18} className="mr-2" />
@@ -168,7 +168,7 @@ const ChatArea: React.FC<{
       <button
         onClick={handleSignOut}
         className={clsx(
-          'flex items-center px-4 py-2 text-sm font-thin text-white hover:bg-gray-800'
+          'flex  w-full items-center px-4 py-2 text-sm font-thin text-white hover:bg-gray-800'
         )}
       >
         <MdOutlineLogout size={18} className="mr-2" />
