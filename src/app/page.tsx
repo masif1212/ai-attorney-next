@@ -76,7 +76,7 @@ function CaseStudies({
       <SectionIntro
         title="Features"
         className="mt-24 sm:mt-32 lg:mt-40"
-        
+
       >
         <p >
           We believe technology holds the key to addressing the world’s most complex challenges. However, it can also contribute to these challenges, placing us in a paradoxical situation.
@@ -120,7 +120,7 @@ function Services() {
         // eyebrow="Comming Soon"
         title="Comming Soon"
         className="mt-24 sm:mt-32 lg:mt-40 text-2xl"
-      
+
       >
         <p >
           Enhancing Your Legal Journey with Innovative AI Solutions.
@@ -133,32 +133,32 @@ function Services() {
           <div className="flex justify-center lg:w-1/2 lg:justify-end lg:pr-12" >
 
             <FadeIn className="w-[33.75rem] flex-none lg:w-[40rem]">
-          <div id = "comming-soon">
+              <div id="comming-soon">
 
-              <StylizedImage
-                src={imageLaptop}
-                sizes="(min-width: 1024px) 41rem, 31rem"
-                className="justify-center lg:justify-end"
-              />
-          </div>
+                <StylizedImage
+                  src={imageLaptop}
+                  sizes="(min-width: 1024px) 41rem, 31rem"
+                  className="justify-center lg:justify-end"
+                />
+              </div>
 
             </FadeIn>
           </div>
           <div >
-          <List className="mt-16 lg:mt-0 lg:w-1/2 lg:min-w-[33rem] lg:pl-4" >
-            <ListItem title="Digital solution for law firms" >
-              Our AI-powered Document Review feature carefully examines your legal documents for accuracy and compliance. It highlights any potential issues, inconsistencies, and risks, providing a detailed review that saves you time and improves the quality of your paperwork. Whether you are dealing with contracts, agreements, or other legal documents, our AI ensures they are thorough and error-free.
-            </ListItem>
-            <ListItem title="Legal Consultation">
-              Our Legal Consultation feature offers personalized legal advice using AI-driven insights. By understanding your unique situation, our platform provides tailored recommendations and guidance to help you navigate complex legal matters. Whether you need advice on legal strategies, compliance, or specific legal questions, our AI consultation service delivers precise and actionable advice, making legal expertise accessible and affordable for both individuals and businesses.
-            </ListItem>
-            <ListItem title="Legal Agreement Drafting">
-              Our Legal Consultation feature offers personalized legal advice using AI-driven insights. By understanding your unique situation, our platform provides tailored recommendations and guidance to help you navigate complex legal matters. Whether you need advice on legal strategies, compliance, or specific legal questions, our AI consultation service delivers precise and actionable advice, making legal expertise accessible and affordable for both individuals and businesses.
-            </ListItem>
-            {/* <ListItem title="Summary">
+            <List className="mt-16 lg:mt-0 lg:w-1/2 lg:min-w-[33rem] lg:pl-4" >
+              <ListItem title="Digital solution for law firms" >
+                Our AI-powered Document Review feature carefully examines your legal documents for accuracy and compliance. It highlights any potential issues, inconsistencies, and risks, providing a detailed review that saves you time and improves the quality of your paperwork. Whether you are dealing with contracts, agreements, or other legal documents, our AI ensures they are thorough and error-free.
+              </ListItem>
+              <ListItem title="Legal Consultation">
+                Our Legal Consultation feature offers personalized legal advice using AI-driven insights. By understanding your unique situation, our platform provides tailored recommendations and guidance to help you navigate complex legal matters. Whether you need advice on legal strategies, compliance, or specific legal questions, our AI consultation service delivers precise and actionable advice, making legal expertise accessible and affordable for both individuals and businesses.
+              </ListItem>
+              <ListItem title="Legal Agreement Drafting">
+                Our Legal Consultation feature offers personalized legal advice using AI-driven insights. By understanding your unique situation, our platform provides tailored recommendations and guidance to help you navigate complex legal matters. Whether you need advice on legal strategies, compliance, or specific legal questions, our AI consultation service delivers precise and actionable advice, making legal expertise accessible and affordable for both individuals and businesses.
+              </ListItem>
+              {/* <ListItem title="Summary">
               AI Attorney harnesses advanced AI technology to offer a comprehensive suite of services, including document generation, personalized legal advice, and digital solutions for law firms. Our goal is to make legal processes more efficient, accurate, and cost-effective, enabling individuals and businesses to navigate legal challenges with confidence.
             </ListItem> */}
-          </List>
+            </List>
           </div>
         </div>
       </Container>
@@ -212,9 +212,9 @@ export default async function Home({ invert }: { invert: boolean }) {
 
       <Testimonial
         className="mt-24 sm:mt-32 lg:mt-40"
-        client={{ name: 'Phobia', logo: logoPhobiaDark }}
+        // client={{ name: 'Phobia', logo: logoPhobiaDark }}
       >
-        The team at Studio went above and beyond with our onboarding, even finding a way to access the user’s microphone without triggering one of those annoying permission dialogs.
+        Combining the power of AI with the profound depth of Pakistani legal precedents, our platform transforms legal research into a precise and insightful process, ensuring you’re always equipped with the knowledge to lead.
       </Testimonial>
 
       <Services />

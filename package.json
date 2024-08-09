@@ -12,6 +12,7 @@
   "dependencies": {
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
+    "@heroicons/react": "^2.1.5",
     "@langchain/community": "^0.2.22",
     "@langchain/core": "^0.2.18",
     "@langchain/openai": "^0.2.5",
