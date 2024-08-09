@@ -178,11 +178,11 @@ function Navigation() {
   return (
     <nav className="mt-px font-display text-5xl font-medium tracking-tight text-white">
       <NavigationRow>
-        <NavigationItem href="/work">Our Work</NavigationItem>
-        <NavigationItem href="/about">About Us</NavigationItem>
+        <NavigationItem href="#case-studies">Features</NavigationItem>
+        <NavigationItem href="#comming-soon">Upcomming</NavigationItem>
       </NavigationRow>
       <NavigationRow>
-        <NavigationItem href="/process">Our Process</NavigationItem>
+        <NavigationItem href="#footer">About Us</NavigationItem>
         <NavigationItem href="/contact">Contact Us</NavigationItem>
       </NavigationRow>
     </nav>
@@ -307,8 +307,9 @@ function RootLayoutInner({ children }: { children: React.ReactNode }) {
           />
 
           <main className="w-full flex-auto">{children}</main>
-
+          <div id ="footer">
           <Footer />
+          </div>
 
         </motion.div>
       </motion.div>

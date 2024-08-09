@@ -234,9 +234,9 @@ const ChatArea: React.FC<{
                 />
               </div>
               <div className="flex flex-wrap justify-center space-x-4">
-                <h1 className="m-2 rounded p-4 text-3xl font-bold md:text-5xl">
+                {/* <h1 className="m-2 rounded p-4 text-3xl font-bold md:text-5xl">
                   Ai-Attorney
-                </h1>
+                </h1> */}
               </div>
             </div>
           </div>
@@ -285,7 +285,7 @@ const ChatArea: React.FC<{
                 }}
                 onKeyDown={handleKeyDown}
                 className="flex-grow bg-white text-base text-gray-900 outline-none ml-4 resize-none overflow-y-auto"
-                style={{ height: 'auto', minHeight: '24px', maxHeight: '72px' }} // Adjusted minHeight and maxHeight
+                style={{ height: 'auto', minHeight: '24px', maxHeight: '72px' , fontWeight : "bold" }} // Adjusted minHeight and maxHeight
                 rows= {1}
               />
               <button

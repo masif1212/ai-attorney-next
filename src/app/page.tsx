@@ -72,20 +72,21 @@ function CaseStudies({
   caseStudies: Array<MDXEntry<CaseStudy>>
 }) {
   return (
-    <>
+    <div id="case-studies">
       <SectionIntro
         title="Features"
         className="mt-24 sm:mt-32 lg:mt-40"
+        
       >
-        <p>
+        <p >
           We believe technology holds the key to addressing the world’s most complex challenges. However, it can also contribute to these challenges, placing us in a paradoxical situation.
         </p>
 
       </SectionIntro>
-      <Container className="mt-16">
+      <Container className="mt-16" >
         <FadeInStagger className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {caseStudies.map((caseStudy) => (
-            <FadeIn key={caseStudy.href} className="flex">
+            <FadeIn key={caseStudy.href} className="flex" >
               <article className="relative flex w-full flex-col rounded-3xl p-6 ring-1 ring-neutral-950/5 transition hover:bg-neutral-50 sm:p-8">
                 <h3>
                   <span className="absolute inset-0 rounded-3xl" />
@@ -108,19 +109,20 @@ function CaseStudies({
           ))}
         </FadeInStagger>
       </Container>
-    </>
+    </div>
   )
 }
 
 function Services() {
   return (
-    <>
+    <div>
       <SectionIntro
         // eyebrow="Comming Soon"
         title="Comming Soon"
         className="mt-24 sm:mt-32 lg:mt-40 text-2xl"
+      
       >
-        <p>
+        <p >
           Enhancing Your Legal Journey with Innovative AI Solutions.
         </p>
 
@@ -128,16 +130,22 @@ function Services() {
 
       <Container className="mt-16">
         <div className="lg:flex lg:items-center lg:justify-end">
-          <div className="flex justify-center lg:w-1/2 lg:justify-end lg:pr-12">
+          <div className="flex justify-center lg:w-1/2 lg:justify-end lg:pr-12" >
+
             <FadeIn className="w-[33.75rem] flex-none lg:w-[40rem]">
+          <div id = "comming-soon">
+
               <StylizedImage
                 src={imageLaptop}
                 sizes="(min-width: 1024px) 41rem, 31rem"
                 className="justify-center lg:justify-end"
               />
+          </div>
+
             </FadeIn>
           </div>
-          <List className="mt-16 lg:mt-0 lg:w-1/2 lg:min-w-[33rem] lg:pl-4">
+          <div >
+          <List className="mt-16 lg:mt-0 lg:w-1/2 lg:min-w-[33rem] lg:pl-4" >
             <ListItem title="Digital solution for law firms" >
               Our AI-powered Document Review feature carefully examines your legal documents for accuracy and compliance. It highlights any potential issues, inconsistencies, and risks, providing a detailed review that saves you time and improves the quality of your paperwork. Whether you are dealing with contracts, agreements, or other legal documents, our AI ensures they are thorough and error-free.
             </ListItem>
@@ -151,9 +159,10 @@ function Services() {
               AI Attorney harnesses advanced AI technology to offer a comprehensive suite of services, including document generation, personalized legal advice, and digital solutions for law firms. Our goal is to make legal processes more efficient, accurate, and cost-effective, enabling individuals and businesses to navigate legal challenges with confidence.
             </ListItem> */}
           </List>
+          </div>
         </div>
       </Container>
-    </>
+    </div>
   )
 }
 
