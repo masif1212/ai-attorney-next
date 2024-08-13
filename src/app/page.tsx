@@ -42,50 +42,49 @@ const clients = [
 
 function Clients() {
   return (
-    <div className="mt-24 h-auto rounded-4xl bg-neutral-950 sm:py-10 lg:mt-56">
+    <div className="mt-24 h-auto rounded-4xl bg-neutral-950 py-10  lg:mt-56">
       <Container className="h-full w-full px-4 sm:px-6 lg:px-8">
         <FadeIn className="flex items-center gap-x-8">
           {/* <div className="h-px flex-auto bg-neutral-800" /> */}
         </FadeIn>
         <FadeInStagger faster>
-          <div className="mt-10 flex h-full w-full flex-col gap-0 sm:flex-row">
-            <div className="flex w-full flex-col justify-center text-white sm:w-1/3 sm:border-r sm:border-white sm:pr-6">
-              <h3 className="text-2xl font-bold sm:text-3xl lg:text-4xl">
-                AI Attorney
-              </h3>
-              <p className="mt-6 text-base sm:text-lg lg:text-xl">
-                AI Attorney is a pioneering legal tech company revolutionizing
-                the legal industry with cutting-edge AI solutions. Our platform
-                excels in generating legal documents, drafting agreements, and
-                providing customized legal advice for both individuals and
-                businesses.
-              </p>
-              <p className="mt-6 text-base sm:text-lg lg:text-xl">
-                By streamlining legal processes, enhancing efficiency, and
-                delivering cost-effective legal services, we empower our clients
-                to navigate the legal landscape with ease and confidence.
-              </p>
-            </div>
-            <div className="flex w-full items-center justify-center sm:w-2/3 sm:pl-8">
-              <video
-                controls
-                preload="none"
-                loop
-                autoPlay	
-                className="h-auto max-h-[400px] w-full transform rounded-lg sm:max-h-[500px] sm:w-[600px] lg:max-h-[800px] lg:w-[900px]"
-                style={{ objectFit: 'cover' }}
+        <div className="mt-10 flex h-full w-full flex-col gap-0 sm:flex-row">
+  <div className="flex w-full flex-col justify-center text-white sm:w-1/3 sm:border-r sm:border-white sm:pr-6">
+    <h3 className="text-2xl font-bold sm:text-3xl lg:text-4xl">
+      AI Attorney
+    </h3>
+    <p className="mt-6 text-base sm:text-base lg:text-base">
+      AI Attorney is a pioneering legal tech company revolutionizing
+      the legal industry with cutting-edge AI solutions. Our platform
+      excels in generating legal documents, drafting agreements.
+    </p>
+    <p className="mt-6 text-base sm:text-base lg:text-base">
+      By streamlining legal processes, enhancing efficiency, and
+      delivering cost-effective legal services, we empower our clients
+      to navigate the legal landscape with ease and confidence.
+    </p>
+  </div>
 
-              >
-                <source src="/videos/Dummy.mp4" type="video/mp4" />
-              </video>
-            </div>
-          </div>
+  <div className="flex w-full items-center justify-center sm:w-2/3 sm:pl-16 sm:py-4 sm:pt-6 sm:pb-6 mt-6 sm:mt-0">
+    <video
+      controls
+      preload="metadata"
+      loop
+      autoPlay
+      muted
+      className="h-auto max-h-[400px] w-full transform rounded-lg sm:max-h-[500px] sm:w-[500px] lg:max-h-[800px] lg:w-[800px]"
+      style={{ objectFit: 'cover' }}
+    >
+      <source src="/videos/Dummy.mp4" type="video/mp4" />
+    </video>
+  </div>
+</div>
+
         </FadeInStagger>
       </Container>
     </div>
   )
 }
-
 function CaseStudies({
   caseStudies,
 }: {
@@ -216,12 +215,8 @@ export default async function Home({ invert }: { invert: boolean }) {
           {/* <h1 className="font-display text-5xl font-medium tracking-tight text-neutral-950 [text-wrap:balance] sm:text-7xl">
           Introduction
         </h1> */}
-          <p className="mt-6 text-justify text-xl text-neutral-600">
-            AI Attorney is a leading legal tech company transforming the legal
-            industry with advanced AI. Our platform generates legal documents,
-            drafts agreements, and offers tailored legal advice for individuals
-            and businesses. We streamline legal processes, boost efficiency, and
-            provide cost-effective legal solutions.
+          <p className="mt-6 text-xl text-neutral-600 ">
+            AI Attorney is a leading legal tech company transforming the legal industry with advanced AI. Our platform generates legal documents, drafts agreements, and offers tailored legal advice for individuals and businesses. We streamline legal processes, boost efficiency, and provide cost-effective legal solutions.
           </p>
         </FadeIn>
 
@@ -244,7 +239,7 @@ export default async function Home({ invert }: { invert: boolean }) {
 
       <Testimonial
         className="mt-24 sm:mt-32 lg:mt-40"
-        // client={{ name: 'Phobia', logo: logoPhobiaDark }}
+      // client={{ name: 'Phobia', logo: logoPhobiaDark }}
       >
         Combining the power of AI with the profound depth of Pakistani legal
         precedents, our platform transforms legal research into a precise and
