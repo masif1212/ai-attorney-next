@@ -278,7 +278,7 @@ const ChatArea: React.FC<{
           <div className="flex w-full max-w-5xl items-center space-x-2 rounded-2xl border-2 border-black bg-white px-2 py-2">
 
             <textarea
-              placeholder="Write here ..."
+              placeholder="Enter prompt here ..."
               value={message}
               onChange={(e) => {
                 setMessage(e.target.value);
