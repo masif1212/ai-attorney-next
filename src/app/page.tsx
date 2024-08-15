@@ -1,3 +1,4 @@
+
 import { type Metadata } from 'next'
 import Image from 'next/image'
 
@@ -19,7 +20,7 @@ import logoPhobiaDark from '@/images/clients/phobia/logo-dark.svg'
 import logoPhobiaLight from '@/images/clients/phobia/logo-light.svg'
 import logoUnseal from '@/images/clients/unseal/logo-light.svg'
 import imageLaptop from '@/images/laptop.jpg'
-import rightarrow from "@/images/clients/arrows/right-arrow.png"
+import rightarrow from '@/images/clients/arrows/right-arrow.png'
 import TextAnimation from '@/components/TextAnimation'
 import { type CaseStudy, type MDXEntry, loadCaseStudies } from '@/lib/mdx'
 
@@ -37,6 +38,8 @@ const clients = [
   ['Responsive Solutions', logoUnseal],
   ['Case Summary', logoUnseal],
 ]
+
+
 
 function Clients() {
   return (
@@ -90,20 +93,17 @@ function CaseStudies({
 }) {
   return (
     <div id="case-studies">
-      <SectionIntro
-        title="Features"
-        className="mt-24 sm:mt-32 lg:mt-40"
-
-      >
-        <p >
-          We believe technology holds the key to addressing the world’s most complex challenges. However, it can also contribute to these challenges, placing us in a paradoxical situation.
+      <SectionIntro title="Features" className="mt-24 sm:mt-32 lg:mt-40">
+        <p>
+          We believe technology holds the key to addressing the world’s most
+          complex challenges. However, it can also contribute to these
+          challenges, placing us in a paradoxical situation.
         </p>
-
       </SectionIntro>
-      <Container className="mt-16" >
+      <Container className="mt-16">
         <FadeInStagger className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {caseStudies.map((caseStudy) => (
-            <FadeIn key={caseStudy.href} className="flex" >
+            <FadeIn key={caseStudy.href} className="flex">
               <article className="relative flex w-full flex-col rounded-3xl p-6 ring-1 ring-neutral-950/5 transition hover:bg-neutral-50 sm:p-8">
                 <h3>
                   <span className="absolute inset-0 rounded-3xl" />
@@ -113,7 +113,6 @@ function CaseStudies({
                     className="h-16 w-16"
                     unoptimized
                   />
-
                 </h3>
                 <p className="mt-6 font-display text-2xl font-semibold text-neutral-950 h-16">
                   {caseStudy.title}
@@ -136,41 +135,47 @@ function Services() {
       <SectionIntro
         // eyebrow="Comming Soon"
         title="Comming Soon"
-        className="mt-24 sm:mt-32 lg:mt-40 text-2xl"
-
+        className="mt-24 text-2xl sm:mt-32 lg:mt-40"
       >
-        <p >
-          Enhancing Your Legal Journey with Innovative AI Solutions.
-        </p>
-
+        <p>Enhancing Your Legal Journey with Innovative AI Solutions.</p>
       </SectionIntro>
 
       <Container className="mt-16">
         <div className="lg:flex lg:items-center lg:justify-end">
-          <div className="flex justify-center lg:w-1/2 lg:justify-end lg:pr-12" >
-
+          <div className="flex justify-center lg:w-1/2 lg:justify-end lg:pr-12">
             <FadeIn className="w-[33.75rem] flex-none lg:w-[40rem]">
               <div id="comming-soon">
-
                 <StylizedImage
                   src={imageLaptop}
                   sizes="(min-width: 1024px) 41rem, 31rem"
                   className="justify-center lg:justify-end"
                 />
               </div>
-
             </FadeIn>
           </div>
-          <div >
-            <List className="mt-16 lg:mt-0 lg:w-1/2 lg:min-w-[33rem] lg:pl-4" >
-              <ListItem title="Digital solution for law firms" >
-                Our AI-powered Document Review feature carefully examines your legal documents for accuracy and compliance. It highlights any potential issues, inconsistencies, and risks, providing a detailed review that saves you time and improves the quality of your paperwork. Whether you are dealing with contracts, agreements, or other legal documents, our AI ensures they are thorough and error-free.
+          <div>
+            <List className="mt-16 lg:mt-0 lg:w-1/2 lg:min-w-[33rem] lg:pl-4">
+              <ListItem title="Digital solution for law firms">
+                Our AI-powered Document Review feature carefully examines your
+                legal documents for accuracy and compliance. It highlights any
+                potential issues, inconsistencies, and risks, providing a
+                detailed review that saves you time and improves the quality of
+                your paperwork. Whether you are dealing with contracts,
+                agreements, or other legal documents, our AI ensures they are
+                thorough and error-free.
               </ListItem>
               <ListItem title="Legal Consultation">
               Get instant, reliable legal advice with AI Attorney’s consultation feature. Our AI-powered bot is trained on an extensive database of legal cases, providing you with accurate and relevant insights tailored to your specific queries. Whether you're a client seeking advice or a lawyer looking for a second opinion, AI Attorney offers accessible, on-demand legal consultation that you can trust.
               </ListItem>
               <ListItem title="Legal Agreement Drafting">
-                Our Legal Consultation feature offers personalized legal advice using AI-driven insights. By understanding your unique situation, our platform provides tailored recommendations and guidance to help you navigate complex legal matters. Whether you need advice on legal strategies, compliance, or specific legal questions, our AI consultation service delivers precise and actionable advice, making legal expertise accessible and affordable for both individuals and businesses.
+                Our Legal Consultation feature offers personalized legal advice
+                using AI-driven insights. By understanding your unique
+                situation, our platform provides tailored recommendations and
+                guidance to help you navigate complex legal matters. Whether you
+                need advice on legal strategies, compliance, or specific legal
+                questions, our AI consultation service delivers precise and
+                actionable advice, making legal expertise accessible and
+                affordable for both individuals and businesses.
               </ListItem>
               {/* <ListItem title="Summary">
               AI Attorney harnesses advanced AI technology to offer a comprehensive suite of services, including document generation, personalized legal advice, and digital solutions for law firms. Our goal is to make legal processes more efficient, accurate, and cost-effective, enabling individuals and businesses to navigate legal challenges with confidence.
@@ -193,12 +198,11 @@ export default async function Home({ invert }: { invert: boolean }) {
 
   return (
     <div>
-      <Container className='mt-20 sm:mt-32 md:mt-52'>
+      <Container className="mt-20 sm:mt-32 md:mt-52">
         <div className="flex items-center">
           <TextAnimation />
         </div>
       </Container>
-
 
       <Container className="mt-10">
         <FadeIn className="max-w-3xl">
@@ -210,7 +214,7 @@ export default async function Home({ invert }: { invert: boolean }) {
           </p>
         </FadeIn>
 
-        <Button href="/signup" invert={invert} className='mt-5'>
+        <Button href="/signup" invert={invert} className="mt-5">
           Get Started
           <Image
             src={rightarrow}
@@ -231,7 +235,10 @@ export default async function Home({ invert }: { invert: boolean }) {
         className="mt-24 sm:mt-32 lg:mt-40"
       // client={{ name: 'Phobia', logo: logoPhobiaDark }}
       >
-        Combining the power of AI with the profound depth of Pakistani legal precedents, our platform transforms legal research into a precise and insightful process, ensuring you’re always equipped with the knowledge to lead.
+        Combining the power of AI with the profound depth of Pakistani legal
+        precedents, our platform transforms legal research into a precise and
+        insightful process, ensuring you’re always equipped with the
+        knowledge to lead.
       </Testimonial>
 
       <Services />

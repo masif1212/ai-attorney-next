@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import Logo from '@/images/logo/logo.svg';
+import Logo from '@/images/logo/black.svg';
 import { BsFillSendFill } from 'react-icons/bs';
 import { CgAttachment } from 'react-icons/cg';
 import { RiMenu3Fill } from 'react-icons/ri';
