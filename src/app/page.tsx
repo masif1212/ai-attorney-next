@@ -49,37 +49,37 @@ function Clients() {
           {/* <div className="h-px flex-auto bg-neutral-800" /> */}
         </FadeIn>
         <FadeInStagger faster>
-        <div className="mt-10 flex h-full w-full flex-col gap-0 sm:flex-row">
-  <div className="flex w-full flex-col justify-center text-white sm:w-1/3 sm:border-r sm:border-white sm:pr-6">
-    <h3 className="text-2xl font-bold sm:text-3xl lg:text-4xl">
-      AI Attorney
-    </h3>
-    <p className="mt-6 text-base sm:text-base lg:text-base">
-      AI Attorney is a pioneering legal tech company revolutionizing
-      the legal industry with cutting-edge AI solutions. Our platform
-      excels in generating legal documents, drafting agreements.
-    </p>
-    <p className="mt-6 text-base sm:text-base lg:text-base">
-      By streamlining legal processes, enhancing efficiency, and
-      delivering cost-effective legal services, we empower our clients
-      to navigate the legal landscape with ease and confidence.
-    </p>
-  </div>
+          <div className="mt-10 flex h-full w-full flex-col gap-0 sm:flex-row">
+            <div className="flex w-full flex-col justify-center text-white sm:w-1/3 sm:border-r sm:border-white sm:pr-6">
+              <h3 className="text-2xl font-bold sm:text-3xl lg:text-4xl">
+                AI Attorney
+              </h3>
+              <p className="mt-6 text-base sm:text-base lg:text-base">
+                AI Attorney is a pioneering legal tech company revolutionizing
+                the legal industry with cutting-edge AI solutions. Our platform
+                excels in generating legal documents, drafting agreements.
+              </p>
+              <p className="mt-6 text-base sm:text-base lg:text-base">
+                By streamlining legal processes, enhancing efficiency, and
+                delivering cost-effective legal services, we empower our clients
+                to navigate the legal landscape with ease and confidence.
+              </p>
+            </div>
 
-  <div className="flex w-full items-center justify-center sm:w-2/3 sm:pl-16 sm:py-4 sm:pt-6 sm:pb-6 mt-6 sm:mt-0">
-    <video
-      controls
-      preload="metadata"
-      loop
-      autoPlay
-      muted
-      className="h-auto max-h-[400px] w-full transform rounded-lg sm:max-h-[500px] sm:w-[500px] lg:max-h-[800px] lg:w-[800px]"
-      style={{ objectFit: 'cover' }}
-    >
-      <source src="/videos/Dummy.mp4" type="video/mp4" />
-    </video>
-  </div>
-</div>
+            <div className="flex w-full items-center justify-center sm:w-2/3 sm:pl-16 sm:py-4 sm:pt-6 sm:pb-6 mt-6 sm:mt-0">
+              <video
+                controls
+                preload="metadata"
+                loop
+                autoPlay
+                muted
+                className="h-auto max-h-[400px] w-full transform rounded-lg sm:max-h-[500px] sm:w-[500px] lg:max-h-[800px] lg:w-[800px]"
+                style={{ objectFit: 'cover' }}
+              >
+                <source src="/videos/Dummy.mp4" type="video/mp4" />
+              </video>
+            </div>
+          </div>
 
         </FadeInStagger>
       </Container>
@@ -134,7 +134,7 @@ function Services() {
     <div>
       <SectionIntro
         // eyebrow="Comming Soon"
-        title="Comming Soon"
+        title="Features to be added"
         className="mt-24 text-2xl sm:mt-32 lg:mt-40"
       >
         <p>Enhancing Your Legal Journey with Innovative AI Solutions.</p>
@@ -155,27 +155,15 @@ function Services() {
           </div>
           <div>
             <List className="mt-16 lg:mt-0 lg:w-1/2 lg:min-w-[33rem] lg:pl-4">
-              <ListItem title="Digital solution for law firms">
-                Our AI-powered Document Review feature carefully examines your
-                legal documents for accuracy and compliance. It highlights any
-                potential issues, inconsistencies, and risks, providing a
-                detailed review that saves you time and improves the quality of
-                your paperwork. Whether you are dealing with contracts,
-                agreements, or other legal documents, our AI ensures they are
-                thorough and error-free.
+              <ListItem title="Contract Drafting and Document Review.">
+              AI Attorney is set to redefine how contracts are drafted and reviewed. Our forthcoming AI-powered system will empower you to create contracts that are not only detailed and compliant with laws but are also crafted with meticulous attention to every nuance and detail. The system will meticulously review your existing documents, pinpointing potential issues and suggesting areas for improvement. This upcoming feature is designed to ensure that every agreement you enter into is precise, legally sound, and error-free, giving you the ultimate confidence in your legal affairs.
+
               </ListItem>
               <ListItem title="Legal Consultation">
-              Get instant, reliable legal advice with AI Attorney’s consultation feature. Our AI-powered bot is trained on an extensive database of legal cases, providing you with accurate and relevant insights tailored to your specific queries. Whether you're a client seeking advice or a lawyer looking for a second opinion, AI Attorney offers accessible, on-demand legal consultation that you can trust.
+              AI Attorney will soon offer immediate and expert legal advice precisely when you need it. Our upcoming consultation feature, powered by an extensive database of legal cases and advanced AI, will provide accurate and relevant insights tailored to your specific needs. Whether you’re a client seeking clarity or a lawyer in need of a second opinion, AI Attorney will make legal consultation more accessible, on-demand, and trustworthy. No more waiting for appointments or sifting through endless resources; the answers you need will be available instantly.
               </ListItem>
-              <ListItem title="Legal Agreement Drafting">
-                Our Legal Consultation feature offers personalized legal advice
-                using AI-driven insights. By understanding your unique
-                situation, our platform provides tailored recommendations and
-                guidance to help you navigate complex legal matters. Whether you
-                need advice on legal strategies, compliance, or specific legal
-                questions, our AI consultation service delivers precise and
-                actionable advice, making legal expertise accessible and
-                affordable for both individuals and businesses.
+              <ListItem title="Digital Enterprise Solutions.">
+              AI Attorney is preparing to introduce Digital Enterprise Solutions designed to transform the way you manage your legal operations. This comprehensive suite will include powerful modules for Finance, Billing, Document Management, and Legal Case Management. Each module will seamlessly integrate into your existing processes, automating routine tasks and enhancing your ability to manage complex legal work with ease. Envision a future where financial tasks are streamlined, billing is handled with precision, documents are effortlessly organized, and legal cases are managed with unparalleled efficiency. AI Attorney will not just simplify your work—it will redefine what’s possible in the legal industry.
               </ListItem>
               {/* <ListItem title="Summary">
               AI Attorney harnesses advanced AI technology to offer a comprehensive suite of services, including document generation, personalized legal advice, and digital solutions for law firms. Our goal is to make legal processes more efficient, accurate, and cost-effective, enabling individuals and businesses to navigate legal challenges with confidence.
@@ -232,7 +220,8 @@ export default async function Home({ invert }: { invert: boolean }) {
       <CaseStudies caseStudies={caseStudies} />
 
       <Testimonial
-        className="mt-24 sm:mt-32 lg:mt-40 p-4 sm:p-6 lg:p-8 text-xs sm:text-base lg:text-lg"
+        className="mt-24 sm:mt-32 lg:mt-40 p-4 sm:p-6  text-xs sm:text-base lg:text-lg"
+
       // client={{ name: 'Phobia', logo: logoPhobiaDark }}
       >
         Combining the power of AI with the profound depth of Pakistani legal

@@ -1,23 +1,37 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import prisma from '../../../../lib/prisma';
-import { authenticate } from '../../../../backend/middleware/auth';
+import { PrismaClient } from '@prisma/client';
 
-export default authenticate(async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { chatId } = req.query;
+const prisma = new PrismaClient();
 
-  if (!chatId || typeof chatId !== 'string') {
-    return res.status(400).json({ message: 'Chat ID is required' });
-  }
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    const { chatId } = req.query;
 
-  try {
-    const messages = await prisma.message.findMany({
-      where: { chatId },
-      orderBy: { createdAt: 'asc' }, 
-    });
+    if (!chatId || typeof chatId !== 'string') {
+        return res.status(400).json({ message: 'chatId is required' });
+    }
 
-    res.status(200).json({ messages });
-  } catch (error) {
-    console.error('Error fetching chat messages:', error);
-    res.status(500).json({ message: 'Error fetching chat messages', error });
-  }
-});
+    try {
+        const chat = await prisma.chat.findUnique({
+            where: { id: chatId },
+            include: {
+                messages: {
+                    orderBy: { createdAt: 'asc' },
+                },
+            },
+        });
+
+        if (!chat) {
+            return res.status(404).json({ message: 'No chat history found' });
+        }
+        const chatHistory = chat.messages.map(message => ({
+            message: message.content,
+            type: message.senderType,
+        }));
+
+        console.log(chatHistory,"chat history");
+        res.status(200).json({ chat_history: chatHistory });
+    } catch (error) {
+        console.error('Error fetching chat history:', error);
+        res.status(500).json({ message: 'Error fetching chat history', error });
+    }
+}

@@ -8,12 +8,12 @@ export default function CaseSummaryModal({ isOpen, closeModal, order_num, case_d
 
   const fetchCaseSummary = async () => {
     try {
-      const response = await fetch('/api/generateSummary', {
+      const response = await fetch('https://4977-2407-aa80-314-b639-2d00-975c-1d3a-86c1.ngrok-free.app/summarize', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ order_num, case_description }),
+        body: JSON.stringify({ text: case_description }),
       })
       const data = await response.json()
       setSummary(data.summary)
