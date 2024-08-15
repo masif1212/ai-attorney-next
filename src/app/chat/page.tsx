@@ -1,22 +1,30 @@
-// pages/chat.tsx
 "use client";
 import { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import ChatArea from "@/components/ChatArea";
-import { useSession } from "next-auth/react";
-
 
 export default function Chat() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [isInitialRender, setIsInitialRender] = useState(true);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [activeUserId, setActiveUserId] = useState<string | null>(null);
-
-  const [chats, setChats] = useState ([]); 
-
-  console.log(chats,'in main componenet')
+  const [chats, setChats] = useState<Chat[]>([]); 
+  const [error, setError] = useState<string | null>(null);
 
 
+  interface Chat {
+    id: string;
+    latestMessage: string;
+    createdAt: string;
+    messages: Message[];
+    fullContext: { content: string }[];
+  }
+  
+  interface Message {
+    senderId: string;
+    content: string;
+    timestamp: string;
+  }
   
 
   useEffect(() => {
@@ -35,7 +43,6 @@ export default function Chat() {
     };
   }, []);
 
-
   useEffect(() => {
     const storedChatId = localStorage.getItem("activeChatId");
     const storedUserId = localStorage.getItem("activeUserId");
@@ -53,38 +60,56 @@ export default function Chat() {
     setSidebarVisible(!sidebarVisible);
   };
 
-
-    // This function is called whenever a new chat is created
-    const handleNewChatCreated = () => {
-      console.log("handleNewChatCreated function called"); // Check if the function is called
-    
-      const userId = localStorage.getItem('activeUserId');
-      console.log("User ID:", userId); // Verify that userId is not null or undefined
-    
-      fetch(`/api/chat/history/${userId}`, {
+  // This function is called whenever a new chat is created
+  const handleNewChatCreated = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('Token is not available');
+      return;
+    }
+  
+    try {
+      const response = await fetch('/api/chat/create', {
+        method: 'POST',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
-      })
-        .then((response) => {
-          console.log("Fetch response:", response); // Log the response
-          return response.json();
-        })
-        .then((data) => {
-          console.log(data, 'data fetched from fetch history'); // Log the fetched data
-          setChats(data);
-        })
-        .catch((error) => {
-          console.error("Error fetching chat history:", error);
-        });
-    };
-    
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        const newChat: Chat = {
+          id: data.chatId, // assuming your API response returns `chatId`
+          latestMessage: '',
+          createdAt: new Date().toISOString(),
+          messages: [],
+          fullContext: [{ content: '' }],
+        };
+  
+        setChats((prevChats) => [newChat, ...prevChats]); // Update the chat list immediately
+        setActiveChatId(data.chatId);
+        localStorage.setItem('activeChatId', data.chatId);
+      } else {
+        console.error('Error response data:', data);
+        setError(data.message || 'Failed to create chat');
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('Caught error:', error);
+        setError(error.message);
+      } else {
+        setError('An unknown error occurred');
+      }
+    }
+  };
+  
   
 
   if (isInitialRender) {
     return null;
   }
-
 
   return (
     <div className="relative flex flex-col md:flex-row h-screen overflow-hidden bg-back">
@@ -103,7 +128,7 @@ export default function Chat() {
           sidebarVisible={sidebarVisible}
           toggleSidebar={toggleSidebar}
           setActiveChatId={setActiveChatId}
-          chats= {chats}
+          chats={chats}
         />
       </div>
       <div className="flex-grow h-full overflow-hidden">
@@ -111,8 +136,8 @@ export default function Chat() {
           toggleSidebar={toggleSidebar}
           sidebarVisible={sidebarVisible}
           activeChatId={activeChatId}
-          onNewChatCreated={handleNewChatCreated} 
-          activeUserId = {activeUserId}
+          onNewChatCreated={handleNewChatCreated}
+          activeUserId={activeUserId}
         />
       </div>
     </div>

@@ -35,6 +35,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   toggleSidebar,
   setActiveChatId,
   chats
+
 }) => {
   const [chatItems, setChatItems] = useState<ChatItem[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -43,8 +44,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const token = localStorage.getItem('token')
   const userId = localStorage.getItem('activeUserId')
-
-  console.log(chats, 'chat from parent component')
 
   const fetchChatHistory = useCallback(async () => {
     if (!chats) return;
@@ -98,6 +97,8 @@ const Sidebar: React.FC<SidebarProps> = ({
       })
 
       const data = await response.json()
+
+
       if (response.ok) {
         setActiveChatId(data.chatId)
         localStorage.setItem('activeChatId', data.chatId)
