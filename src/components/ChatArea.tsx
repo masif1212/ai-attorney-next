@@ -49,51 +49,55 @@ const ChatArea: React.FC<{
   }
 
   const fetchMessages = async (chatId: string) => {
-    if (!chatId) {
-        console.error('No active chat ID, cannot fetch messages.');
-        return;
-    }
+    if (!chatId) return;
 
     const token = localStorage.getItem('token');
-
     try {
-        const response = await fetch(`/api/chat/messages/${chatId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-            },
-        });
+      const response = await fetch(`/api/chat/messages/${chatId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-        if (!response.ok) {
-            throw new Error(`Failed to fetch chat messages: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        if (!data.chat_history || data.chat_history.length === 0) {
-            console.log('No messages found for this chat');
-            return;
-        }
-
-        setChatMessages(data.chat_history.map((msg: { message: string; type: string; }) => ({
+      if (!response.ok) {
+        throw new Error(`Failed to fetch chat messages: ${response.statusText}`);
+      }
+      const data = await response.json();
+      if (data.chat_history && data.chat_history.length > 0) {
+        setChatMessages(
+          data.chat_history.map((msg: { message: string; type: string }) => ({
             content: msg.message,
-            senderType: msg.type
-        })));
+            senderType: msg.type,
+          }))
+        );
+      } else {
+        setChatMessages([]);
+      }
     } catch (error) {
-        console.error('Error fetching messages:', error);
-    }
-};
+      console.error('Error fetching messages:', error);
+    }
+  };
 
 const handleSendMessage = async () => {
   if (!activeUserId || !message.trim()) return;
 
-  if (!activeChatId) {
+  let chatIdToUse = activeChatId;
+
+  if (!chatIdToUse) {
     // If there's no active chat ID, create a new chat first
-    await onNewChatCreated();
+    onNewChatCreated();
+    chatIdToUse = localStorage.getItem("activeChatId"); // Get the newly set chatId
+  }
+
+  if (!chatIdToUse) {
+    console.error("Failed to create or retrieve chat ID");
+    return;
   }
 
   // Proceed with sending the message once the chat has been created
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   const newUserMessage = {
     senderType: 'user',
     content: message,
@@ -112,7 +116,7 @@ const handleSendMessage = async () => {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        chatId: activeChatId,
+        chatId: chatIdToUse,
         query: message,
         userId: activeUserId,
       }),
@@ -147,11 +151,17 @@ const handleSendMessage = async () => {
   }
 };
 
+useEffect(() => {
+  if (activeChatId) {
+    fetchMessages(activeChatId);
+  }
+}, [activeChatId]);
+
 
 
   const handleKeyDown = (e: any) => {
     if (e.key === 'Enter') {
-      e.preventDefault() // Prevent the default behavior of adding a new line
+      e.preventDefault() 
       handleSendMessage()
     }
   }
@@ -160,11 +170,7 @@ const handleSendMessage = async () => {
     messagesEndRef?.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  useEffect(() => {
-    if (activeChatId) {
-      fetchMessages(activeChatId)
-    }
-  }, [activeChatId])
+ 
 
   useEffect(() => {
     scrollToBottom()
@@ -243,7 +249,7 @@ const handleSendMessage = async () => {
       </div>
 
       <div className="mt-2 flex w-full flex-1 flex-col overflow-y-auto pr-2">
-        {chatMessages?.length === 0 ? (
+        {chatMessages?.length === 0  && !loading ? (
           <div className="flex flex-1 items-center justify-center">
             <div className="flex h-full flex-col justify-center text-center">
               <div className="flex items-center justify-center">

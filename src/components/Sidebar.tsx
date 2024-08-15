@@ -83,10 +83,10 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const handleCreateOrFetchChat = async () => {
     if (!token) {
-      setError('Token is not available')
-      return
+      setError('Token is not available');
+      return;
     }
-
+  
     try {
       const response = await fetch('/api/chat/create', {
         method: 'POST',
@@ -94,28 +94,40 @@ const Sidebar: React.FC<SidebarProps> = ({
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-      })
-
-      const data = await response.json()
-
-
+      });
+  
+      const data = await response.json();
+  
       if (response.ok) {
-        setActiveChatId(data.chatId)
-        localStorage.setItem('activeChatId', data.chatId)
-        await fetchChatHistory()
+        const newChat: ChatItem = {
+          id: data.chatId,
+          latestMessage: '',
+          createdAt: new Date().toISOString(),
+          messages: [],
+          fullContext: [{ content: '' }],
+        };
+  
+        setActiveChatId(data.chatId);
+        localStorage.setItem('activeChatId', data.chatId);
+  
+        setChatItems((prevChats) => [newChat, ...prevChats]);
+        setTodayChats((prevChats) => [newChat, ...prevChats]);
+  
+        await fetchChatHistory();
       } else {
-        console.error('Error response data:', data)
-        setError(data.message || 'Failed to create chat')
+        console.error('Error response data:', data);
+        setError(data.message || 'Failed to create chat');
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error('Caught error:', error)
-        setError(error.message)
+        console.error('Caught error:', error);
+        setError(error.message);
       } else {
-        setError('An unknown error occurred')
+        setError('An unknown error occurred');
       }
     }
-  }
+  };
+  
 
   const closeError = () => {
     setError(null)
