@@ -145,7 +145,7 @@ function ContactDetails() {
         </h2>
         <dl className="mt-6 grid grid-cols-1 gap-8 text-sm sm:grid-cols-2">
           {[
-            ['Firefly', 'info@firefly-techsolutions.com​'],
+            ['Ai Attorney', 'info@ai-attorney.com​'],
             ['Contact', '+92-333-9552555​'],
             // ['Press', 'press@studioagency.com'],
           ].map(([label, email]) => (
@@ -164,12 +164,6 @@ function ContactDetails() {
         </dl>
       </Border>
 
-      <Border className="mt-16 pt-16">
-        <h2 className="font-display text-base font-semibold text-neutral-950">
-          Follow us
-        </h2>
-        <SocialMedia className="mt-6" />
-      </Border>
     </FadeIn>
   )
 }

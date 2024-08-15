@@ -23,6 +23,7 @@ import rightarrow from "@/images/clients/arrows/right-arrow.png"
 import TextAnimation from '@/components/TextAnimation'
 import { type CaseStudy, type MDXEntry, loadCaseStudies } from '@/lib/mdx'
 
+
 const clients = [
   ['Phobia', logoPhobiaLight],
   ['Family Fund', logoFamilyFund],
@@ -114,7 +115,7 @@ function CaseStudies({
                   />
 
                 </h3>
-                <p className="mt-6 font-display text-2xl font-semibold text-neutral-950">
+                <p className="mt-6 font-display text-2xl font-semibold text-neutral-950 h-16">
                   {caseStudy.title}
                 </p>
                 <p className="mt-4 text-base text-neutral-600">
@@ -166,7 +167,7 @@ function Services() {
                 Our AI-powered Document Review feature carefully examines your legal documents for accuracy and compliance. It highlights any potential issues, inconsistencies, and risks, providing a detailed review that saves you time and improves the quality of your paperwork. Whether you are dealing with contracts, agreements, or other legal documents, our AI ensures they are thorough and error-free.
               </ListItem>
               <ListItem title="Legal Consultation">
-                Our Legal Consultation feature offers personalized legal advice using AI-driven insights. By understanding your unique situation, our platform provides tailored recommendations and guidance to help you navigate complex legal matters. Whether you need advice on legal strategies, compliance, or specific legal questions, our AI consultation service delivers precise and actionable advice, making legal expertise accessible and affordable for both individuals and businesses.
+              Get instant, reliable legal advice with AI Attorney’s consultation feature. Our AI-powered bot is trained on an extensive database of legal cases, providing you with accurate and relevant insights tailored to your specific queries. Whether you're a client seeking advice or a lawyer looking for a second opinion, AI Attorney offers accessible, on-demand legal consultation that you can trust.
               </ListItem>
               <ListItem title="Legal Agreement Drafting">
                 Our Legal Consultation feature offers personalized legal advice using AI-driven insights. By understanding your unique situation, our platform provides tailored recommendations and guidance to help you navigate complex legal matters. Whether you need advice on legal strategies, compliance, or specific legal questions, our AI consultation service delivers precise and actionable advice, making legal expertise accessible and affordable for both individuals and businesses.

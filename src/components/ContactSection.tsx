@@ -4,6 +4,7 @@ import { FadeIn } from '@/components/FadeIn'
 import { Offices } from '@/components/Offices'
 import { socialMediaProfiles } from '@/components/SocialMedia'
 import Link from 'next/link'
+import { SocialMedia } from '@/components/SocialMedia'
 
 export function ContactSection() {
 
@@ -73,9 +74,9 @@ export function ContactSection() {
 
           </div>
 
-          <div className="mt-10  max-w-xl border-t border-white/10 pt-10 w-full"/> 
+          <div className="mt-10  max-w-xl border-t border-white/10 pt-10 w-full" />
 
-          <Navigation />
+          <SocialMedia className="mt-6" />
 
         </div>
       </FadeIn>
