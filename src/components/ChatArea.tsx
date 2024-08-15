@@ -33,8 +33,9 @@ const ChatArea: React.FC<{
   toggleSidebar: () => void
   sidebarVisible: boolean
   activeChatId: string | null
+  activeUserId: string | null
   onNewChatCreated: () => void
-}> = ({ toggleSidebar, sidebarVisible, activeChatId, onNewChatCreated }) => {
+}> = ({ toggleSidebar, sidebarVisible, activeChatId, onNewChatCreated, activeUserId }) => {
   const router = useRouter()
   const { isOpen, toggleDropdown, closeDropdown } = useDropdown()
   const [message, setMessage] = useState('')
@@ -48,48 +49,57 @@ const ChatArea: React.FC<{
   }
 
   const fetchMessages = async (chatId: string) => {
-    if (!chatId) return
-    const token = localStorage.getItem('token')
+    if (!chatId) {
+        console.error('No active chat ID, cannot fetch messages.');
+        return;
+    }
+
+    const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch(`/api/chat/messages/${chatId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      })
+        const response = await fetch(`/api/chat/messages/${chatId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch chat messages')
-      }
+        if (!response.ok) {
+            throw new Error(`Failed to fetch chat messages: ${response.statusText}`);
+        }
 
-      const data = await response.json()
-      setChatMessages(data.messages)
+        const data = await response.json();
+        if (!data.chat_history || data.chat_history.length === 0) {
+            console.log('No messages found for this chat');
+            return;
+        }
+
+        setChatMessages(data.chat_history.map((msg: { message: string; type: string; }) => ({
+            content: msg.message,
+            senderType: msg.type
+        })));
     } catch (error) {
-      console.error('Error fetching messages:', error)
-    }
-  }
+        console.error('Error fetching messages:', error);
+    }
+};
 
   const handleSendMessage = async () => {
-    if (!activeChatId || !message.trim()) return
-
-    // Logic to determine if a new chat is created
-    onNewChatCreated()
-
-    const token = localStorage.getItem('token')
+    if (!activeChatId || !activeUserId || !message.trim()) return;
+    onNewChatCreated();
+    const token = localStorage.getItem('token');
     const newUserMessage = {
       senderType: 'user',
       content: message,
-    }
+    };
 
-    setChatMessages((prev) => [...prev, newUserMessage])
-    setMessage('') // Clear the input field after sending
+    setChatMessages((prev) => [...prev, newUserMessage]);
+    setMessage(''); 
 
     try {
-      setLoading(true) // Set loading to true when API call starts
+      setLoading(true); 
 
-      const response = await fetch('/api/chat/sendMessage', {
+      const response = await fetch('/api/chat/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -97,38 +107,39 @@ const ChatArea: React.FC<{
         },
         body: JSON.stringify({
           chatId: activeChatId,
-          content: message,
+          query: message,
+          userId: activeUserId
         }),
-      })
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (result && result.pair) {
-        const { userMessage, aiMessage } = result.pair
+        const { userMessage, aiMessage } = result.pair;
 
         setChatMessages((prev) => [
           ...prev.map((msg) =>
             msg === newUserMessage
               ? {
-                  ...msg,
-                  content: userMessage.content || 'Message sent',
-                }
-              : msg,
+                ...msg,
+                content: userMessage.content || 'Message sent',
+              }
+              : msg
           ),
           {
             senderType: 'AI',
             content: aiMessage.content || 'Loading response...',
           },
-        ])
+        ]);
       } else {
-        console.error('Unexpected API response format', result)
+        console.error('Unexpected API response format', result);
       }
     } catch (error) {
-      console.error('Error sending message:', error)
+      console.error('Error sending message:', error);
     } finally {
-      setLoading(false) // Reset loading to false once API call is complete
-    }
-  }
+      setLoading(false); 
+    }
+  };
 
   const handleKeyDown = (e: any) => {
     if (e.key === 'Enter') {
@@ -188,6 +199,7 @@ const ChatArea: React.FC<{
     e.target.style.height = 'auto' // Reset the height to auto
     e.target.style.height = `${e.target.scrollHeight}px` // Set the height to the scrollHeight
   }
+
 
   return (
     <div className="relative flex h-screen flex-1 flex-col bg-white p-5 text-black">

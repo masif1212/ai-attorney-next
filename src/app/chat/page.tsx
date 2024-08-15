@@ -10,6 +10,8 @@ export default function Chat() {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [isInitialRender, setIsInitialRender] = useState(true);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [activeUserId, setActiveUserId] = useState<string | null>(null);
+
   const [chats, setChats] = useState ([]); 
 
   console.log(chats,'in main componenet')
@@ -36,8 +38,14 @@ export default function Chat() {
 
   useEffect(() => {
     const storedChatId = localStorage.getItem("activeChatId");
+    const storedUserId = localStorage.getItem("activeUserId");
+
     if (storedChatId) {
       setActiveChatId(storedChatId);
+    }
+
+    if (storedUserId) {
+      setActiveUserId(storedUserId);
     }
   }, []);
 
@@ -104,6 +112,7 @@ export default function Chat() {
           sidebarVisible={sidebarVisible}
           activeChatId={activeChatId}
           onNewChatCreated={handleNewChatCreated} 
+          activeUserId = {activeUserId}
         />
       </div>
     </div>
