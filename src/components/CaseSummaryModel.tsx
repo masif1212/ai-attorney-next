@@ -38,9 +38,6 @@ function formatResponseText(inputMessage):any {
 
 
 
-
-
-
 export default function CaseSummaryModal({ isOpen, closeModal, order_num, case_description }: any) {
     const [summary, setSummary] = useState('');
     console.log("hehkasdfajhdfjafdjh",summary)
