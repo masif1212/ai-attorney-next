@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import casesData from '../../../data/casesdata.json'
 import Link from 'next/link'
-import { Button } from '@/components/Button'
 
 interface CaseItem {
   order_num: string
