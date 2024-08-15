@@ -84,62 +84,70 @@ const ChatArea: React.FC<{
     }
 };
 
-  const handleSendMessage = async () => {
-    if (!activeChatId || !activeUserId || !message.trim()) return;
-    onNewChatCreated();
-    const token = localStorage.getItem('token');
-    const newUserMessage = {
-      senderType: 'user',
-      content: message,
-    };
+const handleSendMessage = async () => {
+  if (!activeUserId || !message.trim()) return;
 
-    setChatMessages((prev) => [...prev, newUserMessage]);
-    setMessage(''); 
+  if (!activeChatId) {
+    // If there's no active chat ID, create a new chat first
+    await onNewChatCreated();
+  }
 
-    try {
-      setLoading(true); 
+  // Proceed with sending the message once the chat has been created
+  const token = localStorage.getItem('token');
+  const newUserMessage = {
+    senderType: 'user',
+    content: message,
+  };
 
-      const response = await fetch('/api/chat/send', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+  setChatMessages((prev) => [...prev, newUserMessage]);
+  setMessage('');
+
+  try {
+    setLoading(true);
+
+    const response = await fetch('/api/chat/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        chatId: activeChatId,
+        query: message,
+        userId: activeUserId,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (result && result.pair) {
+      const { userMessage, aiMessage } = result.pair;
+
+      setChatMessages((prev) => [
+        ...prev.map((msg) =>
+          msg === newUserMessage
+            ? {
+              ...msg,
+              content: userMessage.content || 'Message sent',
+            }
+            : msg
+        ),
+        {
+          senderType: 'AI',
+          content: aiMessage.content || 'Loading response...',
         },
-        body: JSON.stringify({
-          chatId: activeChatId,
-          query: message,
-          userId: activeUserId
-        }),
-      });
+      ]);
+    } else {
+      console.error('Unexpected API response format', result);
+    }
+  } catch (error) {
+    console.error('Error sending message:', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
-      const result = await response.json();
 
-      if (result && result.pair) {
-        const { userMessage, aiMessage } = result.pair;
-
-        setChatMessages((prev) => [
-          ...prev.map((msg) =>
-            msg === newUserMessage
-              ? {
-                ...msg,
-                content: userMessage.content || 'Message sent',
-              }
-              : msg
-          ),
-          {
-            senderType: 'AI',
-            content: aiMessage.content || 'Loading response...',
-          },
-        ]);
-      } else {
-        console.error('Unexpected API response format', result);
-      }
-    } catch (error) {
-      console.error('Error sending message:', error);
-    } finally {
-      setLoading(false); 
-    }
-  };
 
   const handleKeyDown = (e: any) => {
     if (e.key === 'Enter') {
