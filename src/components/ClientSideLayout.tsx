@@ -10,11 +10,17 @@ export default function ClientSideLayout({ children }: { children: React.ReactNo
 
     return (
         <>
-            {pathname === '/chat' ? (
-                <ClientSessionProvider>{children}</ClientSessionProvider>
-            ) : (
-                <RootLayout>{children}</RootLayout>
-            )}
-        </>
+        {pathname === '/chat' ? (
+            <ClientSessionProvider>{children}</ClientSessionProvider>
+        ) : pathname === '/searchcases' ? (
+            // Render children without any layout or header
+            <>{children}</>
+        ) :pathname=== '/casedetail' ? (
+            <> {children} </>
+        )
+        : (
+            <RootLayout>{children}</RootLayout>
+        )}
+    </>
     );
 }
