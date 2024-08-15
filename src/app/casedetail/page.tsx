@@ -32,37 +32,39 @@ export default function CaseDetail() {
         <div className='flex flex-row justify-between mb-5'>
           <button
             onClick={() => window.history.back()}
-            className="mr-2 flex h-10 px-5 items-center justify-center rounded-4xl border-black bg-black hover:bg-buttonHover text-white"
+            className="mr-2 flex h-8 sm:h-10 px-3 sm:px-5 items-center justify-center rounded-4xl border-black bg-black hover:bg-buttonHover text-white"
           >
             Back
           </button>
-        
+
           <button
             onClick={openModal}
-            className="mr-2 flex h-10 px-5 items-center justify-center rounded-4xl border-black bg-black hover:bg-buttonHover text-white"
+            className="mr-2 flex h-8 sm:h-10 px-3 sm:px-5 items-center justify-center rounded-4xl border-black bg-black hover:bg-buttonHover text-white"
           >
             Case Summary
           </button>
         </div>
 
-        <div className="rounded-lg bg-white p-8 shadow-xl">
-          <h1 className="mb-4 text-center text-2xl font-extrabold text-gray-800">
+        <div className="rounded-lg bg-white p-6 sm:p-8 shadow-xl">
+          <h1 className="mb-4 text-center text-xl sm:text-2xl font-extrabold text-gray-800">
             {caseItem.title}
           </h1>
-          <p className="mb-6 text-center text-lg font-semibold text-gray-600">
+          <p className="mb-4 sm:mb-6 text-center text-base sm:text-lg font-semibold text-gray-600">
             {caseItem.court}
           </p>
-          <p className="mb-6 text-center text-lg font-semibold text-gray-600">
+          <p className="mb-4 sm:mb-6 text-center text-base sm:text-lg font-semibold text-gray-600">
             {caseItem.citation}
           </p>
-          <p className="mb-6 text-center text-lg font-semibold text-gray-600">
+          <p className="mb-4 sm:mb-6 text-center text-base sm:text-lg font-semibold text-gray-600">
             {caseItem.judges}
           </p>
-          <p className="text-justify text-gray-700 leading-relaxed">
+          <p className="text-justify text-sm sm:text-base text-gray-700 leading-relaxed">
             {caseItem.case_description}
           </p>
           {/* You can add more case details here */}
+
         </div>
+
       </div>
 
       {/* Modal Component */}

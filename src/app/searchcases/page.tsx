@@ -49,10 +49,10 @@ export default function SearchCases() {
       {/* Search input at the top */}
       <div className="sticky top-0 z-10  w-full  bg-white p-4 shadow-lg">
         <div className="ml-auto flex flex-row justify-center items-center">
-   
+
           <button
             onClick={() => window.history.back()}
-            className="mr-2 flex h-10 px-5 items-center justify-center rounded-4xl border-black bg-black hover:bg-buttonHover text-white"
+            className="mr-2 flex h-8 sm:h-10 px-3 sm:px-5 items-center justify-center rounded-4xl border-black bg-black hover:bg-buttonHover text-white"
           >
             Back
           </button>
@@ -63,7 +63,7 @@ export default function SearchCases() {
             value={searchQuery}
             onChange={handleSearch}
             placeholder="Enter search query..."
-            className="mx-auto block w-full max-w-2xl rounded-2xl border border-gray-300 p-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-400"
+            className="mx-auto block w-full max-w-xl sm:max-w-2xl rounded-lg sm:rounded-2xl border border-gray-300 px-2 sm:px-3 py-1 sm:py-2 text-sm sm:text-base focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-400"
           />
         </div>
       </div>
@@ -74,24 +74,25 @@ export default function SearchCases() {
             filteredCases.map((caseItem) => (
               <Link
                 key={caseItem.order_num}
-                href={`/casedetail?order_num=${caseItem.order_num}`} // Pass order_num in the URL
+                href={`/casedetail?order_num=${caseItem.order_num}`}
                 className="block"
               >
                 <div
                   key={caseItem.order_num}
-                  className="transform rounded-lg bg-white p-6 shadow-lg transition-transform hover:scale-100"
+                  className="transform rounded-lg bg-white p-4 sm:p-6 shadow-lg transition-transform hover:scale-100"
                 >
-                  <h2 className="text-black-800 mb-2 text-2xl font-semibold">
+                  <h2 className="text-xl sm:text-2xl text-black-800 mb-2 font-semibold">
                     {caseItem.title}
                   </h2>
-                  <p className="mb-2 font-medium text-gray-700">
+                  <p className="mb-2 font-medium text-gray-700 text-sm sm:text-base">
                     {caseItem.court}
                   </p>
-                  <p className="line-clamp-4 text-gray-900">
+                  <p className="line-clamp-4 text-gray-900 text-sm sm:text-base">
                     {caseItem.case_description}
                   </p>
                 </div>
               </Link>
+
             ))
           ) : (
             <p className="text-center text-gray-700">No cases found.</p>

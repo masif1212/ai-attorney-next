@@ -110,9 +110,9 @@ const ChatArea: React.FC<{
           ...prev.map((msg) =>
             msg === newUserMessage
               ? {
-                  ...msg,
-                  content: userMessage.content || 'Message sent',
-                }
+                ...msg,
+                content: userMessage.content || 'Message sent',
+              }
               : msg,
           ),
           {
@@ -190,7 +190,8 @@ const ChatArea: React.FC<{
   }
 
   return (
-    <div className="relative flex h-screen flex-1 flex-col bg-white p-5 text-black">
+    <div className="relative flex h-screen flex-1 flex-col bg-white p-5 text-black ">
+
       <div className="flex items-center justify-between">
         {!sidebarVisible && (
           <div className="flex space-x-2 text-lg font-bold">
@@ -203,26 +204,28 @@ const ChatArea: React.FC<{
           </div>
         )}
 
-        <div className="ml-auto flex flex-row justify-center items-center">
+        <div className="ml-auto flex flex-row justify-center items-cente">
           <Link href="/searchcases">
-            <button className="mr-2 flex h-10 px-5 items-center justify-center rounded-4xl border-black bg-black hover:bg-buttonHover">
-              <p className="text-white">Search Cases</p>
+            <button className="mr-2 flex h-8 sm:h-10 px-3 sm:px-5 items-center justify-center rounded-4xl border-black bg-black hover:bg-buttonHover">
+              <p className="text-xs sm:text-base text-white">Search Cases</p>
             </button>
           </Link>
 
           <div className={clsx('relative', sidebarVisible ? 'ml-auto' : '')}>
             <button
-              className="flex h-10 w-10 items-center justify-center rounded-full border-black bg-black hover:bg-buttonHover"
+              className="flex h-8 sm:h-10 w-8 sm:w-10 items-center justify-center rounded-full border-black bg-black hover:bg-buttonHover"
               onClick={toggleDropdown}
             >
-              <p className="text-white">M</p>
+              <p className="text-xs sm:text-base text-white">M</p>
             </button>
             {isOpen && dropDown()}
           </div>
         </div>
+
+
       </div>
 
-      <div className="mt-2 flex w-full flex-1 flex-col overflow-y-auto pr-2">
+      <div className="mt-2 flex w-full flex-1 flex-col overflow-y-auto ">
         {chatMessages?.length === 0 ? (
           <div className="flex flex-1 items-center justify-center">
             <div className="flex h-full flex-col justify-center text-center">
@@ -242,8 +245,8 @@ const ChatArea: React.FC<{
             </div>
           </div>
         ) : (
-          <div className="flex flex-grow flex-col items-center overflow-y-auto p-4">
-            <div className="w-5/6 flex-col space-y-4 pl-5">
+          <div className="flex flex-grow flex-col items-center overflow-y-auto px-4">
+            <div className="w-5/6 flex-col space-y-4">
               {chatMessages?.map((msg, index) => (
                 <div
                   key={index}
@@ -251,11 +254,10 @@ const ChatArea: React.FC<{
                 >
                   <div>
                     <div
-                      className={`rounded-lg p-2 ${
-                        msg?.senderType === 'AI'
-                          ? 'flex justify-end bg-gray-100 text-black shadow-lg'
-                          : 'text-md bg-black text-white'
-                      }`}
+                      className={`rounded-lg py-1 px-3 ${msg?.senderType === 'AI'
+                        ? 'flex justify-end bg-gray-100 text-black shadow-lg text-sm sm:text-base'
+                        : 'text-md sm:text-base bg-black text-white text-sm '
+                        }`}
                     >
                       {msg?.content}
                     </div>
@@ -277,6 +279,7 @@ const ChatArea: React.FC<{
         )}
 
         <div className="flex w-full items-center justify-center p-4">
+         
           <div className="flex w-full max-w-5xl items-center space-x-2 rounded-2xl border-2 border-black bg-white px-2 py-2">
             <textarea
               placeholder="Enter prompt here ..."
@@ -304,6 +307,9 @@ const ChatArea: React.FC<{
               <BsFillSendFill size={20} color="#000" />
             </button>
           </div>
+
+
+
         </div>
       </div>
     </div>

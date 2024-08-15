@@ -25,18 +25,18 @@ export function Testimonial({
         className="absolute inset-0 -z-10 h-full w-full fill-neutral-100 stroke-neutral-950/5 [mask-image:linear-gradient(to_bottom_left,white_50%,transparent_60%)]"
         yOffset={-256}
       /> */}
-        <FadeIn>
-          <figure className="mx-auto max-w-4xl">
-            <blockquote className="relative font-display text-3xl font-medium tracking-tight text-neutral-950 sm:text-4xl">
-              <p className="before:content-['“'] after:content-['”'] sm:before:absolute sm:before:right-full text-white">
-                {children}
-              </p>
-            </blockquote>
-            {/* <figcaption className="mt-10">
+      <FadeIn>
+        <figure className="mx-auto max-w-4xl">
+          <blockquote className="relative font-display text-xl sm:text-3xl font-medium tracking-tight text-neutral-950 px-2">
+            <p className="before:content-['“'] after:content-['”'] sm:before:absolute sm:before:right-full text-white">
+              {children}
+            </p>
+          </blockquote>
+          {/* <figcaption className="mt-10">
               <Image src={client.logo} alt={client.name} unoptimized />
             </figcaption> */}
-          </figure>
-        </FadeIn>
+        </figure>
+      </FadeIn>
     </div>
   )
 }

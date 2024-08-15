@@ -26,6 +26,7 @@ import LogoBlack from "@/images/logo/logo-black.png"
 import LogoWhite from "@/images/logo/logo-white.png"
 import Image from 'next/image'
 
+
 const RootLayoutContext = createContext<{
   logoHovered: boolean
   setLogoHovered: React.Dispatch<React.SetStateAction<boolean>>
@@ -67,6 +68,7 @@ function Header({
 }) {
   let { logoHovered, setLogoHovered } = useContext(RootLayoutContext)!
   const { data: session } = useSession()
+  const pathname = usePathname();
 
 
   return (
@@ -104,7 +106,7 @@ function Header({
                 )}
               />
             )}
-            
+
             <Logo
               className="hidden h-8 sm:block"
               invert={invert}
@@ -114,9 +116,14 @@ function Header({
         </div>
         <div className="flex items-center gap-x-8">
 
-          <Button href="/signin" invert={invert}>
-            Sign in
-          </Button>
+          {
+            pathname !== '/signin' && (
+              <Button href="/signin" invert={invert}>
+                Sign in
+              </Button>
+            )
+          }
+
 
 
           <button
@@ -307,8 +314,8 @@ function RootLayoutInner({ children }: { children: React.ReactNode }) {
           />
 
           <main className="w-full flex-auto">{children}</main>
-          <div id ="footer">
-          <Footer />
+          <div id="footer">
+            <Footer />
           </div>
 
         </motion.div>

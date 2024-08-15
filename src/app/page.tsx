@@ -232,7 +232,7 @@ export default async function Home({ invert }: { invert: boolean }) {
       <CaseStudies caseStudies={caseStudies} />
 
       <Testimonial
-        className="mt-24 sm:mt-32 lg:mt-40"
+        className="mt-24 sm:mt-32 lg:mt-40 p-4 sm:p-6 lg:p-8 text-xs sm:text-base lg:text-lg"
       // client={{ name: 'Phobia', logo: logoPhobiaDark }}
       >
         Combining the power of AI with the profound depth of Pakistani legal
