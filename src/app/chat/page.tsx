@@ -81,14 +81,15 @@ export default function Chat() {
   
       if (response.ok) {
         const newChat: Chat = {
-          id: data.chatId, // assuming your API response returns `chatId`
+          id: data.chatId, 
           latestMessage: '',
           createdAt: new Date().toISOString(),
           messages: [],
           fullContext: [{ content: '' }],
         };
+        console.log(newChat,"new Chat")
   
-        setChats((prevChats) => [newChat, ...prevChats]); // Update the chat list immediately
+        setChats((prevChats) => [newChat, ...prevChats]); 
         setActiveChatId(data.chatId);
         localStorage.setItem('activeChatId', data.chatId);
       } else {
@@ -104,6 +105,8 @@ export default function Chat() {
       }
     }
   };
+
+  console.log(chats,"chats")
   
   
 
