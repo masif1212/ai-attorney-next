@@ -18,6 +18,7 @@ type ServerResponse = {
   isError: boolean;
 };
 
+
 export default function SignUp() {
   const { register, handleSubmit, formState: { errors }, watch } = useForm<RegisterForm>();
   const [serverResponse, setServerResponse] = useState<ServerResponse | null>(null);

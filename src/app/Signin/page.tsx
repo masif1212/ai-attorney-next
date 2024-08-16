@@ -11,6 +11,7 @@ type Inputs = {
   password: string;
 };
 
+
 export default function SignIn() {
   const { register, handleSubmit, formState: { errors } } = useForm<Inputs>();
   const [serverResponse, setServerResponse] = useState<{ message: string; isError: boolean } | null>(null);
