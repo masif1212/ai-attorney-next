@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../../../lib/prisma';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'default_fallback_secret';
+const JWT_SECRET = "secreat-key" || 'default_fallback_secret';
 
 export default async function register(req: NextApiRequest, res: NextApiResponse) {
   const { email, password, name, phone } = req.body;

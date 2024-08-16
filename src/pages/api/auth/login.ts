@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const JWT_SECRET = process.env.JWT_SECRET || 'default_fallback_secret';
+const JWT_SECRET = "secreat-key" || 'default_fallback_secret';
 
 export default async function login(req: NextApiRequest, res: NextApiResponse) {
   const { email, password } = req.body;
