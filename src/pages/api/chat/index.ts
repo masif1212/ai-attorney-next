@@ -1,4 +1,3 @@
-// pages/api/chat/index.ts
 
 import { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '../../../lib/prisma';
@@ -6,7 +5,6 @@ import { authenticate } from '../../../backend/middleware/auth';
 
 const getChats = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    // Ensure req.userId is a number
     const userId = Number(req.userId);
 
     if (isNaN(userId)) {

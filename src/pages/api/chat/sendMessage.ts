@@ -1,9 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '../../../lib/prisma';
 import { authenticate } from '../../../backend/middleware/auth';
-import { MessageType } from '@prisma/client';
 import OpenAI from 'openai';
-import { loadData } from '../../../lib/loadData';
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -144,7 +142,7 @@ const generateAIResponse = async (query: string): Promise<string> => {
           senderId: userIdString,
           content,
           senderType: 'user',
-          messageType: MessageType.QUERY,
+          messageType: 'QUERY',
           sequence: newSequence,
           pairId: pairId,
         },
@@ -157,7 +155,7 @@ const generateAIResponse = async (query: string): Promise<string> => {
           senderId: null,
           content: aiContent,
           senderType: 'AI',
-          messageType: MessageType.RESPONSE,
+          messageType: 'RESPONSE',
           sequence: newSequence + 1,
           parentId: userMessage.id,
           pairId: pairId,

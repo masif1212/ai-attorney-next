@@ -165,7 +165,7 @@ function Services() {
                 thorough and error-free.
               </ListItem>
               <ListItem title="Legal Consultation">
-              Get instant, reliable legal advice with AI Attorney’s consultation feature. Our AI-powered bot is trained on an extensive database of legal cases, providing you with accurate and relevant insights tailored to your specific queries. Whether you're a client seeking advice or a lawyer looking for a second opinion, AI Attorney offers accessible, on-demand legal consultation that you can trust.
+              Get instant, reliable legal advice with AI Attorney’s consultation feature. Our AI-powered bot is trained on an extensive database of legal cases, providing you with accurate and relevant insights tailored to your specific queries. Whether you are a client seeking advice or a lawyer looking for a second opinion, AI Attorney offers accessible, on-demand legal consultation that you can trust.
               </ListItem>
               <ListItem title="Legal Agreement Drafting">
                 Our Legal Consultation feature offers personalized legal advice
@@ -193,7 +193,7 @@ export const metadata: Metadata = {
     'We are a development studio working at the intersection of design and technology.',
 }
 
-export default async function Home({ invert }: { invert: boolean }) {
+export default async function Home({ invert }: any) {
   let caseStudies = (await loadCaseStudies()).slice(0, 3)
 
   return (

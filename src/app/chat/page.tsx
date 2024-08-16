@@ -87,18 +87,15 @@ export default function Chat() {
           messages: [],
           fullContext: [{ content: '' }],
         };
-        console.log(newChat,"new Chat")
   
         setChats((prevChats) => [newChat, ...prevChats]); 
         setActiveChatId(data.chatId);
         localStorage.setItem('activeChatId', data.chatId);
       } else {
-        console.error('Error response data:', data);
         setError(data.message || 'Failed to create chat');
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.error('Caught error:', error);
         setError(error.message);
       } else {
         setError('An unknown error occurred');
@@ -106,7 +103,6 @@ export default function Chat() {
     }
   };
 
-  console.log(chats,"chats")
   
   
 

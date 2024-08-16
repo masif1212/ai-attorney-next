@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const response = await fetch('https://4977-2407-aa80-314-b639-2d00-975c-1d3a-86c1.ngrok-free.app/ask', {
+    const response = await fetch('http://a2.aiattorney.com.pk/ask', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

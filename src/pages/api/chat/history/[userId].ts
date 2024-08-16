@@ -21,15 +21,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     const today = format(new Date(), 'yyyy-MM-dd');
-    const todaysChats = chats.filter(chat =>
+    const todaysChats = chats.filter((chat: { messages: string | any[]; }) =>
       chat.messages.length > 0 && format(chat.messages[0].createdAt, 'yyyy-MM-dd') === today
     );
 
-    const previousChats = chats.filter(chat =>
+    const previousChats = chats.filter((chat: { messages: string | any[]; }) =>
       chat.messages.length > 0 && format(chat.messages[0].createdAt, 'yyyy-MM-dd') !== today
     );
 
-    const formatChats = (chatArray: typeof chats) => chatArray.map(chat => ({
+    const formatChats = (chatArray: typeof chats) => chatArray.map((chat: { id: any; createdAt: any; messages: any[]; }) => ({
       id: chat.id,
       createdAt: chat.createdAt,
       latestMessage: chat.messages[0]?.content.slice(0, 20) || '',
