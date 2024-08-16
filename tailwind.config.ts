@@ -33,7 +33,8 @@ export default {
         buttonHover : "#2e2e2e",
         back : "#292928",
         test : "#faf5f5",
-        chattext : "#555555"
+        chattext : "#555555",
+        chatbg: "#f3f4f6"
       },
       animation: {
         fadeInWord: 'fadeInWord 0.5s forwards',

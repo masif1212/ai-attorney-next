@@ -22,7 +22,8 @@ import { Logo, Logomark } from '@/components/Logo'
 import { Offices } from '@/components/Offices'
 import { SocialMedia } from '@/components/SocialMedia'
 import ClientSessionProvider from './ClientSessionProvider'
-import LogoImage from "@/images/logo/logo-black.png"
+import LogoBlack from "@/images/logo/logo-black.png"
+import LogoWhite from "@/images/logo/logo-white.png"
 import Image from 'next/image'
 
 const RootLayoutContext = createContext<{
@@ -71,34 +72,52 @@ function Header({
   return (
     <Container>
       <div className="flex items-center justify-between ">
-      <div className=''>
-      <Link
-      href="/"
-      aria-label="Home"
-      onMouseEnter={() => setLogoHovered(true)}
-      onMouseLeave={() => setLogoHovered(false)}
-      className="flex items-center space-x-2"
-    >
+        <div className=''>
+          <Link
+            href="/"
+            aria-label="Home"
+            onMouseEnter={() => setLogoHovered(true)}
+            onMouseLeave={() => setLogoHovered(false)}
+            className="flex items-center space-x-2"
+          >
 
-      <Image src={LogoImage} width={36} height={25} alt="Logo" 
-        className={clsx(
-          'font-bold text-xl transition-all duration-300',
-          invert ? 'fill-white' : 'fill-neutral-950'
-        )}
-      />
-      <Logo
-        className="hidden h-8 sm:block"
-        invert={invert}
-        filled={logoHovered}
-      />
-    </Link>
-    </div>
+            {invert ? (
+              <Image
+                src={LogoWhite} // Render LogoWhite if invert is true
+                width={36}
+                height={25}
+                alt="Logo"
+                className={clsx(
+                  'font-bold text-xl transition-all duration-300',
+                  'fill-white'
+                )}
+              />
+            ) : (
+              <Image
+                src={LogoBlack} // Render LogoBlack if invert is false
+                width={36}
+                height={25}
+                alt="Logo"
+                className={clsx(
+                  'font-bold text-xl transition-all duration-300',
+                  'fill-neutral-950'
+                )}
+              />
+            )}
+            
+            <Logo
+              className="hidden h-8 sm:block"
+              invert={invert}
+              filled={logoHovered}
+            />
+          </Link>
+        </div>
         <div className="flex items-center gap-x-8">
-         
-            <Button href="/signin" invert={invert}>
-              Sign in
-            </Button>
-    
+
+          <Button href="/signin" invert={invert}>
+            Sign in
+          </Button>
+
 
           <button
             ref={toggleRef}
@@ -159,11 +178,11 @@ function Navigation() {
   return (
     <nav className="mt-px font-display text-5xl font-medium tracking-tight text-white">
       <NavigationRow>
-        <NavigationItem href="/work">Our Work</NavigationItem>
-        <NavigationItem href="/about">About Us</NavigationItem>
+        <NavigationItem href="#case-studies">Features</NavigationItem>
+        <NavigationItem href="#comming-soon">Upcomming</NavigationItem>
       </NavigationRow>
       <NavigationRow>
-        <NavigationItem href="/process">Our Process</NavigationItem>
+        <NavigationItem href="#footer">About Us</NavigationItem>
         <NavigationItem href="/contact">Contact Us</NavigationItem>
       </NavigationRow>
     </nav>
@@ -288,8 +307,9 @@ function RootLayoutInner({ children }: { children: React.ReactNode }) {
           />
 
           <main className="w-full flex-auto">{children}</main>
-
-           <Footer />
+          <div id ="footer">
+          <Footer />
+          </div>
 
         </motion.div>
       </motion.div>
@@ -307,5 +327,5 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
         <RootLayoutInner key={pathname}>{children}</RootLayoutInner>
       </ClientSessionProvider>
     </RootLayoutContext.Provider>
-  )
+  )
 }

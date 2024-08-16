@@ -11,8 +11,6 @@ type RegisterForm = {
   phone: string;
   password: string;
   confirmPassword: string;
-  linkedinUrl?: string;
-  facebookUrl?: string;
 };
 
 type ServerResponse = {
@@ -21,7 +19,7 @@ type ServerResponse = {
 };
 
 export default function SignUp() {
-  const { register, handleSubmit, formState: { errors }, watch, reset } = useForm<RegisterForm>();
+  const { register, handleSubmit, formState: { errors }, watch } = useForm<RegisterForm>();
   const [serverResponse, setServerResponse] = useState<ServerResponse | null>(null);
   const router = useRouter();
 
@@ -31,22 +29,29 @@ export default function SignUp() {
       return;
     }
 
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
 
-    const result = await res.json();
-    if (res.ok) {
-      setServerResponse({ message: 'Signup successful!', isError: false });
-      setTimeout(() => {
-        router.push('/signin');
-      }, 1000);
-    } else {
-      setServerResponse({ message: result.message, isError: true });
+      const result = await res.json();
+      
+      if (res.ok) {
+        setServerResponse({ message: 'Signup successful!', isError: false });
+        
+        setTimeout(() => {
+          router.push('/signin');
+        }, 1000);
+      } else {
+        setServerResponse({ message: result.message, isError: true });
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
+      setServerResponse({ message: 'An error occurred. Please try again later.', isError: true });
     }
   };
 
@@ -148,34 +153,7 @@ export default function SignUp() {
               {errors.confirmPassword && <span className="text-red-500 text-sm">{errors.confirmPassword.message}</span>}
             </div>
           </div>
-          <div>
-            <label htmlFor="linkedinUrl" className="block text-sm font-medium leading-6 text-gray-900">
-              Linkedin Profile URL
-            </label>
-            <div className="mt-2">
-              <input
-                id="linkedinUrl"
-                type="url"
-                {...register('linkedinUrl')}
-                placeholder="Enter LinkedIn profile URL"
-                className="block w-full rounded-md border-0 px-3 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-          <div>
-            <label htmlFor="facebookUrl" className="block text-sm font-medium leading-6 text-gray-900">
-              Facebook Profile URL
-            </label>
-            <div className="mt-2">
-              <input
-                id="facebookUrl"
-                type="url"
-                {...register('facebookUrl')}
-                placeholder="Enter Facebook profile URL"
-                className="block w-full rounded-md border-0 px-3 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
+         
           <div>
             <button
               type="submit"

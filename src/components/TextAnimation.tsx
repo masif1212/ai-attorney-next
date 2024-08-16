@@ -13,9 +13,9 @@ const TextAnimation: React.FC<TextAnimationProps> = () => {
 
     const texts = [
         "Revolutionizing Legal Research in Pakistan",
-        "Elevate Your Legal Research with Ai Attorney - The AI-Powered Solution",
+        "Elevate Your Legal Research with AI Attorney - The AI-Powered Solution",
         "Empowering Legal Professionals with Accurate and Efficient Case Law Research",
-        "Maximize Your Time with Ai Attorney’s Intelligent Legal Insights",
+        "Maximize Your Time with AI Attorney’s Intelligent Legal Insights",
     ];
 
     useEffect(() => {

@@ -1,10 +1,10 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import { useState } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type Inputs = {
   email: string;
@@ -17,42 +17,39 @@ export default function SignIn() {
   const router = useRouter();
 
   const onSubmit: SubmitHandler<Inputs> = async ({ email, password }) => {
-    const result = await signIn('credentials', {
-      redirect: false,
-      email,
-      password,
-    });
-
-    if (result?.ok) {
-      setServerResponse({ message: 'Logged in successfully!', isError: false });
-      setTimeout(() => {
-        router.push('/chat');
-      }, 1500);
-    } else {
-      setServerResponse({ message: result?.error || 'Something went wrong', isError: true });
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem("token", data.token); 
+        localStorage.setItem("activeChatId", data.chatId); 
+        localStorage.setItem("activeUserId", data.userId); 
+        setServerResponse({ message: "Logged in successfully!", isError: false });
+        setTimeout(() => {
+          router.push("/chat");
+        }, 0);
+      } else {
+        setServerResponse({ message: data.message, isError: true });
+      }
+    } catch (error) {
+      setServerResponse({ message: "An error occurred. Please try again.", isError: true });
     }
   };
-
-  // useEffect to clear the serverResponse message after 3 seconds
-  useEffect(() => {
-    if (serverResponse) {
-      const timer = setTimeout(() => {
-        setServerResponse(null);
-      }, 3000); // Change 3000 to the duration you want the message to be visible
-
-      // Cleanup the timer on component unmount or when serverResponse changes
-      return () => clearTimeout(timer);
-    }
-  }, [serverResponse]);
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         {serverResponse && (
-          <div className="flex justify-center">
+          <div className="flex justify-center ">
             <div
               className={`mt-4 p-2 rounded-md ${
-                serverResponse.isError ? 'bg-red-500' : 'bg-green-500'
+                serverResponse.isError ? "bg-red-500" : "bg-green-500"
               } text-white text-center max-w-sm`}
             >
               {serverResponse.message}
@@ -75,7 +72,7 @@ export default function SignIn() {
                 id="email"
                 type="email"
                 placeholder="Enter your email"
-                {...register('email', { required: 'Email is required' })}
+                {...register("email", { required: "Email is required" })}
                 className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"
               />
               {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
@@ -90,7 +87,7 @@ export default function SignIn() {
                 id="password"
                 type="password"
                 placeholder="Enter your password"
-                {...register('password', { required: 'Password is required' })}
+                {...register("password", { required: "Password is required" })}
                 className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"
               />
               {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
@@ -107,7 +104,7 @@ export default function SignIn() {
         </form>
 
         <p className="mt-10 text-center text-sm text-gray-500">
-          Don't have an account?{' '}
+          Don't have an account?{" "}
           <Link href="/signup" className="font-semibold leading-6 text-black hover:text-indigo-500">
             SignUp
           </Link>
