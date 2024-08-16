@@ -4,6 +4,7 @@ datasource db {
   url      = env("mysql://aiattorn_devOne:AiAttorney987612345@181.224.131.55:3306/aiattorn_dev")
 }
 
+
 generator client {
   provider = "prisma-client-js"
 }
