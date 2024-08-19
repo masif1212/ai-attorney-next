@@ -15,7 +15,7 @@ export const authenticate = (handler: NextApiHandler) => {
       return res.status(401).json({ message: 'Unauthorized: No token provided' });
     }
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: string };
+      const decoded = jwt.verify(token, "secreat-key" as string) as { userId: string };
       req.userId = decoded.userId;
       return handler(req, res);
     } catch (error) {
