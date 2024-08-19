@@ -1,18 +1,19 @@
 // src/pages/api/connect.js
 import type { NextApiRequest, NextApiResponse } from 'next';
-import connectToDatabase from '../../lib/db';
+import prisma from '../../lib/prisma';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  
+  const start = Date.now();
   try {
-    const connection = await connectToDatabase();
-    console.log('Connection object:');
+    console.log('Attempting to connect to the database...');
+    
+    // Test a simple query to ensure the connection is working
+    const userCount = await prisma.user.count();
 
-    if (connection) {
-      res.status(200).json({ message: 'Database connected successfully' });
-    } else {
-      res.status(500).json({ message: 'Failed to connect to the database' });
-    }
+    const end = Date.now();
+    console.log(`Database connected and query executed in ${end - start}ms`);
+
+    res.status(200).json({ message: 'Database connected successfully', userCount });
   } catch (error) {
     console.error('Error during connection:', error);
     res.status(500).json({ message: 'An unexpected error occurred' });
@@ -20,4 +21,3 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 export default handler;
-
