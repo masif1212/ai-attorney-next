@@ -45,7 +45,7 @@ export default function SignUp() {
         setServerResponse({ message: 'Signup successful!', isError: false });
         
         setTimeout(() => {
-          router.push('/signin');
+          router.push('/SignIn');
         }, 1000);
       } else {
         setServerResponse({ message: result.message, isError: true });
@@ -167,7 +167,7 @@ export default function SignUp() {
      
         <p className="mt-10 text-center text-sm text-gray-500">
           Already have an account?{' '}
-          <Link href="/signin" className="font-semibold leading-6 text-black hover:text-indigo-500">
+          <Link href="/SignIn" className="font-semibold leading-6 text-black hover:text-indigo-500">
             Sign in
           </Link>
         </p>
