@@ -1,7 +1,7 @@
 
 datasource db {
   provider = "mysql" 
-  url      = env("mysql://root:gYvwbsccsHHJDEzcPLMznQXbeYQDNvPW@junction.proxy.rlwy.net:55944/railway")
+  url      = env("DATABASE_URL")
 }
 
 
