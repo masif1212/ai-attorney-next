@@ -9,6 +9,8 @@ import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 const useDropdown = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -17,79 +19,58 @@ const useDropdown = () => {
   return { isOpen, toggleDropdown, closeDropdown }
 }
 
-const formatResponseText = (inputMessage: string): string => {
-  const linePattern = /^-\s*(.*?):/gm;
-  const headingPattern = /^###\s*(.*?):?/gm;
-  const caseNumberPattern = /Case\s[1-9]+:/g;
-  const urlPattern = /\[(.*?)\]\((https?:\/\/[^\s]+)\)/g;
-  const numberingPattern = /^(\d+)\.\s+/gm; // Pattern to match numbering like 1. 2. 3. etc.
+// const formatResponseText = (inputMessage: string): string => {
+//   const linePattern = /^-\s*(.*?):/gm;
+//   const headingPattern = /^###\s*(.*?):?/gm;
+//   const caseNumberPattern = /Case\s[1-9]+:/g;
+//   const urlPattern = /\[(.*?)\]\((https?:\/\/[^\s]+)\)/g;
+//   const numberingPattern = /^(\d+)\.\s+/gm; 
+//   const sectionsToBold = [
+//     'Case Title',
+//     'Citation',
+//     'Court',
+//     'Key Facts',
+//     'Proceedings',
+//     "Judge's Decision",
+//     'Reference URL',
+//   ];
 
-  // Sections to format
-  const sectionsToBold = [
-    'Case Title',
-    'Citation',
-    'Court',
-    'Key Facts',
-    'Proceedings',
-    "Judge's Decision",
-    'Reference URL',
-  ];
+//   let finalText = inputMessage.replace(headingPattern, (match, p1) => {
+//     return `<h3 style="font-size: 1.5em; margin-top: 10px;">${p1.trim()}</h3>`;
+//   });
 
-  // Replace headings with formatted HTML and make the font larger
-  let finalText = inputMessage.replace(headingPattern, (match, p1) => {
-    return `<h3 style="font-size: 1.5em; margin-top: 10px;">${p1.trim()}</h3>`;
-  });
+//   finalText = finalText.replace(linePattern, (match, p1) => {
+//     if (sectionsToBold.includes(p1.trim())) {
+//       return `<p style="font-size: 1.2em;"><span style="font-weight: 600;">• ${p1.trim()}:</span>`;
+//     }
+//     return `<p style="font-size: 1em;">${p1.trim()}:`;
+//   });
+//   finalText = finalText.replace(caseNumberPattern, match => {
+//     return `<span style="font-weight: 700; font-size: 1.3em;">&#8226; ${match}</span>`;
+//   });
+//   sectionsToBold.forEach(section => {
+//     const sectionPattern = new RegExp(`(${section}):`, 'g');
+//     finalText = finalText.replace(
+//       sectionPattern,
+//       '<span style="font-weight: 600;">$1:</span>'
+//     );
+//   });
 
-  // Replace lines starting with - and apply semi-bold formatting to specified sections with slightly larger text
-  finalText = finalText.replace(linePattern, (match, p1) => {
-    if (sectionsToBold.includes(p1.trim())) {
-      return `<p style="font-size: 1.2em;"><span style="font-weight: 600;">• ${p1.trim()}:</span></p>`;
-    }
-    return `<p style="font-size: 1em;">${p1.trim()}:</p>`;
-  });
-
-  // Apply bold, large font size, and add a black bullet before "Case 1", "Case 2", "Case 3", etc.
-  finalText = finalText.replace(caseNumberPattern, match => {
-    return `<span style="font-weight: 700; font-size: 1.3em;">&#8226; ${match}</span>`;
-  });
-
-  // Apply semi-bold formatting with a colon after the specified sections
-  sectionsToBold.forEach(section => {
-    const sectionPattern = new RegExp(`(${section}):`, 'g');
-    finalText = finalText.replace(
-      sectionPattern,
-      '<span style="font-weight: 600;">$1:</span>'
-    );
-  });
-
-  // Format numbered lists, bolding the numbers and keeping them on the same line with the text
-  finalText = finalText.replace(numberingPattern, (match, p1) => {
-    return `<p><strong>${p1}.</strong> `;
-  });
-
-  // Replace URLs with "Download Case" text that links to the actual URL
-  finalText = finalText.replace(urlPattern, (match, text, url) => {
-    return `<a style="color: #2980B9;" href="${url}" target="_blank">Download Case</a></p>`;
-  });
-
-  // Replace any lines starting with `- ` (in case there are items not captured by the above patterns)
-  finalText = finalText.replace(/^- (.*)/gm, (match, p1) => {
-    return `<p>${p1.trim()}</p>`;
-  });
-
-  // Clean up any excessive new lines
-  finalText = finalText.replace(/\n{2,}/g, '\n\n');
-  finalText = finalText.replace(/^\n+|\n+$/g, '');
-
-  // Ensure proper paragraph closing tags
-  finalText = finalText.replace(/(<\/p>)(?=<strong>)/g, '</p>\n<p>');
-
-  // Remove any remaining ** markers from the text
-  finalText = finalText.replace(/\\(.?)\\*/g, '$1');
-
-  return finalText;
-};
-
+// finalText = finalText.replace(numberingPattern, (match, p1) => {
+//     return `<p><strong>${p1}.</strong> `;
+//   });
+//   finalText = finalText.replace(urlPattern, (match, text, url) => {
+//     return `<a style="color: #2980B9;" href="${url}" target="_blank">Download Case</a></p>`;
+//   });
+//   finalText = finalText.replace(/^- (.*)/gm, (match, p1) => {
+//     return `<p>${p1.trim()}</p>`;
+//   });
+//   finalText = finalText.replace(/\n{2,}/g, '\n\n');
+//   finalText = finalText.replace(/^\n+|\n+$/g, '');
+//   finalText = finalText.replace(/(<\/p>)(?=<strong>)/g, '</p>\n<p>');
+//   finalText = finalText.replace(/\*\*(.*?)\*\*/g, '$1');
+//   return finalText;
+// };
 
 const ChatArea: React.FC<{
   toggleSidebar: () => void
@@ -136,7 +117,7 @@ const ChatArea: React.FC<{
       if (data.chat_history && data.chat_history.length > 0) {
         setChatMessages(
           data.chat_history.map((msg: { message: string; type: string }) => ({
-            content: formatResponseText(msg.message),
+            content: msg.message,
             senderType: msg.type,
           }))
         )
@@ -170,12 +151,9 @@ const ChatArea: React.FC<{
     };
   
     setChatMessages(prev => [...prev, newUserMessage]);
-  
     setMessage('');
-  
     try {
       setLoading(true);
-  
       const response = await fetch('/api/chat/send', {
         method: 'POST',
         headers: {
@@ -190,15 +168,13 @@ const ChatArea: React.FC<{
       });
   
       const result = await response.json();
-  
       if (result && result.pair) {
         const { aiMessage } = result.pair;
-  
         setChatMessages(prev => [
           ...prev,
           {
             senderType: 'AI',
-            content: formatResponseText(aiMessage.content || 'Error receiving response.'),
+            content: aiMessage.content || 'Error receiving response.',
           },
         ]);
       } else {
@@ -216,7 +192,6 @@ const ChatArea: React.FC<{
       fetchMessages(activeChatId)
     }
   }, [activeChatId])
-
   const handleKeyDown = (e: any) => {
     if (e.key === 'Enter') {
       e.preventDefault()
@@ -227,11 +202,10 @@ const ChatArea: React.FC<{
   const scrollToBottom = () => {
     messagesEndRef?.current?.scrollIntoView({ behavior: 'smooth' })
   }
-
+  
   useEffect(() => {
     scrollToBottom()
   }, [chatMessages, loading])
-
   const dropDown = () => (
     <div className="absolute right-0 z-10 mt-2 w-32 rounded-md border border-gray-900 bg-black shadow-lg">
       <button
@@ -303,7 +277,7 @@ const ChatArea: React.FC<{
         ) : (
           <div className="flex flex-grow flex-col items-center overflow-y-auto">
             <div className="w-5/6 flex-col space-y-4">
-              {chatMessages.map((msg, index) => (
+            {chatMessages.map((msg, index) => (
                 <div
                   key={index}
                   className={`flex ${
@@ -316,8 +290,9 @@ const ChatArea: React.FC<{
                         ? 'bg-white text-black shadow-lg'
                         : 'bg-black text-white'
                     } text-sm sm:text-base`}
-                    dangerouslySetInnerHTML={{ __html: msg.content }}
-                  />
+                  >
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                  </div>
                 </div>
               ))}
               {loading && (

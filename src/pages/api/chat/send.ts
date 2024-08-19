@@ -75,5 +75,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } catch (error) {
     console.error("Error in /api/ask handler:", error);
     res.status(500).json({ error: `Failed to process the query: ${error}`});
-  }
+}
 }
