@@ -1,4 +1,3 @@
-// src/pages/api/connect.js
 import type { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '../../lib/prisma';
 
@@ -7,7 +6,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     console.log('Attempting to connect to the database...');
     
-    // Test a simple query to ensure the connection is working
     const userCount = await prisma.user.count();
 
     const end = Date.now();
