@@ -160,7 +160,7 @@ function Services() {
 
               </ListItem>
               <ListItem title="Legal Consultation">
-              AI Attorney will soon offer immediate and expert legal advice precisely when you need it. Our upcoming consultation feature, powered by an extensive database of legal cases and advanced AI, will provide accurate and relevant insights tailored to your specific needs. Whether you’re a client seeking clarity or a lawyer in need of a second opinion, AI Attorney will make legal consultation more accessible, on-demand, and trustworthy. No more waiting for appointments or sifting through endless resources; the answers you need will be available instantly.
+              Get instant, reliable legal advice with AI Attorney’s consultation feature. Our AI-powered bot is trained on an extensive database of legal cases, providing you with accurate and relevant insights tailored to your specific queries. Whether you are a client seeking advice or a lawyer looking for a second opinion, AI Attorney offers accessible, on-demand legal consultation that you can trust.
               </ListItem>
               <ListItem title="Digital Enterprise Solutions.">
               AI Attorney is preparing to introduce Digital Enterprise Solutions designed to transform the way you manage your legal operations. This comprehensive suite will include powerful modules for Finance, Billing, Document Management, and Legal Case Management. Each module will seamlessly integrate into your existing processes, automating routine tasks and enhancing your ability to manage complex legal work with ease. Envision a future where financial tasks are streamlined, billing is handled with precision, documents are effortlessly organized, and legal cases are managed with unparalleled efficiency. AI Attorney will not just simplify your work—it will redefine what’s possible in the legal industry.
@@ -181,7 +181,7 @@ export const metadata: Metadata = {
     'We are a development studio working at the intersection of design and technology.',
 }
 
-export default async function Home({ invert }: { invert: boolean }) {
+export default async function Home({ invert }: any) {
   let caseStudies = (await loadCaseStudies()).slice(0, 3)
 
   return (

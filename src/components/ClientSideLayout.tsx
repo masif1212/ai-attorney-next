@@ -18,6 +18,9 @@ export default function ClientSideLayout({ children }: { children: React.ReactNo
         ) :pathname=== '/casedetail' ? (
             <> {children} </>
         )
+        // :pathname=== '/payment' ? (
+        //     <> {children} </>
+        // )
         : (
             <RootLayout>{children}</RootLayout>
         )}

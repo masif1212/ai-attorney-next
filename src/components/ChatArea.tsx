@@ -43,9 +43,9 @@ const formatResponseText = (inputMessage: string): string => {
   // Replace lines starting with - and apply semi-bold formatting to specified sections with slightly larger text
   finalText = finalText.replace(linePattern, (match, p1) => {
     if (sectionsToBold.includes(p1.trim())) {
-      return `<p style="font-size: 1.2em;"><span style="font-weight: 600;">• ${p1.trim()}:</span>`;
+      return `<p style="font-size: 1.2em;"><span style="font-weight: 600;">• ${p1.trim()}:</span></p>`;
     }
-    return `<p style="font-size: 1em;">${p1.trim()}:`;
+    return `<p style="font-size: 1em;">${p1.trim()}:</p>`;
   });
 
   // Apply bold, large font size, and add a black bullet before "Case 1", "Case 2", "Case 3", etc.
@@ -85,11 +85,10 @@ const formatResponseText = (inputMessage: string): string => {
   finalText = finalText.replace(/(<\/p>)(?=<strong>)/g, '</p>\n<p>');
 
   // Remove any remaining ** markers from the text
-  finalText = finalText.replace(/\*\*(.*?)\*\*/g, '$1');
+  finalText = finalText.replace(/\\(.?)\\*/g, '$1');
 
   return finalText;
 };
-
 
 
 const ChatArea: React.FC<{

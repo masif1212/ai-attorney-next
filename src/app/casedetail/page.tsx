@@ -1,16 +1,15 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import CaseSummaryModal from '../../components/CaseSummaryModel'
 import casesData from '../../../data/casesdata.json'
 
-export default function CaseDetail() {
+function CaseDetailContent() {
   const searchParams = useSearchParams()
   const order_num = searchParams?.get('order_num')
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  // Find the case by the order_num from the URL
   const caseItem = casesData.find((item) => item.order_num === order_num)
 
   if (!caseItem) {
@@ -28,7 +27,6 @@ export default function CaseDetail() {
   return (
     <div className="min-h-screen w-full bg-gradient-to-r from-gray-100 to-gray-300 p-8">
       <div className="mx-auto w-full max-w-6xl">
-
         <div className='flex flex-row justify-between mb-5'>
           <button
             onClick={() => window.history.back()}
@@ -76,4 +74,12 @@ export default function CaseDetail() {
       />
     </div>
   )
+}
+
+export default function CaseDetail() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CaseDetailContent />
+    </Suspense>
+  );
 }
