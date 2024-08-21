@@ -1,10 +1,10 @@
 'use client'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { RiMenu2Line } from 'react-icons/ri'
 import { MdOutlineAddComment } from 'react-icons/md'
 import ButtonForBlackScreen from './ButtonForBlackScreen'
-import Popup from './Popup'
 import '../styles/custom.css'
+import {  useRouter } from 'next/navigation'
 
 // Interface for chat items
 interface ChatItem {
@@ -41,16 +41,13 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [error, setError] = useState<string | null>(null)
   const [todayChats, setTodayChats] = useState<ChatItem[]>([])
   const [previousChats, setPreviousChats] = useState<ChatItem[]>([])
-
+  const router = useRouter()
   const token = localStorage.getItem('token')
   const userId = localStorage.getItem('activeUserId')
 
   const fetchChatHistory = useCallback(async () => {
     if (!chats) return;
-    if (!userId || !token) {
-      setError('User ID or token is not available')
-      return
-    }
+ 
 
     try {
       const response = await fetch(`/api/chat/history/${userId}`, {
@@ -129,9 +126,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
   
 
-  const closeError = () => {
-    setError(null)
-  }
+ 
 
   useEffect(() => {
     fetchChatHistory()
@@ -208,7 +203,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         )}
       </div>
-      {error && <Popup message={error} onClose={closeError} />}
+    
     </div>
   )
 }

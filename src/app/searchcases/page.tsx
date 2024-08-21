@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo,useState } from 'react'
 import casesData from '../../../data/casesdata.json'
 import Link from 'next/link'
-
+import {  redirect, useRouter } from 'next/navigation'
 interface CaseItem {
   order_num: string
   citation: string
@@ -29,10 +29,23 @@ interface CaseItem {
 export default function SearchCases() {
   const [filteredCases, setFilteredCases] = useState(casesData.slice(0, 10))
   const [searchQuery, setSearchQuery] = useState('')
+  const token = localStorage.getItem('token');
+  const userId = localStorage.getItem('activeUserId');
+
+ const router =useRouter();
+ 
+
+  // useMemo(() => {
+  //   if (!userId || !token) {
+  //     redirect('/')
+  //     console.log('hi usememo')
+  //   }
+  // }, [token]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.toLowerCase()
     setSearchQuery(query)
+ 
 
     const filtered = casesData.filter(
       (caseItem) =>
@@ -42,9 +55,11 @@ export default function SearchCases() {
         caseItem.court.toLowerCase().includes(query),
     )
     setFilteredCases(filtered)
+ 
   }
 
   return (
+    <>
     <div className="min-h-screen w-full bg-gray-100">
       {/* Search input at the top */}
       <div className="sticky top-0 z-10  w-full  bg-white p-4 shadow-lg">
@@ -100,5 +115,9 @@ export default function SearchCases() {
         </div>
       </div>
     </div>
+
+
+</>
+
   )
 }

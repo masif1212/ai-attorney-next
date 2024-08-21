@@ -6,11 +6,12 @@ import Logo from '@/images/logo/black.svg'
 import { BsFillSendFill } from 'react-icons/bs'
 import { RiMenu3Fill } from 'react-icons/ri'
 import clsx from 'clsx'
-import { useRouter } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { useSession, signOut } from 'next-auth/react'
+import { signOut } from 'next-auth/react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { cookies } from 'next/headers'
 
 const useDropdown = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -93,8 +94,9 @@ const ChatArea: React.FC<{
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
 
   const handleSignOut = async () => {
-    await signOut({ redirect: false })
-    router.push('/')
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+    await signOut({ redirect: true })
+  
   }
 
   const fetchMessages = async (chatId: string) => {

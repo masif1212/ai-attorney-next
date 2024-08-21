@@ -31,7 +31,10 @@ export default function SignIn() {
         localStorage.setItem("token", data.token); 
         localStorage.setItem("activeChatId", data.chatId); 
         localStorage.setItem("activeUserId", data.userId); 
+        document.cookie = `token=${data.token}; path=/`;
+        console.log('cookies')
         setServerResponse({ message: "Logged in successfully!", isError: false });
+   
         setTimeout(() => {
           router.push("/chat");
         }, 0);

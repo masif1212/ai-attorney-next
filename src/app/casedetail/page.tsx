@@ -1,7 +1,7 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
-import { useState, Suspense } from 'react'
+import {  useSearchParams } from 'next/navigation'
+import { useState, Suspense, useMemo } from 'react'
 import CaseSummaryModal from '../../components/CaseSummaryModel'
 import casesData from '../../../data/casesdata.json'
 
@@ -15,6 +15,10 @@ function CaseDetailContent() {
   if (!caseItem) {
     return <p className="text-center text-gray-700">Case not found.</p>
   }
+ 
+
+ 
+
 
   const openModal = () => {
     setIsModalOpen(true)
