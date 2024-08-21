@@ -23,9 +23,9 @@ export default {
         '4xl': '2.5rem',
       },
       fontFamily: {
-        sans: ['Mona Sans', ...defaultTheme.fontFamily.sans],
+        sans: ['Poppins', ...defaultTheme.fontFamily.sans],
         display: [
-          ['Mona Sans', ...defaultTheme.fontFamily.sans],
+          ['Poppins', ...defaultTheme.fontFamily.sans],
           { fontVariationSettings: '"wdth" 125' },
         ],
       },

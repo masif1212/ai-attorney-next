@@ -90,7 +90,7 @@ function Header({
                 height={25}
                 alt="Logo"
                 className={clsx(
-                  'font-bold text-xl transition-all duration-300',
+                  'font-bold text-xl  transition-all duration-300',
                   'fill-white'
                 )}
               />
@@ -108,7 +108,7 @@ function Header({
             )}
 
             <Logo
-              className="hidden h-8 sm:block"
+              className="hidden h-8 rounded-lg  sm:block"
               invert={invert}
               filled={logoHovered}
             />
@@ -118,7 +118,7 @@ function Header({
 
           {
             pathname !== '/Signin' && (
-              <Button href="/Signin" invert={invert}>
+              <Button href="/Signin" invert={invert} >
                 Sign in
               </Button>
             )
@@ -308,7 +308,7 @@ function RootLayoutInner({ children }: { children: React.ReactNode }) {
           className="relative isolate flex w-full flex-col pt-9"
         >
           <GridPattern
-            className="absolute inset-x-0 -top-14 -z-10 h-[1000px] w-full fill-neutral-50 stroke-neutral-950/5 [mask-image:linear-gradient(to_bottom_left,white_40%,transparent_50%)]"
+            className="absolute inset-x-0 -top-14 -z-10 h-[1000px] w-full fill-neutral-50 stroke-neutral-950/5 [mask-image:linear-gradient(to_bottom_left,white_0%,transparent_50%)]"
             yOffset={-96}
             interactive
           />

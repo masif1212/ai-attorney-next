@@ -29,18 +29,9 @@ interface CaseItem {
 export default function SearchCases() {
   const [filteredCases, setFilteredCases] = useState(casesData.slice(0, 10))
   const [searchQuery, setSearchQuery] = useState('')
-  const token = localStorage.getItem('token');
-  const userId = localStorage.getItem('activeUserId');
+
 
  const router =useRouter();
- 
-
-  // useMemo(() => {
-  //   if (!userId || !token) {
-  //     redirect('/')
-  //     console.log('hi usememo')
-  //   }
-  // }, [token]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.toLowerCase()
