@@ -117,8 +117,8 @@ function Header({
         <div className="flex items-center gap-x-8">
 
           {
-            pathname !== '/Signin' && (
-              <Button href="/Signin" invert={invert}>
+            pathname !== '/signin' && (
+              <Button href="/signin" invert={invert}>
                 Sign in
               </Button>
             )

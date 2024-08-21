@@ -5,11 +5,11 @@ import mysql, { Connection } from 'mysql2/promise';
 const connectToDatabase = async (): Promise<Connection | null> => {
   try {
     const connection = await mysql.createConnection({
-      host: 'junction.proxy.rlwy.net',
-      port: 55944,
+      host: 'localhost',
+      port: 3306,
       user: 'root',
-      password: 'gYvwbsccsHHJDEzcPLMznQXbeYQDNvPW',
-      database: 'railway',
+      password: 'root123',
+      database: 'aiattorney',
     });
   
 
