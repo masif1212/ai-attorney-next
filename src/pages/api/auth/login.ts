@@ -6,21 +6,26 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const JWT_SECRET = "secreat-key" || 'default_fallback_secret';
+const JWT_SECRET = process.env.JWT_SECRET_KEY || 'default_fallback_secret';
 
 export default async function login(req: NextApiRequest, res: NextApiResponse) {
   const { email, password } = req.body;
+
   if (!email || !password) {
     return res.status(400).json({ message: 'Email and password are required' });
   }
+
   try {
     const user = await prisma.user.findUnique({
       where: { email },
     });
+
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
+
     if (!isPasswordValid) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
@@ -40,9 +45,15 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
     }
 
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-    res.status(200).json({ message: 'Logged in successfully', userId: user.id, token, chatId: chat.id });
+
+    return res.status(200).json({
+      message: 'Logged in successfully',
+      userId: user.id,
+      token,
+      chatId: chat.id,
+    });
   } catch (error) {
     console.error('Error logging in:', error);
-    res.status(500).json({ message: 'Error logging in', error: error });
+    return res.status(500).json({ message: 'Internal server error' });
   }
 }
