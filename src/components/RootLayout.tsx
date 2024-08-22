@@ -85,7 +85,7 @@ function Header({
 
             {invert ? (
               <Image
-                src={LogoWhite} // Render LogoWhite if invert is true
+                src={LogoWhite}
                 width={36}
                 height={25}
                 alt="Logo"
@@ -119,11 +119,10 @@ function Header({
           {
             pathname !== '/signin' && (
               <Button href="/signin" invert={invert} >
-            pathname !== '/signin' && (
-              <Button href="/signin" invert={invert}>
                 Sign in
               </Button>
             )
+          }
 
 
 

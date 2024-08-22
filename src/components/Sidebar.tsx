@@ -137,14 +137,14 @@ const Sidebar: React.FC<SidebarProps> = ({
   }
 
   return (
-    <div className="flex h-screen w-60 flex-col border-2 border-black bg-black px-3 py-3 text-white">
-      <div className="flex flex-row justify-between pt-3" >
+    <div className="flex dark:bg-gray-800 h-screen w-60 flex-col border-2 border-black dark:border-gray-900 bg-black px-3 py-3 text-white">
+      <div className="flex flex-row  justify-between pt-3" >
         <ButtonForBlackScreen onClick={toggleSidebar}>
           <RiMenu2Line size={25} color="#faf5f5" />
         </ButtonForBlackScreen>
 
         <ButtonForBlackScreen onClick={handleCreateOrFetchChat}>
-          <MdOutlineAddComment size={25} color="#faf5f5" />
+          <MdOutlineAddComment size={25} color="#faf5f5"  />
         </ButtonForBlackScreen>
       </div>
 

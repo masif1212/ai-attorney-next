@@ -19,7 +19,7 @@ export function Button({
     'inline-flex rounded-full px-4 py-2 text-sm font-semibold transition',
     invert
       ? 'bg-white text-neutral-950 hover:bg-neutral-200'
-      : 'bg-neutral-950 text-white hover:bg-neutral-800',
+      : 'bg-neutral-950 text-white hover:bg-neutral-900',
   )
 
   let inner = <span className="relative  flex flex-row items-center">{children}</span>
