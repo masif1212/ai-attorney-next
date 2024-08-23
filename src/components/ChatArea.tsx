@@ -3,77 +3,22 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Logo from '@/images/logo/black.svg'
+import classes from '../styles/scrolebar.module.css';
 import whitLogo from '@/images/logo/logo-white-white.png'
 import { BsFillSendFill } from 'react-icons/bs'
 import { RiMenu3Fill } from 'react-icons/ri'
 import clsx from 'clsx'
-import { redirect, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
 import DarkModeToggle from './darkmodebutton'
 import MarkdownTypingEffect from './typing-word-response'
-
 const useDropdown = () => {
   const [isOpen, setIsOpen] = useState(false)
   const toggleDropdown = () => setIsOpen(!isOpen)
   const closeDropdown = () => setIsOpen(false)
   return { isOpen, toggleDropdown, closeDropdown }
 }
-
-// const formatResponseText = (inputMessage: string): string => {
-//   const linePattern = /^-\s*(.*?):/gm;
-//   const headingPattern = /^###\s*(.*?):?/gm;
-//   const caseNumberPattern = /Case\s[1-9]+:/g;
-//   const urlPattern = /\[(.*?)\]\((https?:\/\/[^\s]+)\)/g;
-//   const numberingPattern = /^(\d+)\.\s+/gm;
-//   const sectionsToBold = [
-//     'Case Title',
-//     'Citation',
-//     'Court',
-//     'Key Facts',
-//     'Proceedings',
-//     "Judge's Decision",
-//     'Reference URL',
-//   ];
-
-//   let finalText = inputMessage.replace(headingPattern, (match, p1) => {
-//     return `<h3 style="font-size: 1.5em; margin-top: 10px;">${p1.trim()}</h3>`;
-//   });
-
-//   finalText = finalText.replace(linePattern, (match, p1) => {
-//     if (sectionsToBold.includes(p1.trim())) {
-//       return `<p style="font-size: 1.2em;"><span style="font-weight: 600;">• ${p1.trim()}:</span>`;
-//     }
-//     return `<p style="font-size: 1em;">${p1.trim()}:`;
-//   });
-//   finalText = finalText.replace(caseNumberPattern, match => {
-//     return `<span style="font-weight: 700; font-size: 1.3em;">&#8226; ${match}</span>`;
-//   });
-//   sectionsToBold.forEach(section => {
-//     const sectionPattern = new RegExp(`(${section}):`, 'g');
-//     finalText = finalText.replace(
-//       sectionPattern,
-//       '<span style="font-weight: 600;">$1:</span>'
-//     );
-//   });
-
-// finalText = finalText.replace(numberingPattern, (match, p1) => {
-//     return `<p><strong>${p1}.</strong> `;
-//   });
-//   finalText = finalText.replace(urlPattern, (match, text, url) => {
-//     return `<a style="color: #2980B9;" href="${url}" target="_blank">Download Case</a></p>`;
-//   });
-//   finalText = finalText.replace(/^- (.*)/gm, (match, p1) => {
-//     return `<p>${p1.trim()}</p>`;
-//   });
-//   finalText = finalText.replace(/\n{2,}/g, '\n\n');
-//   finalText = finalText.replace(/^\n+|\n+$/g, '');
-//   finalText = finalText.replace(/(<\/p>)(?=<strong>)/g, '</p>\n<p>');
-//   finalText = finalText.replace(/\*\*(.*?)\*\*/g, '$1');
-//   return finalText;
-// };
 
 const ChatArea: React.FC<{
   toggleSidebar: () => void
@@ -94,6 +39,8 @@ const ChatArea: React.FC<{
   const [chatMessages, setChatMessages] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
+  const userName = localStorage.getItem('name')
+  const firstLetter = userName ? userName.charAt(0).toUpperCase() : ''
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') === 'dark'
@@ -230,7 +177,7 @@ const ChatArea: React.FC<{
     scrollToBottom()
   }, [chatMessages, loading])
   const dropDown = () => (
-    <div className="absolute right-0 z-10 mt-2 w-32 rounded-md border border-gray-900 bg-black shadow-lg">
+    <div className="absolute right-0 z-10 mt-2 w-32 rounded-md  border border-gray-900 bg-black shadow-lg">
       <button
         onClick={() => router.push('/payment')}
         className={clsx(
@@ -255,18 +202,23 @@ const ChatArea: React.FC<{
     e.target.style.height = `${e.target.scrollHeight}px`
   }
   function formatResponseText(inputText: string): string {
-    const headingPattern = /(Key Facts of the Case:|Proceedings:|Judge's Decision:)/g;
-    const quotesPattern = /"([^"]+)"/g;
-    const urlPattern = /(https?:\/\/[^\s]+)/g;
-    const textToRemove = /undefined/g;
-    let formattedText = inputText.replace(headingPattern, '\n\n## **$1');
-    formattedText = formattedText.replace(quotesPattern, '***"$1"**');
-    formattedText = formattedText.replace(urlPattern, `🗂️[***Click Here 👈***]($1)`);
-    formattedText = formattedText.replace(textToRemove, '');
-    formattedText = formattedText.replace(/\n/g, '\n\n');
-    
-    return formattedText;
+    const headingPattern =
+      /(Key Facts of the Case:| Proceedings:| Judge's Decision::| Case Title:)/g
+    const quotesPattern = /"([^"]+)"/g
+    const urlPattern = /(https?:\/\/[^\s]+)/g
+    const textToRemove = /undefined/g
+    let formattedText = inputText.replace(headingPattern, '\n\n## **$1')
+    formattedText = formattedText.replace(quotesPattern, '**"$1"**')
+    formattedText = formattedText.replace(
+      urlPattern,
+      `🗂️[**Download 👈**]($1) `,
+    )
+    formattedText = formattedText.replace(textToRemove, '')
+    formattedText = formattedText.replace(/\n/g, '\n\n')
+
+    return formattedText
   }
+
   return (
     <div className="relative flex h-screen flex-1 flex-col bg-chatbg p-5 text-black dark:bg-gray-900">
       <div className="flex items-center justify-between">
@@ -281,7 +233,7 @@ const ChatArea: React.FC<{
           </div>
         )}
         <Link href="/searchcases">
-          <button className="flex h-8 items-center justify-center rounded-full border-black bg-black hover:bg-buttonHover dark:bg-white sm:h-10 sm:px-5">
+          <button className="flex h-8 justify-center sm:py-1 py-2  px-4 rounded-full border-black bg-black  hover:bg-buttonHover dark:bg-white sm:h-10 sm:px-5">
             <p className="text-xs text-white dark:text-black sm:text-base">
               Search Cases
             </p>
@@ -292,11 +244,11 @@ const ChatArea: React.FC<{
 
           <div className={clsx('relative', sidebarVisible ? 'ml-auto' : '')}>
             <button
-              className="flex h-8 w-8 items-center justify-center rounded-full border-black bg-black hover:bg-buttonHover dark:bg-white sm:h-10 sm:w-10"
+              className="flex h-8 w-8 justify-center sm:py-1 py-2  rounded-full border-black bg-black  hover:bg-buttonHover dark:bg-white sm:h-10 sm:w-10"
               onClick={toggleDropdown}
             >
               <p className="text-xs text-white dark:text-black sm:text-base">
-                M
+                {firstLetter}
               </p>
             </button>
             {isOpen && dropDown()}
@@ -304,7 +256,7 @@ const ChatArea: React.FC<{
         </div>
       </div>
 
-      <div className="mt-2 flex w-full flex-1 flex-col overflow-y-auto pr-2">
+      <div className={` mt-8 flex w-full flex-1 flex-col overflow-y-auto  pr-2`}>
         {chatMessages?.length === 0 ? (
           <div className="flex flex-1 items-center justify-center">
             <div className="flex h-full flex-col justify-center text-center">
@@ -319,7 +271,7 @@ const ChatArea: React.FC<{
             </div>
           </div>
         ) : (
-          <div className="flex flex-grow flex-col  items-center overflow-y-auto">
+          <div className={`${classes.sidebar}   flex flex-grow flex-col items-center overflow-y-auto`} >
             <div className="w-5/6 flex-col space-y-4">
               {chatMessages?.map((msg, index) => (
                 <div
@@ -333,26 +285,29 @@ const ChatArea: React.FC<{
                       src={Logo}
                       alt="Ai-Attorney Logo"
                       width={10}
-                      className='flex p-1 h-8 w-8 items-center justify-center rounded-full dark:bg-white border-black  sm:h-10 sm:w-10'
+                      className="flex h-8 w-8 justify-center rounded-full border-black p-1 dark:bg-white sm:h-10 sm:w-10"
                       height={10}
                     />
                   ) : (
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full border-black bg-black dark:bg-white  hover:bg-buttonHover sm:h-10 sm:w-10">
-                      <p className="text-xs text-white dark:text-black sm:text-base">M</p>
+                    <div className="flex h-8 w-8 py-1 justify-center rounded-full border-black bg-black hover:bg-buttonHover dark:bg-white sm:h-10 sm:w-10">
+                      <p className="text-xs text-white dark:text-black sm:text-base">
+                        {' '}
+                        {firstLetter}
+                      </p>
                     </div>
                   )}
                   <div
                     className={`rounded-lg px-3 py-2 ${
                       msg.senderType === 'AI'
-                        ? 'bg-white text-black dark:bg-gray-800 dark:text-white shadow-lg'
-                        : 'bg-black dark:bg-gray-700  dark:text-white text-white'
+                        ? 'bg-white text-black shadow-lg dark:bg-gray-800 dark:text-white'
+                        : 'bg-black text-white dark:bg-gray-700 dark:text-white'
                     } text-sm sm:text-base`}
                   >
-                     <MarkdownTypingEffect
-                        text={formatResponseText(msg?.content)}
-                        messageId={msg?.question}
-                        speed={50}
-                      />
+                    <MarkdownTypingEffect
+                      text={formatResponseText(msg?.content)}
+                      messageId={msg?.question}
+                      speed={50}
+                    />
                   </div>
                 </div>
               ))}
@@ -372,7 +327,7 @@ const ChatArea: React.FC<{
 
         <div className="flex w-full items-center justify-center">
           <div
-            className={`mr-2 flex w-5/6 items-center space-x-2 rounded-2xl border-2 border-black dark:border-gray-700 bg-chatbg dark:bg-gray-800 p-2 ${
+            className={`mr-2 flex w-5/6 items-center space-x-2 rounded-2xl border-2 border-black bg-chatbg p-2 dark:border-gray-700 dark:bg-gray-800 ${
               sidebarVisible ? 'max-w-6xl' : 'max-w-7xl'
             }`}
           >
@@ -384,7 +339,7 @@ const ChatArea: React.FC<{
                 handleResize(e)
               }}
               onKeyDown={handleKeyDown}
-              className="ml-4 flex-grow resize-none overflow-y-auto bg-chatbg dark:bg-gray-800 text-base dark:text-white text-gray-900 outline-none"
+              className="ml-4 flex-grow resize-none overflow-y-auto bg-chatbg text-base text-gray-900 outline-none dark:bg-gray-800 dark:text-white"
               style={{
                 height: 'auto',
                 minHeight: '24px',

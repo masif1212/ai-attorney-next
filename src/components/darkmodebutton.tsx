@@ -10,7 +10,7 @@ interface DarkModeToggleProps {
 export default function DarkModeToggle({ isDarkMode, onToggle }: DarkModeToggleProps) {
   return (
     <div
-    className={`${classes.switch} ${isDarkMode ? classes.dark : classes.light}`}
+    className={`${classes.switch}  ${isDarkMode ? classes.dark  : classes.light}`}
     data-isOn={isDarkMode}
       onClick={onToggle}
     >

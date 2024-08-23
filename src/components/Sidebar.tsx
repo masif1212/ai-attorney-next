@@ -41,11 +41,12 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [error, setError] = useState<string | null>(null)
   const [todayChats, setTodayChats] = useState<ChatItem[]>([])
   const [previousChats, setPreviousChats] = useState<ChatItem[]>([])
-  const router = useRouter()
   const token = localStorage.getItem('token')
   const userId = localStorage.getItem('activeUserId')
+  const completeMsg = localStorage.getItem('completedMessages')
 
   const fetchChatHistory = useCallback(async () => {
+    console.log('fetching chat history');
     if (!chats) return;
  
 
@@ -63,7 +64,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       }
 
       const data = await response.json()
-      setTodayChats(data.today)
+      setTodayChats(data?.today)
       setPreviousChats(data.previous)
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -72,7 +73,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         setError('An unknown error occurred')
       }
     }
-  }, [userId, token, chats])
+  }, [userId, token, chats,completeMsg])
 
   useEffect(() => {
     fetchChatHistory()
@@ -148,19 +149,19 @@ const Sidebar: React.FC<SidebarProps> = ({
         </ButtonForBlackScreen>
       </div>
 
-      <div className="custom-scrollbar flex-1 overflow-y-auto">
-        {todayChats.length > 0 && (
+      <div className="custom-scrollbar px-3 py-3 flex-1  overflow-y-auto">
+        {todayChats?.length > 0 && (
           <div className="mt-5">
-            <div className="text-sm font-bold">Today</div>
+            <div className="text-sm font-bold gap-y-2  border-b-2 border-zinc-400 ">Today</div>
             <ul>
-              {todayChats.map((item, index) => (
+              {todayChats?.map((item, index) => (
                 <li
                   key={index}
-                  className="mr-1 rounded hover:bg-gray-900"
+                  className="mr-1 px-1 py-1 mb-1 rounded hover:bg-gray-900"
                 >
                   <button
                     className="rounded text-sm text-gray-400 w-full"
-                    onClick={() => setActiveChatId(item.id)}
+                    onClick={() => setActiveChatId(item?.id)}
                   >
                     <span className="flex justify-start text-white w-full  px-1">
                       {
@@ -176,22 +177,22 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         )}
 
-        {previousChats.length > 0 && (
+        {previousChats?.length > 0 && (
           <div className="mt-5">
-            <div className="mb-2 text-sm font-bold">Previous Day</div>
+            <div className="text-sm font-bold gap-y-2  border-b-2 border-zinc-400 ">Previous Day</div>
             <ul className="space-y-2">
-              {previousChats.map((item, index) => (
+              {previousChats?.map((item, index) => (
                 <li
                   key={index}
-                  className="mr-1 rounded px-1 hover:bg-gray-900"
+                  className="mr-1 px-1 py-1 mb-1 rounded hover:bg-gray-900"
                 >
                   <button
-                    className="flex justify-between text-sm text-gray-400"
-                    onClick={() => setActiveChatId(item.id)}
+                    className="rounded text-sm text-gray-400 w-full"
+                    onClick={() => setActiveChatId(item?.id)}
                   >
-                    <span className="flex justify-start font-semibold text-slate-100 w-full px-1">
+                    <span className="flex justify-start text-white w-full  px-1">
                       {
-                        item.fullContext[0]?.content.length <= 25
+                        item?.fullContext[0]?.content?.length <= 25
                           ? item.fullContext[0]?.content
                           : item.fullContext[0]?.content.substring(0, 25) + "..."
                       }

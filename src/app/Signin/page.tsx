@@ -27,11 +27,13 @@ export default function SignIn() {
         body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
+      console.log(data,'data from repsonse api')
       if (response.ok) {
-        localStorage.setItem("token", data.token); 
-        localStorage.setItem("activeChatId", data.chatId); 
-        localStorage.setItem("activeUserId", data.userId); 
-        document.cookie = `token=${data.token}; path=/`;
+        localStorage.setItem("token", data?.token); 
+        localStorage.setItem("name", data?.username); 
+        localStorage.setItem("activeChatId", data?.chatId); 
+        localStorage.setItem("activeUserId", data?.userId); 
+        document.cookie = `token=${data?.token}; path=/`;
         console.log('cookies')
         setServerResponse({ message: "Logged in successfully!", isError: false });
    
