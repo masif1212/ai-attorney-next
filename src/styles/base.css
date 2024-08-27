@@ -9,8 +9,9 @@
   src: url('../fonts/Mona-Sans.var.woff2') format('woff2');
 }
 
+/* main search box  */
 .ais-SearchBox-input {
-  @apply flex-1 justify-center items-center w-full max-w-2xl rounded-full border border-gray-300 p-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-400 ;
+  @apply flex-1 justify-center items-center w-full max-w-7xl rounded-full border border-gray-300 p-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-400 ;
 }
 .ais-SearchBox-submitIcon{
   @apply hidden
@@ -20,6 +21,11 @@
 }
 .ais-SearchBox-resetIcon{
   @apply hidden
+}
+
+/* Filters */
+.select__control {
+  @apply w-full lg:w-72;
 }
 
 
@@ -41,14 +47,14 @@
 
 /* Style the active pagination button */
 .ais-Pagination-item--selected .ais-Pagination-link {
-  @apply text-white bg-blue-500 border-blue-500; /* Change these colors as per your design */
+  @apply text-white bg-black; /* Change these colors as per your design */
 }
 
 /* Additional hover and focus styles */
 .ais-Pagination-link:hover {
-  @apply text-blue-700;
+  @apply text-white bg-gray-950;
 }
 
 .ais-Pagination-link:focus {
-  @apply outline-none ring-2 ring-blue-500;
+  @apply outline-none ring-2 ring-gray-500;
 }
