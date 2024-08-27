@@ -49,7 +49,7 @@ const searchClient = typesenseInstantsearchAdapter.searchClient
 function Hit({ hit }: any) {
   return (
     <Link href={`/casedetail?order_num=${hit.order_num}`}>
-      <div className="mb-4 transform rounded-lg border border-gray-300 bg-white p-4 duration-300 hover:shadow-lg">
+      <div className="mb-4 transform rounded-lg border border-gray-200 bg-white p-4 duration-300 hover:shadow-lg">
         <h2 className="mb-2 text-lg font-semibold text-gray-900">
           {hit.title}
         </h2>
