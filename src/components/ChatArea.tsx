@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Logo from '@/images/logo/black.svg'
-import classes from '../styles/scrolebar.module.css';
+import classes from '../styles/scrolebar.module.css'
 import whitLogo from '@/images/logo/logo-white-white.png'
 import { BsFillSendFill } from 'react-icons/bs'
 import { RiMenu3Fill } from 'react-icons/ri'
@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import DarkModeToggle from './darkmodebutton'
-import MarkdownTypingEffect from './typing-word-response'
+import WordByWordTypingEffect from './typing-word-response'
 const useDropdown = () => {
   const [isOpen, setIsOpen] = useState(false)
   const toggleDropdown = () => setIsOpen(!isOpen)
@@ -37,6 +37,7 @@ const ChatArea: React.FC<{
   const { isOpen, toggleDropdown, closeDropdown } = useDropdown()
   const [message, setMessage] = useState('')
   const [chatMessages, setChatMessages] = useState<any[]>([])
+  console.log(chatMessages, 'chatMessages from response ')
   const [loading, setLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   const userName = localStorage.getItem('name')
@@ -85,9 +86,10 @@ const ChatArea: React.FC<{
       const data = await response.json()
       if (data.chat_history && data.chat_history.length > 0) {
         setChatMessages(
-          data?.chat_history?.map((msg: { message: string; type: string }) => ({
+          data?.chat_history?.map((msg: { message: string; type: string,id:string }) => ({
             content: msg.message,
             senderType: msg.type,
+            id: msg.id,
           })),
         )
       } else {
@@ -177,7 +179,7 @@ const ChatArea: React.FC<{
     scrollToBottom()
   }, [chatMessages, loading])
   const dropDown = () => (
-    <div className="absolute right-0 z-10 mt-2 w-32 rounded-md  border border-gray-900 bg-black shadow-lg">
+    <div className="absolute right-0 z-10 mt-2 w-32 rounded-md border border-gray-900 bg-black shadow-lg">
       <button
         onClick={() => router.push('/payment')}
         className={clsx(
@@ -202,26 +204,24 @@ const ChatArea: React.FC<{
     e.target.style.height = `${e.target.scrollHeight}px`
   }
   function formatResponseText(inputText: string): string {
-    const headingPattern =
-      /(Key Facts of the Case:| Proceedings:| Judge's Decision::| Case Title:)/g
-    const quotesPattern = /"([^"]+)"/g
-    const urlPattern = /(https?:\/\/[^\s]+)/g
-    const textToRemove = /undefined/g
-    let formattedText = inputText.replace(headingPattern, '\n\n## **$1')
-    formattedText = formattedText.replace(quotesPattern, '**"$1"**')
-    formattedText = formattedText.replace(
-      urlPattern,
-      `🗂️[**Download 👈**]($1) `,
-    )
-    formattedText = formattedText.replace(textToRemove, '')
-    formattedText = formattedText.replace(/\n/g, '\n\n')
-
-    return formattedText
+    const quotesPattern = /"([^"]+)"/g;
+    const urlPattern = /(https?:\/\/[^\s]+)/g;
+    const textToRemove = /undefined/g;
+    const casePattern = /(Case \d+:)/g;
+  
+    let formattedText = inputText.replace(casePattern, match => `\n\n**${match}**\n\n`); 
+    formattedText = formattedText.replace(quotesPattern, '**"$1"**');
+    formattedText = formattedText.replace(urlPattern, `🗂️[**Download 👈**]($1)\n\n`);
+    formattedText = formattedText.replace(textToRemove, '');
+    formattedText = formattedText.replace(/\n/g, '\n\n');
+  
+    return formattedText;
   }
+  
 
   return (
-    <div className="relative flex h-screen flex-1 flex-col bg-chatbg p-5 text-black dark:bg-gray-900">
-      <div className="flex items-center justify-between">
+    <div className="relative flex h-screen flex-1 flex-col bg-white p-2 text-black dark:bg-gray-900">
+      <div className="flex items-center  justify-between">
         {!sidebarVisible && (
           <div className="flex space-x-2 text-lg font-bold">
             <button
@@ -233,9 +233,9 @@ const ChatArea: React.FC<{
           </div>
         )}
         <Link href="/searchcases">
-          <button className="flex h-8 justify-center sm:py-1 py-2  px-4 rounded-full border-black bg-black  hover:bg-buttonHover dark:bg-white sm:h-10 sm:px-5">
+          <button className="flex sm:ml-0 ml-4 h-8 items-center justify-center rounded-full border-black bg-black px-4 hover:bg-buttonHover dark:bg-white sm:h-10 sm:px-5">
             <p className="text-xs text-white dark:text-black sm:text-base">
-              Search Cases
+            Browse Cases
             </p>
           </button>
         </Link>
@@ -244,21 +244,24 @@ const ChatArea: React.FC<{
 
           <div className={clsx('relative', sidebarVisible ? 'ml-auto' : '')}>
             <button
-              className="flex h-8 w-8 justify-center sm:py-1 py-2  rounded-full border-black bg-black  hover:bg-buttonHover dark:bg-white sm:h-10 sm:w-10"
+              className="flex h-8 w-8 items-center justify-center rounded-full border-black bg-black hover:bg-buttonHover dark:bg-white sm:h-10 sm:w-10"
               onClick={toggleDropdown}
             >
-              <p className="text-xs text-white dark:text-black sm:text-base">
+              <p className="text-xs font-medium text-white dark:text-black sm:text-base">
                 {firstLetter}
               </p>
             </button>
+
             {isOpen && dropDown()}
           </div>
         </div>
       </div>
 
-      <div className={` mt-8 flex w-full flex-1 flex-col overflow-y-auto  pr-2`}>
+      <div
+        className={`mt-8 flex w-full gap-y-2 flex-1 flex-col items-center overflow-y-auto pr-2`}
+      >
         {chatMessages?.length === 0 ? (
-          <div className="flex flex-1 items-center justify-center">
+          <div className="flex flex-1">
             <div className="flex h-full flex-col justify-center text-center">
               <div className="flex items-center justify-center">
                 <Image
@@ -271,8 +274,10 @@ const ChatArea: React.FC<{
             </div>
           </div>
         ) : (
-          <div className={`${classes.sidebar}   flex flex-grow flex-col items-center overflow-y-auto`} >
-            <div className="w-5/6 flex-col space-y-4">
+          <div
+            className={`${classes.sidebar} flex flex-grow w-full  flex-col overflow-y-auto px-4`}
+          >
+            <div className="w-full flex-col space-y-4">
               {chatMessages?.map((msg, index) => (
                 <div
                   key={index}
@@ -289,25 +294,25 @@ const ChatArea: React.FC<{
                       height={10}
                     />
                   ) : (
-                    <div className="flex h-8 w-8 py-1 justify-center rounded-full border-black bg-black hover:bg-buttonHover dark:bg-white sm:h-10 sm:w-10">
-                      <p className="text-xs text-white dark:text-black sm:text-base">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full border-black bg-black hover:bg-buttonHover dark:bg-white sm:h-10 sm:w-10">
+                      <p className="text-xs font-medium text-white dark:text-black sm:text-base">
                         {' '}
                         {firstLetter}
                       </p>
                     </div>
                   )}
                   <div
-                    className={`rounded-lg px-3 py-2 ${
-                      msg.senderType === 'AI'
-                        ? 'bg-white text-black shadow-lg dark:bg-gray-800 dark:text-white'
+                    className={`rounded-lg px-4 py-1 sm:py-2 ${
+                      msg?.senderType === 'AI'
+                        ? 'bg-white text-black shadow-sm dark:bg-gray-800 dark:text-white'
                         : 'bg-black text-white dark:bg-gray-700 dark:text-white'
                     } text-sm sm:text-base`}
                   >
-                    <MarkdownTypingEffect
-                      text={formatResponseText(msg?.content)}
-                      messageId={msg?.question}
-                      speed={50}
-                    />
+                    {msg.senderType === 'AI' ? (
+                      <WordByWordTypingEffect   text={formatResponseText(msg?.content)} speed={50} id={msg?.id} />
+                    ) : (
+                      <div className='first-letter:capitalize'>{msg.content}</div>
+                    )}
                   </div>
                 </div>
               ))}

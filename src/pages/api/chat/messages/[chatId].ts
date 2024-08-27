@@ -23,12 +23,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (!chat) {
             return res.status(404).json({ message: 'No chat history found' });
         }
-        const chatHistory = chat.messages.map((message: { content: any; senderType: any; }) => ({
+        const chatHistory = chat.messages.map((message: { content: any; senderType: any; id: any; }) => ({
             message: message.content,
             type: message.senderType,
+            id:message.id,  
         }));
+        console.log(chatHistory);
 
-        console.log(chatHistory,"chat history");
         res.status(200).json({ chat_history: chatHistory });
     } catch (error) {
         console.error('Error fetching chat history:', error);

@@ -21,6 +21,7 @@ type ServerResponse = {
 
 export default function SignUp() {
   const { register, handleSubmit, formState: { errors }, watch } = useForm<RegisterForm>();
+  const [showPassword, setShowPassword] = useState(false)
   const [serverResponse, setServerResponse] = useState<ServerResponse | null>(null);
   const router = useRouter();
 
@@ -55,6 +56,9 @@ export default function SignUp() {
       setServerResponse({ message: 'An error occurred. Please try again later.', isError: true });
     }
   };
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
+  }
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -124,7 +128,7 @@ export default function SignUp() {
             <div className="mt-2">
               <input
                 id="password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 {...register('password', { required: 'Password is required',
                   minLength: {
                     value: 8,
@@ -147,11 +151,21 @@ export default function SignUp() {
             <div className="mt-2">
               <input
                 id="confirmPassword"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 {...register('confirmPassword', { required: 'Confirm Password is required' })}
                 className="block w-full rounded-md border-0 px-3 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"
               />
               {errors.confirmPassword && <span className="text-red-500 text-sm">{errors.confirmPassword.message}</span>}
+              <label className="flex w-2/4 items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={showPassword}
+                  onChange={togglePasswordVisibility}
+                />
+                <span className="py-2 text-xs tracking-wide text-black dark:text-white">
+                  Show Password
+                </span>
+              </label>
             </div>
           </div>
          
