@@ -1,119 +1,218 @@
 'use client'
 
-import { useMemo,useState } from 'react'
-import casesData from '../../../data/casesdata.json'
+import TypesenseInstantSearchAdapter from 'typesense-instantsearch-adapter'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import {  redirect, useRouter } from 'next/navigation'
-interface CaseItem {
-  order_num: string
-  citation: string
-  title: string
-  court: string
-  relatedcase_type: string
-  description: string
-  below_notes: string
-  case_description: string
-  year: string
-  citation_name: string
-  page_no: string
-  related_laws: string
-  judges: string
-  refer_link: string | null
-  case_facts: string
-  case_judgement: string
-  case_proceddings: string
-  Questions: string
-  Vocabulary: string
+import {
+  Hits,
+  Configure,
+  Pagination,
+  connectRefinementList,
+} from 'react-instantsearch-dom'
+import '@/styles/base.css'
+import { useState, useEffect, useMemo } from 'react'
+import Select from 'react-select'
+import LogoBlack from '@/images/logo/logo-black.png'
+import clsx from 'clsx'
+import Image from 'next/image'
+import React from 'react'
+
+// Dynamically load InstantSearch components to disable SSR (Server-Side Rendering)
+const InstantSearch = dynamic(
+  () => import('react-instantsearch-dom').then((mod) => mod.InstantSearch),
+  { ssr: true },
+)
+const SearchBox = dynamic(
+  () => import('react-instantsearch-dom').then((mod) => mod.SearchBox),
+  { ssr: true },
+)
+
+// Set up TypeSense InstantSearch adapter
+const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
+  server: {
+    apiKey: 'qxfa25ROV2MmKOE',
+    nodes: [
+      {
+        host: 'localhost',
+        port: 8108,
+        protocol: 'http',
+      },
+    ],
+  },
+  additionalSearchParameters: {
+    query_by: 'title,description,citation,court,year',
+  },
+})
+
+const searchClient = typesenseInstantsearchAdapter.searchClient
+
+// Component to render each hit
+const Hit = ({ hit }: any) => {
+  return (
+    <Link href={`/casedetail?order_num=${hit.order_num}`}>
+      <div className="mb-4 transform rounded-lg border border-gray-200 bg-white p-4 duration-300 hover:shadow-lg">
+        <h2 className="mb-2 text-lg font-semibold text-gray-900">
+          {hit.title}
+        </h2>
+        <p className="mb-1 text-sm text-gray-500">Court: {hit.court}</p>
+        <p className="mb-1 text-sm text-gray-500">Year: {hit.year}</p>
+        <p className="line-clamp-3 text-base text-gray-700">
+          {hit.case_description}
+        </p>
+      </div>
+    </Link>
+  )
 }
 
-export default function SearchCases() {
-  const [filteredCases, setFilteredCases] = useState(casesData.slice(0, 10))
-  const [searchQuery, setSearchQuery] = useState('')
-  const token = localStorage.getItem('token');
-  const userId = localStorage.getItem('activeUserId');
+// Custom Refinement Dropdown
+const CustomRefinementDropdown = React.memo(({ items, currentRefinement, refine, attribute }: any) => {
+  const [selectedOption, setSelectedOption] = useState<any>(null)
+  const [isClient, setIsClient] = useState(false)
 
- const router =useRouter();
- 
 
-  // useMemo(() => {
-  //   if (!userId || !token) {
-  //     redirect('/')
-  //     console.log('hi usememo')
-  //   }
-  // }, [token]);
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value.toLowerCase()
-    setSearchQuery(query)
- 
+  const options = useMemo(() => items.map((item: any) => ({
+    value: item.value.toString(),
+    label: `${item.label}`,
+  })), [items])
 
-    const filtered = casesData.filter(
-      (caseItem) =>
-        caseItem.title.toLowerCase().includes(query) ||
-        caseItem.description.toLowerCase().includes(query) ||
-        caseItem.citation.toLowerCase().includes(query) ||
-        caseItem.court.toLowerCase().includes(query),
-    )
-    setFilteredCases(filtered)
- 
+  const handleChange = (selected: any) => {
+    if (selected) {
+      refine([selected.value.toString()])
+      setSelectedOption(selected)
+    } else {
+      if (selectedOption !== null) {
+        setSelectedOption(null)
+        refine([])
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (
+      !currentRefinement.length ||
+      !currentRefinement.includes(selectedOption?.value)
+    ) {
+      setSelectedOption(null)
+    }
+  }, [currentRefinement])
+
+  if (!isClient) {
+    return null
   }
 
   return (
-    <>
-    <div className="min-h-screen w-full bg-gray-100">
-      {/* Search input at the top */}
-      <div className="sticky top-0 z-10  w-full  bg-white p-4 shadow-lg">
-        <div className="ml-auto flex flex-row justify-center items-center">
+    <Select
+      options={options}
+      value={selectedOption}
+      onChange={handleChange}
+      placeholder={` ${attribute}`}
+      className="basic-single-select w-full sm:w-48"
+      classNamePrefix="select"
+      isClearable
+      isMulti={false}
+    />
+  )
+})
 
-          <button
-            onClick={() => window.history.back()}
-            className="mr-2 flex h-8 sm:h-10 px-3 sm:px-5 items-center justify-center rounded-4xl border-black bg-black hover:bg-buttonHover text-white"
-          >
-            Back
-          </button>
+const ConnectedRefinementDropdown = connectRefinementList(CustomRefinementDropdown)
 
+// Main search component
+export default function SearchCases() {
+  const [showAdditionalFilters, setShowAdditionalFilters] = useState(false)
 
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={handleSearch}
-            placeholder="Enter search query..."
-            className="mx-auto block w-full max-w-xl sm:max-w-2xl rounded-lg sm:rounded-2xl border border-gray-300 px-2 sm:px-3 py-1 sm:py-2 text-sm sm:text-base focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-400"
-          />
+  return (
+    <div className="min-h-screen w-full bg-white">
+      <InstantSearch searchClient={searchClient} indexName="cases">
+        {/* Header with logo and title */}
+        <div className="flex w-full flex-col items-center bg-white px-6 pt-4 sm:flex-row sm:px-12">
+          <div className="mb-2 flex items-center justify-center sm:mb-0 sm:justify-start">
+            <Image
+              src={LogoBlack}
+              width={40}
+              height={30}
+              alt="Logo"
+              className={clsx(
+                'text-xl font-bold transition-all duration-300',
+                'fill-neutral-950',
+              )}
+            />
+          </div>
+          {/* Search Box */}
+          <div className="sticky top-0 z-10 w-full bg-white p-4">
+            <div className="flex w-full flex-1 items-center">
+              <SearchBox
+                className="w-full"
+                translations={{
+                  placeholder: 'Search cases here...',
+                }}
+              />
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className="p-6">
-        <div className="mx-auto w-full max-w-6xl space-y-4 z-1">
-          {filteredCases.length > 0 ? (
-            filteredCases.map((caseItem) => (
-              <Link
-                key={caseItem.order_num}
-                href={`/casedetail?order_num=${caseItem.order_num}`}
-                className="block"
+        {/* Main Content */}
+        <div className="w-full bg-white">
+          {/* Filters */}
+          <div className="flex flex-col flex-wrap justify-center space-y-4 bg-white px-6 py-4 lg:flex-row lg:space-x-32 lg:space-y-0">
+            <div className="w-full sm:w-auto">
+              <label className="block text-gray-700">Select Journal</label>
+              <ConnectedRefinementDropdown attribute="citation_name" />
+            </div>
+            <div className="w-full max-w-xs sm:w-auto">
+              <label className="block text-gray-700">Select Year</label>
+              <ConnectedRefinementDropdown attribute="year" />
+            </div>
+
+            <div className="w-full max-w-xs sm:w-auto">
+              <label className="block text-gray-700">Select Court</label>
+              <ConnectedRefinementDropdown attribute="court" />
+            </div>
+
+            {/* Button to show additional filters */}
+            <div className="flex w-full items-end sm:w-auto">
+              <button
+                onClick={() => setShowAdditionalFilters(!showAdditionalFilters)}
+                className="rounded-md bg-black px-4 py-2 text-white hover:bg-gray-700"
               >
-                <div
-                  key={caseItem.order_num}
-                  className="transform rounded-lg bg-white p-4 sm:p-6 shadow-lg transition-transform hover:scale-100"
-                >
-                  <h2 className="text-xl sm:text-2xl text-black-800 mb-2 font-semibold">
-                    {caseItem.title}
-                  </h2>
-                  <p className="mb-2 font-medium text-gray-700 text-sm sm:text-base">
-                    {caseItem.court}
-                  </p>
-                  <p className="line-clamp-4 text-gray-900 text-sm sm:text-base">
-                    {caseItem.case_description}
-                  </p>
-                </div>
-              </Link>
+                {showAdditionalFilters ? '-' : '+'}
+              </button>
+            </div>
+          </div>
 
-            ))
-          ) : (
-            <p className="text-center text-gray-700">No cases found.</p>
+          {/* Additional Filters (conditionally rendered) */}
+          {showAdditionalFilters && (
+            <div className="flex flex-col flex-wrap justify-center space-y-4 px-6 py-4 lg:flex-row lg:space-x-32 lg:space-y-0">
+              <div className="w-full max-w-xs sm:w-auto">
+                <label className="block text-gray-700">Select Page no.</label>
+                <ConnectedRefinementDropdown attribute="page_no" />
+              </div>
+              <div className="w-full max-w-xs sm:w-auto">
+                <label className="block text-gray-700">Select Judges</label>
+                <ConnectedRefinementDropdown attribute="judges" />
+              </div>
+            </div>
           )}
+
+          {/* Display hits */}
+          <div className="border-gray-200 bg-white px-4 py-4 sm:px-6 md:px-8">
+            <Configure hitsPerPage={10} />
+            <Hits hitComponent={Hit} />
+          </div>
+
+          {/* Pagination at the bottom */}
+          <div className="flex justify-center bg-white py-4">
+            <Pagination
+              className="flex flex-wrap justify-center space-x-2 sm:space-x-4 md:space-x-6 lg:space-x-8 xl:space-x-10"
+              padding={2}
+              showLast={true}
+            />
+          </div>
         </div>
-      </div>
+      </InstantSearch>
     </div>
 
 
