@@ -1,12 +1,12 @@
-// src/lib/db.js
 import mysql, { Connection } from 'mysql2/promise'
 
 // mysql://root:gYvwbsccsHHJDEzcPLMznQXbeYQDNvPW@junction.proxy.rlwy.net:55944/railway
+"mysql://root:vsxcsdTBEavnekMELTZBTsYpIQsPlvJW@autorack.proxy.rlwy.net:50132/railway"
 const connectToDatabase = async (): Promise<Connection | null> => {
   try {
     const connection = await mysql.createConnection({
-      host: 'mysql.railway.internal',
-      port: 3306,
+      host: 'autorack.proxy.rlwy.net',
+      port: 50132,
       user: 'root',
       password: 'vsxcsdTBEavnekMELTZBTsYpIQsPlvJW',
       database: 'railway',
