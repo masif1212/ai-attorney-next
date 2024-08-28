@@ -1,7 +1,6 @@
 import { type Metadata } from 'next';
 import '@/styles/tailwind.css';
 import ClientSideLayout from '@/components/ClientSideLayout';
-
 export const metadata: Metadata = {
   title: {
     template: '%s - Ai Attorney',

@@ -4,8 +4,7 @@ import defaultTheme from 'tailwindcss/defaultTheme'
 export default {
   // content: ['./src/**/*.{js,jsx,mdx,ts,tsx}'],
   content: ['./src/**/*.{js,jsx,mdx,ts,tsx}'],
-
-
+  darkMode: 'class',
   theme: {
     fontSize: {
       xs: ['0.75rem', { lineHeight: '1rem' }],
@@ -25,9 +24,9 @@ export default {
         '4xl': '2.5rem',
       },
       fontFamily: {
-        sans: ['Mona Sans', ...defaultTheme.fontFamily.sans],
+        sans: ['Poppins', ...defaultTheme.fontFamily.sans],
         display: [
-          ['Mona Sans', ...defaultTheme.fontFamily.sans],
+          ['Poppins', ...defaultTheme.fontFamily.sans],
           { fontVariationSettings: '"wdth" 125' },
         ],
       },

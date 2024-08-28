@@ -3,75 +3,22 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Logo from '@/images/logo/black.svg'
+import classes from '../styles/scrolebar.module.css'
+import whitLogo from '@/images/logo/logo-white-white.png'
 import { BsFillSendFill } from 'react-icons/bs'
 import { RiMenu3Fill } from 'react-icons/ri'
 import clsx from 'clsx'
-import { redirect, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import { cookies } from 'next/headers'
-
+import DarkModeToggle from './darkmodebutton'
+import WordByWordTypingEffect from './typing-word-response'
 const useDropdown = () => {
   const [isOpen, setIsOpen] = useState(false)
   const toggleDropdown = () => setIsOpen(!isOpen)
   const closeDropdown = () => setIsOpen(false)
   return { isOpen, toggleDropdown, closeDropdown }
 }
-
-// const formatResponseText = (inputMessage: string): string => {
-//   const linePattern = /^-\s*(.*?):/gm;
-//   const headingPattern = /^###\s*(.*?):?/gm;
-//   const caseNumberPattern = /Case\s[1-9]+:/g;
-//   const urlPattern = /\[(.*?)\]\((https?:\/\/[^\s]+)\)/g;
-//   const numberingPattern = /^(\d+)\.\s+/gm; 
-//   const sectionsToBold = [
-//     'Case Title',
-//     'Citation',
-//     'Court',
-//     'Key Facts',
-//     'Proceedings',
-//     "Judge's Decision",
-//     'Reference URL',
-//   ];
-
-//   let finalText = inputMessage.replace(headingPattern, (match, p1) => {
-//     return `<h3 style="font-size: 1.5em; margin-top: 10px;">${p1.trim()}</h3>`;
-//   });
-
-//   finalText = finalText.replace(linePattern, (match, p1) => {
-//     if (sectionsToBold.includes(p1.trim())) {
-//       return `<p style="font-size: 1.2em;"><span style="font-weight: 600;">• ${p1.trim()}:</span>`;
-//     }
-//     return `<p style="font-size: 1em;">${p1.trim()}:`;
-//   });
-//   finalText = finalText.replace(caseNumberPattern, match => {
-//     return `<span style="font-weight: 700; font-size: 1.3em;">&#8226; ${match}</span>`;
-//   });
-//   sectionsToBold.forEach(section => {
-//     const sectionPattern = new RegExp(`(${section}):`, 'g');
-//     finalText = finalText.replace(
-//       sectionPattern,
-//       '<span style="font-weight: 600;">$1:</span>'
-//     );
-//   });
-
-// finalText = finalText.replace(numberingPattern, (match, p1) => {
-//     return `<p><strong>${p1}.</strong> `;
-//   });
-//   finalText = finalText.replace(urlPattern, (match, text, url) => {
-//     return `<a style="color: #2980B9;" href="${url}" target="_blank">Download Case</a></p>`;
-//   });
-//   finalText = finalText.replace(/^- (.*)/gm, (match, p1) => {
-//     return `<p>${p1.trim()}</p>`;
-//   });
-//   finalText = finalText.replace(/\n{2,}/g, '\n\n');
-//   finalText = finalText.replace(/^\n+|\n+$/g, '');
-//   finalText = finalText.replace(/(<\/p>)(?=<strong>)/g, '</p>\n<p>');
-//   finalText = finalText.replace(/\*\*(.*?)\*\*/g, '$1');
-//   return finalText;
-// };
 
 const ChatArea: React.FC<{
   toggleSidebar: () => void
@@ -90,13 +37,34 @@ const ChatArea: React.FC<{
   const { isOpen, toggleDropdown, closeDropdown } = useDropdown()
   const [message, setMessage] = useState('')
   const [chatMessages, setChatMessages] = useState<any[]>([])
+  console.log(chatMessages, 'chatMessages from response ')
   const [loading, setLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
+  const userName = localStorage.getItem('name')
+  const firstLetter = userName ? userName.charAt(0).toUpperCase() : ''
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') === 'dark'
+    }
+    return false
+  })
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark')
+      localStorage.setItem('theme', 'dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+      localStorage.setItem('theme', 'light')
+    }
+  }, [isDarkMode])
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode)
+  }
 
   const handleSignOut = async () => {
-    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;'
     await signOut({ redirect: true })
-  
   }
 
   const fetchMessages = async (chatId: string) => {
@@ -118,10 +86,11 @@ const ChatArea: React.FC<{
       const data = await response.json()
       if (data.chat_history && data.chat_history.length > 0) {
         setChatMessages(
-          data.chat_history.map((msg: { message: string; type: string }) => ({
+          data?.chat_history?.map((msg: { message: string; type: string,id:string }) => ({
             content: msg.message,
             senderType: msg.type,
-          }))
+            id: msg.id,
+          })),
         )
       } else {
         setChatMessages([])
@@ -132,30 +101,30 @@ const ChatArea: React.FC<{
   }
 
   const handleSendMessage = async () => {
-    if (!activeUserId || !message.trim()) return;
-  
-    let chatIdToUse = activeChatId;
-  
+    if (!activeUserId || !message.trim()) return
+
+    let chatIdToUse = activeChatId
+
     if (!chatIdToUse) {
-      onNewChatCreated();
-      chatIdToUse = localStorage.getItem('activeChatId');
+      onNewChatCreated()
+      chatIdToUse = localStorage.getItem('activeChatId')
     }
-  
+
     if (!chatIdToUse) {
-      console.error('Failed to create or retrieve chat ID');
-      return;
+      console.error('Failed to create or retrieve chat ID')
+      return
     }
-  
-    const token = localStorage.getItem('token');
+
+    const token = localStorage.getItem('token')
     const newUserMessage = {
       senderType: 'user',
       content: message,
-    };
-  
-    setChatMessages(prev => [...prev, newUserMessage]);
-    setMessage('');
+    }
+
+    setChatMessages((prev) => [...prev, newUserMessage])
+    setMessage('')
     try {
-      setLoading(true);
+      setLoading(true)
       const response = await fetch('/api/chat/send', {
         method: 'POST',
         headers: {
@@ -167,35 +136,36 @@ const ChatArea: React.FC<{
           query: message,
           userId: activeUserId,
         }),
-      });
-  
-      const result = await response.json();
+      })
+
+      const result = await response.json()
       if (result && result.pair) {
-        const { aiMessage } = result.pair;
-        setChatMessages(prev => [
+        const { aiMessage } = result.pair
+        setChatMessages((prev) => [
           ...prev,
           {
             senderType: 'AI',
             content: aiMessage.content || 'Error receiving response.',
           },
-        ]);
+        ])
       } else {
-        console.error('Unexpected API response format', result);
+        console.error('Unexpected API response format', result)
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('Error sending message:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
-  
+  }
+
   useEffect(() => {
     if (activeChatId) {
       fetchMessages(activeChatId)
     }
   }, [activeChatId])
+
   const handleKeyDown = (e: any) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSendMessage()
     }
@@ -204,7 +174,7 @@ const ChatArea: React.FC<{
   const scrollToBottom = () => {
     messagesEndRef?.current?.scrollIntoView({ behavior: 'smooth' })
   }
-  
+
   useEffect(() => {
     scrollToBottom()
   }, [chatMessages, loading])
@@ -213,7 +183,7 @@ const ChatArea: React.FC<{
       <button
         onClick={() => router.push('/payment')}
         className={clsx(
-          'flex w-full items-center border-b-2 border-gray-600 px-4 py-2 text-sm font-thin text-white hover:bg-gray-800'
+          'flex w-full items-center border-b-2 border-gray-600 px-4 py-2 text-sm font-thin text-white hover:bg-gray-800',
         )}
       >
         Payments
@@ -221,7 +191,7 @@ const ChatArea: React.FC<{
       <button
         onClick={handleSignOut}
         className={clsx(
-          'flex w-full items-center border-b-2 border-gray-600 px-4 py-2 text-sm font-thin text-white'
+          'flex w-full items-center border-b-2 border-gray-600 px-4 py-2 text-sm font-thin text-white',
         )}
       >
         Sign out
@@ -233,10 +203,25 @@ const ChatArea: React.FC<{
     e.target.style.height = 'auto'
     e.target.style.height = `${e.target.scrollHeight}px`
   }
+  function formatResponseText(inputText: string): string {
+    const quotesPattern = /"([^"]+)"/g;
+    const urlPattern = /(https?:\/\/[^\s]+)/g;
+    const textToRemove = /undefined/g;
+    const casePattern = /(Case \d+:)/g;
+  
+    let formattedText = inputText.replace(casePattern, match => `\n\n**${match}**\n\n`); 
+    formattedText = formattedText.replace(quotesPattern, '**"$1"**');
+    formattedText = formattedText.replace(urlPattern, `🗂️[**Download 👈**]($1)\n\n`);
+    formattedText = formattedText.replace(textToRemove, '');
+    formattedText = formattedText.replace(/\n/g, '\n\n');
+  
+    return formattedText;
+  }
+  
 
   return (
-    <div className="relative flex h-screen flex-1 flex-col bg-chatbg p-5 text-black">
-      <div className="flex items-center justify-between">
+    <div className="relative flex h-screen flex-1 flex-col bg-white p-2 text-black dark:bg-gray-900">
+      <div className="flex items-center  justify-between">
         {!sidebarVisible && (
           <div className="flex space-x-2 text-lg font-bold">
             <button
@@ -247,53 +232,87 @@ const ChatArea: React.FC<{
             </button>
           </div>
         )}
-
-        <div className="ml-auto flex flex-row items-center justify-center">
-          <Link href="/searchcases">
-            <button className="mr-2 flex h-8 items-center justify-center rounded-4xl border-black bg-black px-3 hover:bg-buttonHover sm:h-10 sm:px-5">
-              <p className="text-xs text-white sm:text-base">Search Cases</p>
-            </button>
-          </Link>
+        <Link href="/searchcases">
+          <button className="flex sm:ml-0 ml-4 h-8 items-center justify-center rounded-full border-black bg-black px-4 hover:bg-buttonHover dark:bg-white sm:h-10 sm:px-5">
+            <p className="text-xs text-white dark:text-black sm:text-base">
+            Browse Cases
+            </p>
+          </button>
+        </Link>
+        <div className="ml-auto flex flex-row items-center justify-center gap-2">
+          <DarkModeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
 
           <div className={clsx('relative', sidebarVisible ? 'ml-auto' : '')}>
             <button
-              className="flex h-8 w-8 items-center justify-center rounded-full border-black bg-black hover:bg-buttonHover sm:h-10 sm:w-10"
+              className="flex h-8 w-8 items-center justify-center rounded-full border-black bg-black hover:bg-buttonHover dark:bg-white sm:h-10 sm:w-10"
               onClick={toggleDropdown}
             >
-              <p className="text-xs text-white sm:text-base">M</p>
+              <p className="text-xs font-medium text-white dark:text-black sm:text-base">
+                {firstLetter}
+              </p>
             </button>
+
             {isOpen && dropDown()}
           </div>
         </div>
       </div>
 
-      <div className="mt-2 flex w-full flex-1 flex-col overflow-y-auto pr-2">
-        {chatMessages?.length === 0 && !loading ? (
-          <div className="flex flex-1 items-center justify-center">
+      <div
+        className={`mt-8 flex w-full gap-y-2 flex-1 flex-col items-center overflow-y-auto pr-2`}
+      >
+        {chatMessages?.length === 0 ? (
+          <div className="flex flex-1">
             <div className="flex h-full flex-col justify-center text-center">
               <div className="flex items-center justify-center">
-                <Image src={Logo} alt="Ai-Attorney Logo" width={200} height={200} />
+                <Image
+                  src={isDarkMode ? whitLogo : Logo}
+                  alt="Ai-Attorney Logo"
+                  width={200}
+                  height={200}
+                />
               </div>
             </div>
           </div>
         ) : (
-          <div className="flex flex-grow flex-col items-center overflow-y-auto">
-            <div className="w-5/6 flex-col space-y-4">
-            {chatMessages.map((msg, index) => (
+          <div
+            className={`${classes.sidebar} flex flex-grow w-full  flex-col overflow-y-auto px-4`}
+          >
+            <div className="w-full flex-col space-y-4">
+              {chatMessages?.map((msg, index) => (
                 <div
                   key={index}
-                  className={`flex ${
+                  className={`flex gap-1 ${
                     msg.senderType === 'AI' ? 'justify-end' : 'justify-start'
                   }`}
                 >
+                  {msg.senderType === 'AI' ? (
+                    <Image
+                      src={Logo}
+                      alt="Ai-Attorney Logo"
+                      width={10}
+                      className="flex h-8 w-8 justify-center rounded-full border-black p-1 dark:bg-white sm:h-10 sm:w-10"
+                      height={10}
+                    />
+                  ) : (
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full border-black bg-black hover:bg-buttonHover dark:bg-white sm:h-10 sm:w-10">
+                      <p className="text-xs font-medium text-white dark:text-black sm:text-base">
+                        {' '}
+                        {firstLetter}
+                      </p>
+                    </div>
+                  )}
                   <div
-                    className={`rounded-lg py-2 px-3 ${
-                      msg.senderType === 'AI'
-                        ? 'bg-white text-black shadow-lg'
-                        : 'bg-black text-white'
+                    className={`rounded-lg px-4 py-1 sm:py-2 ${
+                      msg?.senderType === 'AI'
+                        ? 'bg-white text-black shadow-sm dark:bg-gray-800 dark:text-white'
+                        : 'bg-black text-white dark:bg-gray-700 dark:text-white'
                     } text-sm sm:text-base`}
                   >
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                    {msg.senderType === 'AI' ? (
+                      <WordByWordTypingEffect   text={formatResponseText(msg?.content)} speed={50} id={msg?.id} />
+                    ) : (
+                      <div className='first-letter:capitalize'>{msg.content}</div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -313,19 +332,19 @@ const ChatArea: React.FC<{
 
         <div className="flex w-full items-center justify-center">
           <div
-            className={`mr-2 flex w-5/6 items-center space-x-2 rounded-2xl border-2 border-black bg-chatbg p-2 ${
+            className={`mr-2 flex w-5/6 items-center space-x-2 rounded-2xl border-2 border-black bg-chatbg p-2 dark:border-gray-700 dark:bg-gray-800 ${
               sidebarVisible ? 'max-w-6xl' : 'max-w-7xl'
             }`}
           >
             <textarea
               placeholder="Enter prompt here ..."
               value={message}
-              onChange={e => {
+              onChange={(e) => {
                 setMessage(e.target.value)
                 handleResize(e)
               }}
               onKeyDown={handleKeyDown}
-              className="ml-4 flex-grow resize-none overflow-y-auto bg-chatbg text-base text-gray-900 outline-none"
+              className="ml-4 flex-grow resize-none overflow-y-auto bg-chatbg text-base text-gray-900 outline-none dark:bg-gray-800 dark:text-white"
               style={{
                 height: 'auto',
                 minHeight: '24px',

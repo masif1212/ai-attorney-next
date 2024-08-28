@@ -4,7 +4,8 @@ import { RiMenu2Line } from 'react-icons/ri'
 import { MdOutlineAddComment } from 'react-icons/md'
 import ButtonForBlackScreen from './ButtonForBlackScreen'
 import '../styles/custom.css'
-import {  useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import capitalizeFirstLetter from '@/app/utilies/capital-first-letter'
 
 // Interface for chat items
 interface ChatItem {
@@ -34,20 +35,19 @@ const Sidebar: React.FC<SidebarProps> = ({
   sidebarVisible,
   toggleSidebar,
   setActiveChatId,
-  chats
-
+  chats,
 }) => {
   const [chatItems, setChatItems] = useState<ChatItem[]>([])
   const [error, setError] = useState<string | null>(null)
   const [todayChats, setTodayChats] = useState<ChatItem[]>([])
   const [previousChats, setPreviousChats] = useState<ChatItem[]>([])
-  const router = useRouter()
   const token = localStorage.getItem('token')
   const userId = localStorage.getItem('activeUserId')
+  const completeMsg = localStorage.getItem('completedMessages')
 
   const fetchChatHistory = useCallback(async () => {
-    if (!chats) return;
- 
+    console.log('fetching chat history')
+    if (!chats) return
 
     try {
       const response = await fetch(`/api/chat/history/${userId}`, {
@@ -63,7 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       }
 
       const data = await response.json()
-      setTodayChats(data.today)
+      setTodayChats(data?.today)
       setPreviousChats(data.previous)
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -72,7 +72,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         setError('An unknown error occurred')
       }
     }
-  }, [userId, token, chats])
+  }, [userId, token, chats, completeMsg])
 
   useEffect(() => {
     fetchChatHistory()
@@ -80,10 +80,10 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const handleCreateOrFetchChat = async () => {
     if (!token) {
-      setError('Token is not available');
-      return;
+      setError('Token is not available')
+      return
     }
-  
+
     try {
       const response = await fetch('/api/chat/create', {
         method: 'POST',
@@ -91,10 +91,10 @@ const Sidebar: React.FC<SidebarProps> = ({
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-      });
-  
-      const data = await response.json();
-  
+      })
+
+      const data = await response.json()
+
       if (response.ok) {
         const newChat: ChatItem = {
           id: data.chatId,
@@ -102,43 +102,41 @@ const Sidebar: React.FC<SidebarProps> = ({
           createdAt: new Date().toISOString(),
           messages: [],
           fullContext: [{ content: '' }],
-        };
-  
-        setActiveChatId(data.chatId);
-        localStorage.setItem('activeChatId', data.chatId);
-  
-        setChatItems((prevChats) => [newChat, ...prevChats]);
-        setTodayChats((prevChats) => [newChat, ...prevChats]);
-  
-        await fetchChatHistory();
+        }
+
+        setActiveChatId(data.chatId)
+        localStorage.setItem('activeChatId', data.chatId)
+
+        setChatItems((prevChats) => [newChat, ...prevChats])
+        setTodayChats((prevChats) => [newChat, ...prevChats])
+
+        await fetchChatHistory()
       } else {
-        console.error('Error response data:', data);
-        setError(data.message || 'Failed to create chat');
+        console.error('Error response data:', data)
+        setError(data.message || 'Failed to create chat')
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error('Caught error:', error);
-        setError(error.message);
+        console.error('Caught error:', error)
+        setError(error.message)
       } else {
-        setError('An unknown error occurred');
+        setError('An unknown error occurred')
       }
     }
-  };
-  
-
- 
+  }
 
   useEffect(() => {
     fetchChatHistory()
-  }, [fetchChatHistory, chats])
+    console.log('fetching chat history when we send an message') 
+  }, [fetchChatHistory, chats,completeMsg])
 
   if (!sidebarVisible) {
     return null
   }
 
   return (
-    <div className="flex h-screen w-60 flex-col border-2 border-black bg-black px-3 py-3 text-white">
-      <div className="flex flex-row justify-between pt-3" >
+    <div className="flex h-screen w-64 flex-col border-2 border-black bg-black px-3 py-3 text-white dark:border-gray-900 dark:bg-gray-800">
+      <div className="flex flex-row justify-between pt-3">
         <ButtonForBlackScreen onClick={toggleSidebar}>
           <RiMenu2Line size={25} color="#faf5f5" />
         </ButtonForBlackScreen>
@@ -148,26 +146,29 @@ const Sidebar: React.FC<SidebarProps> = ({
         </ButtonForBlackScreen>
       </div>
 
-      <div className="custom-scrollbar flex-1 overflow-y-auto">
-        {todayChats.length > 0 && (
+      <div className="custom-scrollbar flex-1 overflow-y-auto py-3">
+        {todayChats?.length > 0 && (
           <div className="mt-5">
-            <div className="text-sm font-bold">Today</div>
+            <div className="gap-y-2 border-b-2 border-zinc-400 text-sm font-bold">
+              Today
+            </div>
             <ul>
-              {todayChats.map((item, index) => (
+              {todayChats?.map((item, index) => (
                 <li
                   key={index}
-                  className="mr-1 rounded hover:bg-gray-900"
+                  className="mb-1 mr-1 rounded px-1 py-1 hover:bg-gray-900"
                 >
                   <button
-                    className="rounded text-sm text-gray-400 w-full"
-                    onClick={() => setActiveChatId(item.id)}
+                    className="w-full rounded text-sm text-gray-400"
+                    onClick={() => setActiveChatId(item?.id)}
                   >
-                    <span className="flex justify-start text-white w-full  px-1">
-                      {
-                        item.fullContext[0]?.content.length <= 25
+                    <span className="flex w-full justify-start px-1 text-white">
+                    {capitalizeFirstLetter(
+                        item?.fullContext[0]?.content?.length <= 25
                           ? item.fullContext[0]?.content
-                          : item.fullContext[0]?.content.substring(0, 25) + "..."
-                      }
+                          : item.fullContext[0]?.content.substring(0, 25) +
+                              '...',
+                      )}
                     </span>
                   </button>
                 </li>
@@ -176,25 +177,28 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         )}
 
-        {previousChats.length > 0 && (
+        {previousChats?.length > 0 && (
           <div className="mt-5">
-            <div className="mb-2 text-sm font-bold">Previous Day</div>
+            <div className="gap-y-2 border-b-2 border-zinc-400 text-sm font-bold">
+              Previous Day
+            </div>
             <ul className="space-y-2">
-              {previousChats.map((item, index) => (
+              {previousChats?.map((item, index) => (
                 <li
                   key={index}
-                  className="mr-1 rounded px-1 hover:bg-gray-900"
+                  className="mb-1 mr-1 rounded px-1 py-1 hover:bg-gray-900"
                 >
                   <button
-                    className="flex justify-between text-sm text-gray-400"
-                    onClick={() => setActiveChatId(item.id)}
+                    className="w-full rounded text-sm text-gray-400"
+                    onClick={() => setActiveChatId(item?.id)}
                   >
-                    <span className="flex justify-start font-semibold text-slate-100 w-full px-1">
-                      {
-                        item.fullContext[0]?.content.length <= 25
+                    <span className="flex w-full justify-start px-1 text-white ">
+                    {capitalizeFirstLetter(
+                        item?.fullContext[0]?.content?.length <= 25
                           ? item.fullContext[0]?.content
-                          : item.fullContext[0]?.content.substring(0, 25) + "..."
-                      }
+                          : item.fullContext[0]?.content.substring(0, 25) +
+                              '...',
+                      )}
                     </span>
                   </button>
                 </li>
@@ -203,9 +207,9 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         )}
       </div>
-    
     </div>
   )
 }
 
 export default Sidebar
+

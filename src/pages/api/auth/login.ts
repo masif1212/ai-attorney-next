@@ -45,10 +45,10 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
     }
 
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-
     return res.status(200).json({
       message: 'Logged in successfully',
       userId: user.id,
+      username: user.name,
       token,
       chatId: chat.id,
     });

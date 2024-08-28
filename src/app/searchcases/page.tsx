@@ -1,5 +1,4 @@
 'use client'
-
 import TypesenseInstantSearchAdapter from 'typesense-instantsearch-adapter'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
@@ -16,7 +15,6 @@ import LogoBlack from '@/images/logo/logo-black.png'
 import clsx from 'clsx'
 import Image from 'next/image'
 import React from 'react'
-
 // Dynamically load InstantSearch components to disable SSR (Server-Side Rendering)
 const InstantSearch = dynamic(
   () => import('react-instantsearch-dom').then((mod) => mod.InstantSearch),
@@ -26,7 +24,6 @@ const SearchBox = dynamic(
   () => import('react-instantsearch-dom').then((mod) => mod.SearchBox),
   { ssr: true },
 )
-
 // Set up TypeSense InstantSearch adapter
 const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
   server: {
@@ -43,9 +40,7 @@ const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
     query_by: 'title,description,citation,court,year',
   },
 })
-
 const searchClient = typesenseInstantsearchAdapter.searchClient
-
 // Component to render each hit
 const Hit = ({ hit }: any) => {
   return (
@@ -63,22 +58,17 @@ const Hit = ({ hit }: any) => {
     </Link>
   )
 }
-
 // Custom Refinement Dropdown
-const CustomRefinementDropdown = React.memo(({ items, currentRefinement, refine, attribute }: any) => {
+const CustomRefinementDropdown = React.memo(function CustomRefinementDropdown({ items, currentRefinement, refine, attribute }: any) {
   const [selectedOption, setSelectedOption] = useState<any>(null)
   const [isClient, setIsClient] = useState(false)
-
-
   useEffect(() => {
     setIsClient(true)
   }, [])
-
   const options = useMemo(() => items.map((item: any) => ({
     value: item.value.toString(),
     label: `${item.label}`,
   })), [items])
-
   const handleChange = (selected: any) => {
     if (selected) {
       refine([selected.value.toString()])
@@ -90,7 +80,6 @@ const CustomRefinementDropdown = React.memo(({ items, currentRefinement, refine,
       }
     }
   }
-
   useEffect(() => {
     if (
       !currentRefinement.length ||
@@ -98,12 +87,10 @@ const CustomRefinementDropdown = React.memo(({ items, currentRefinement, refine,
     ) {
       setSelectedOption(null)
     }
-  }, [currentRefinement])
-
+  }, [currentRefinement, selectedOption?.value])
   if (!isClient) {
     return null
   }
-
   return (
     <Select
       options={options}
@@ -117,13 +104,10 @@ const CustomRefinementDropdown = React.memo(({ items, currentRefinement, refine,
     />
   )
 })
-
 const ConnectedRefinementDropdown = connectRefinementList(CustomRefinementDropdown)
-
 // Main search component
 export default function SearchCases() {
   const [showAdditionalFilters, setShowAdditionalFilters] = useState(false)
-
   return (
     <div className="min-h-screen w-full bg-white">
       <InstantSearch searchClient={searchClient} indexName="cases">
@@ -153,7 +137,6 @@ export default function SearchCases() {
             </div>
           </div>
         </div>
-
         {/* Main Content */}
         <div className="w-full bg-white">
           {/* Filters */}
@@ -166,12 +149,10 @@ export default function SearchCases() {
               <label className="block text-gray-700">Select Year</label>
               <ConnectedRefinementDropdown attribute="year" />
             </div>
-
             <div className="w-full max-w-xs sm:w-auto">
               <label className="block text-gray-700">Select Court</label>
               <ConnectedRefinementDropdown attribute="court" />
             </div>
-
             {/* Button to show additional filters */}
             <div className="flex w-full items-end sm:w-auto">
               <button
@@ -182,7 +163,6 @@ export default function SearchCases() {
               </button>
             </div>
           </div>
-
           {/* Additional Filters (conditionally rendered) */}
           {showAdditionalFilters && (
             <div className="flex flex-col flex-wrap justify-center space-y-4 px-6 py-4 lg:flex-row lg:space-x-32 lg:space-y-0">
@@ -196,13 +176,11 @@ export default function SearchCases() {
               </div>
             </div>
           )}
-
           {/* Display hits */}
           <div className="border-gray-200 bg-white px-4 py-4 sm:px-6 md:px-8">
             <Configure hitsPerPage={10} />
             <Hits hitComponent={Hit} />
           </div>
-
           {/* Pagination at the bottom */}
           <div className="flex justify-center bg-white py-4">
             <Pagination
@@ -214,9 +192,5 @@ export default function SearchCases() {
         </div>
       </InstantSearch>
     </div>
-
-
-</>
-
   )
 }

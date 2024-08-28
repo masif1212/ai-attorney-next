@@ -1,0 +1,24 @@
+/* Sidebar.module.css */
+
+
+  .sidebar::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+  }
+  
+  .sidebar::-webkit-scrollbar-track {
+    background-color: #e0e0e0; /* Background of the scrollbar track */
+    border-radius: 80px; /* Optional: to make the track rounded */
+  }
+  
+  .sidebar::-webkit-scrollbar-thumb {
+    background-color: #888; /* Color of the scrollbar thumb */
+    border-radius: 80px; /* Optional: to make the thumb rounded */
+  }
+  
+  .sidebar::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Color of the scrollbar thumb on hover */
+  }
+  
+  /* For Firefox */
+
+  
