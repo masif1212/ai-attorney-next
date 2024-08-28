@@ -10,11 +10,12 @@ import {
   connectRefinementList,
 } from 'react-instantsearch-dom'
 import '@/styles/base.css'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Select from 'react-select'
 import LogoBlack from '@/images/logo/logo-black.png'
 import clsx from 'clsx'
 import Image from 'next/image'
+import React from 'react'
 
 // Dynamically load InstantSearch components to disable SSR (Server-Side Rendering)
 const InstantSearch = dynamic(
@@ -46,7 +47,7 @@ const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
 const searchClient = typesenseInstantsearchAdapter.searchClient
 
 // Component to render each hit
-function Hit({ hit }: any) {
+const Hit = ({ hit }: any) => {
   return (
     <Link href={`/casedetail?order_num=${hit.order_num}`}>
       <div className="mb-4 transform rounded-lg border border-gray-200 bg-white p-4 duration-300 hover:shadow-lg">
@@ -64,28 +65,29 @@ function Hit({ hit }: any) {
 }
 
 // Custom Refinement Dropdown
-
-const CustomRefinementDropdown = ({
-  items,
-  currentRefinement,
-  refine,
-  attribute,
-}: any) => {
+const CustomRefinementDropdown = React.memo(({ items, currentRefinement, refine, attribute }: any) => {
   const [selectedOption, setSelectedOption] = useState<any>(null)
+  const [isClient, setIsClient] = useState(false)
 
-  const options = items.map((item: any) => ({
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  const options = useMemo(() => items.map((item: any) => ({
     value: item.value.toString(),
     label: `${item.label}`,
-  }))
+  })), [items])
 
   const handleChange = (selected: any) => {
     if (selected) {
-      // Clear the previous refinement and apply the new one
       refine([selected.value.toString()])
       setSelectedOption(selected)
     } else {
-      setSelectedOption(null)
-      refine([])
+      if (selectedOption !== null) {
+        setSelectedOption(null)
+        refine([])
+      }
     }
   }
 
@@ -97,6 +99,10 @@ const CustomRefinementDropdown = ({
       setSelectedOption(null)
     }
   }, [currentRefinement])
+
+  if (!isClient) {
+    return null
+  }
 
   return (
     <Select
@@ -110,11 +116,9 @@ const CustomRefinementDropdown = ({
       isMulti={false}
     />
   )
-}
+})
 
-const ConnectedRefinementDropdown = connectRefinementList(
-  CustomRefinementDropdown,
-)
+const ConnectedRefinementDropdown = connectRefinementList(CustomRefinementDropdown)
 
 // Main search component
 export default function SearchCases() {
@@ -194,7 +198,7 @@ export default function SearchCases() {
           )}
 
           {/* Display hits */}
-          <div className=" border-gray-200 bg-white px-4 py-4 sm:px-6 md:px-8">
+          <div className="border-gray-200 bg-white px-4 py-4 sm:px-6 md:px-8">
             <Configure hitsPerPage={10} />
             <Hits hitComponent={Hit} />
           </div>
