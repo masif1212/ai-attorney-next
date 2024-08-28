@@ -1,24 +1,24 @@
 // src/lib/db.js
-import mysql, { Connection } from 'mysql2/promise';
+import mysql, { Connection } from 'mysql2/promise'
 
 // mysql://root:gYvwbsccsHHJDEzcPLMznQXbeYQDNvPW@junction.proxy.rlwy.net:55944/railway
 const connectToDatabase = async (): Promise<Connection | null> => {
   try {
     const connection = await mysql.createConnection({
-      host: '181.224.131.55',
+      host: 'mysql.railway.internal',
       port: 3306,
-      user: 'aiattorn_devOne',
-      password: 'AiAttorney987612345',
-      database: 'aiattorn_dev',
+      user: 'root',
+      password: 'vsxcsdTBEavnekMELTZBTsYpIQsPlvJW',
+      database: 'railway',
     });
   
 
-    console.log("Database connected Successfully")
-    return connection;
+    console.log('Database connected Successfully')
+    return connection
   } catch (error) {
-    console.error('Error connecting to the database:', error);
-    return null;
+    console.error('Error connecting to the database:', error)
+    return null
   }
-};
+}
 
-export default connectToDatabase;
+export default connectToDatabase
