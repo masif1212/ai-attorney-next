@@ -24,7 +24,6 @@ function Office({
     </address>
   )
 }
-
 export function Offices({
   invert = false,
   ...props

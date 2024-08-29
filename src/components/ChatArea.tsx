@@ -86,11 +86,13 @@ const ChatArea: React.FC<{
       const data = await response.json()
       if (data.chat_history && data.chat_history.length > 0) {
         setChatMessages(
-          data?.chat_history?.map((msg: { message: string; type: string,id:string }) => ({
-            content: msg.message,
-            senderType: msg.type,
-            id: msg.id,
-          })),
+          data?.chat_history?.map(
+            (msg: { message: string; type: string; id: string }) => ({
+              content: msg.message,
+              senderType: msg.type,
+              id: msg.id,
+            }),
+          ),
         )
       } else {
         setChatMessages([])
@@ -181,12 +183,12 @@ const ChatArea: React.FC<{
   const dropDown = () => (
     <div className="absolute right-0 z-10 mt-2 w-32 rounded-md border border-gray-900 bg-black shadow-lg">
       <button
-        onClick={() => router.push('/payment')}
+        onClick={() => router.push('/profile')}
         className={clsx(
           'flex w-full items-center border-b-2 border-gray-600 px-4 py-2 text-sm font-thin text-white hover:bg-gray-800',
         )}
       >
-        Payments
+        Profile
       </button>
       <button
         onClick={handleSignOut}
@@ -204,24 +206,29 @@ const ChatArea: React.FC<{
     e.target.style.height = `${e.target.scrollHeight}px`
   }
   function formatResponseText(inputText: string): string {
-    const quotesPattern = /"([^"]+)"/g;
-    const urlPattern = /(https?:\/\/[^\s]+)/g;
-    const textToRemove = /undefined/g;
-    const casePattern = /(Case \d+:)/g;
-  
-    let formattedText = inputText.replace(casePattern, match => `\n\n**${match}**\n\n`); 
-    formattedText = formattedText.replace(quotesPattern, '**"$1"**');
-    formattedText = formattedText.replace(urlPattern, `🗂️[**Download 👈**]($1)\n\n`);
-    formattedText = formattedText.replace(textToRemove, '');
-    formattedText = formattedText.replace(/\n/g, '\n\n');
-  
-    return formattedText;
+    const quotesPattern = /"([^"]+)"/g
+    const urlPattern = /(https?:\/\/[^\s]+)/g
+    const textToRemove = /undefined/g
+    const casePattern = /(Case \d+:)/g
+
+    let formattedText = inputText.replace(
+      casePattern,
+      (match) => `\n\n**${match}**\n\n`,
+    )
+    formattedText = formattedText.replace(quotesPattern, '**"$1"**')
+    formattedText = formattedText.replace(
+      urlPattern,
+      `🗂️[**Download 👈**]($1)\n\n`,
+    )
+    formattedText = formattedText.replace(textToRemove, '')
+    formattedText = formattedText.replace(/\n/g, '\n\n')
+
+    return formattedText
   }
-  
 
   return (
     <div className="relative flex h-screen flex-1 flex-col bg-white p-2 text-black dark:bg-gray-900">
-      <div className="flex items-center  justify-between">
+      <div className="flex items-center justify-between">
         {!sidebarVisible && (
           <div className="flex space-x-2 text-lg font-bold">
             <button
@@ -233,9 +240,9 @@ const ChatArea: React.FC<{
           </div>
         )}
         <Link href="/searchcases">
-          <button className="flex sm:ml-0 ml-4 h-8 items-center justify-center rounded-full border-black bg-black px-4 hover:bg-buttonHover dark:bg-white sm:h-10 sm:px-5">
+          <button className="ml-4 flex h-8 items-center justify-center rounded-full border-black bg-black px-4 hover:bg-buttonHover dark:bg-white sm:ml-0 sm:h-10 sm:px-5">
             <p className="text-xs text-white dark:text-black sm:text-base">
-            Browse Cases
+              Browse Cases
             </p>
           </button>
         </Link>
@@ -258,7 +265,7 @@ const ChatArea: React.FC<{
       </div>
 
       <div
-        className={`mt-8 flex w-full gap-y-2 flex-1 flex-col items-center overflow-y-auto pr-2`}
+        className={`mt-8 flex w-full flex-1 flex-col items-center gap-y-2 overflow-y-auto pr-2`}
       >
         {chatMessages?.length === 0 ? (
           <div className="flex flex-1">
@@ -275,7 +282,7 @@ const ChatArea: React.FC<{
           </div>
         ) : (
           <div
-            className={`${classes.sidebar} flex flex-grow w-full  flex-col overflow-y-auto px-4`}
+            className={`${classes.sidebar} flex w-full flex-grow flex-col overflow-y-auto px-4`}
           >
             <div className="w-full flex-col space-y-4">
               {chatMessages?.map((msg, index) => (
@@ -294,9 +301,8 @@ const ChatArea: React.FC<{
                       height={10}
                     />
                   ) : (
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full border-black bg-black hover:bg-buttonHover dark:bg-white sm:h-10 sm:w-10">
-                      <p className="text-xs font-medium text-white dark:text-black sm:text-base">
-                        {' '}
+                    <div className="flex flex-shrink-0 h-8 w-8 items-center justify-center rounded-full border-black bg-black hover:bg-buttonHover dark:bg-white sm:h-10 sm:w-10">
+                      <p className="px-1 text-xs font-medium text-white dark:text-black sm:px-2 sm:text-base">
                         {firstLetter}
                       </p>
                     </div>
@@ -304,14 +310,20 @@ const ChatArea: React.FC<{
                   <div
                     className={`rounded-lg px-4 py-1 sm:py-2 ${
                       msg?.senderType === 'AI'
-                        ? 'bg-white text-black shadow-sm dark:bg-gray-800 dark:text-white'
+                        ? 'w-full bg-white text-black shadow-sm dark:bg-gray-800 dark:text-white'
                         : 'bg-black text-white dark:bg-gray-700 dark:text-white'
                     } text-sm sm:text-base`}
                   >
                     {msg.senderType === 'AI' ? (
-                      <WordByWordTypingEffect   text={formatResponseText(msg?.content)} speed={50} id={msg?.id} />
+                      <WordByWordTypingEffect
+                        text={formatResponseText(msg?.content)}
+                        speed={50}
+                        id={msg?.id}
+                      />
                     ) : (
-                      <div className='first-letter:capitalize'>{msg.content}</div>
+                      <div className="first-letter:capitalize">
+                        {msg.content}
+                      </div>
                     )}
                   </div>
                 </div>
