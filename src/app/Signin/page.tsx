@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 'use client'
 
 import { useState } from 'react'
@@ -18,6 +17,8 @@ export default function SignIn() {
     formState: { errors },
   } = useForm<Inputs>()
   const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [signUpLoading, setSignUpLoading] = useState(false)
   const [serverResponse, setServerResponse] = useState<{
     message: string
     isError: boolean
@@ -25,6 +26,7 @@ export default function SignIn() {
   const router = useRouter()
 
   const onSubmit: SubmitHandler<Inputs> = async ({ email, password }) => {
+    setLoading(true)
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -34,22 +36,20 @@ export default function SignIn() {
         body: JSON.stringify({ email, password }),
       })
       const data = await response.json()
-      console.log(data, 'data from repsonse api')
       if (response.ok) {
+        router.push('/chat')
         localStorage.setItem('token', data?.token)
         localStorage.setItem('name', data?.username)
         localStorage.setItem('activeChatId', data?.chatId)
         localStorage.setItem('activeUserId', data?.userId)
+        setLoading(false)
         document.cookie = `token=${data?.token}; path=/`
-        console.log('cookies')
         setServerResponse({
           message: 'Logged in successfully!',
           isError: false,
         })
 
-        setTimeout(() => {
-          router.push('/chat')
-        }, 0)
+      
       } else {
         setServerResponse({ message: data.message, isError: true })
       }
@@ -141,9 +141,9 @@ export default function SignIn() {
           <div>
             <button
               type="submit"
-              className="flex w-full justify-center rounded-md bg-black px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-buttonHover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="flex w-full justify-center rounded-md bg-black px-3 py-1.5 text-sm font-normal leading-6 text-white shadow-sm hover:bg-buttonHover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
-              Sign in
+              {loading ? 'Loading...' : 'Sign in'}
             </button>
           </div>
         </form>
@@ -152,9 +152,12 @@ export default function SignIn() {
           Don't have an account?{' '}
           <Link
             href="/signup"
-            className="font-semibold leading-6 text-black hover:text-indigo-500"
+            onLoad={() => {
+              setSignUpLoading(true)
+            }}
+            className="font-normal leading-6 text-black hover:text-indigo-500"
           >
-            SignUp
+            {signUpLoading ? 'Loading...' : 'Sign up'}
           </Link>
         </p>
       </div>
