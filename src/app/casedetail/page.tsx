@@ -27,42 +27,41 @@ function CaseDetailContent() {
   return (
     <div className="min-h-screen w-full bg-gradient-to-r from-gray-100 to-gray-300 p-8">
       <div className="mx-auto w-full max-w-6xl">
-        <div className='flex flex-row justify-between mb-5'>
+        <div className="sticky top-0 z-10 mb-5 flex flex-row justify-between bg-gradient-to-r from-gray-100 to-gray-300 px-4 py-3">
           <button
             onClick={() => window.history.back()}
-            className="mr-2 flex h-8 sm:h-10 px-3 sm:px-5 items-center justify-center rounded-4xl border-black bg-black hover:bg-buttonHover text-white"
+            className="mr-2 flex h-8 items-center justify-center rounded-4xl border-black bg-black px-3 text-white hover:bg-buttonHover sm:h-10 sm:px-5"
           >
             Back
           </button>
 
           <button
             onClick={openModal}
-            className="mr-2 flex h-8 sm:h-10 px-3 sm:px-5 items-center justify-center rounded-4xl border-black bg-black hover:bg-buttonHover text-white"
+            className="mr-2 flex h-8 items-center justify-center rounded-4xl border-black bg-black px-3 text-white hover:bg-buttonHover sm:h-10 sm:px-5"
           >
             Case Summary
           </button>
         </div>
 
-        <div className="rounded-lg bg-white p-6 sm:p-8 shadow-xl">
-          <h1 className="mb-4 text-center text-xl sm:text-2xl font-extrabold text-gray-800">
+        {/* Add top padding to create space for sticky buttons */}
+        <div className="rounded-lg bg-white p-6 pt-20 shadow-xl sm:p-8">
+          <h1 className="mb-4 text-center text-xl font-extrabold text-gray-800 sm:text-2xl">
             {caseItem.title}
           </h1>
-          <p className="mb-4 sm:mb-6 text-center text-base sm:text-lg font-semibold text-gray-600">
+          <p className="mb-4 text-center text-base font-semibold text-gray-600 sm:mb-6 sm:text-lg">
             {caseItem.court}
           </p>
-          <p className="mb-4 sm:mb-6 text-center text-base sm:text-lg font-semibold text-gray-600">
+          <p className="mb-4 text-center text-base font-semibold text-gray-600 sm:mb-6 sm:text-lg">
             {caseItem.citation}
           </p>
-          <p className="mb-4 sm:mb-6 text-center text-base sm:text-lg font-semibold text-gray-600">
+          <p className="mb-4 text-center text-base font-semibold text-gray-600 sm:mb-6 sm:text-lg">
             {caseItem.judges}
           </p>
-          <p className="text-justify text-sm sm:text-base text-gray-700 leading-relaxed">
+          <p className="text-justify text-sm leading-relaxed text-gray-700 sm:text-base">
             {caseItem.case_description}
           </p>
           {/* You can add more case details here */}
-
         </div>
-
       </div>
 
       {/* Modal Component */}
@@ -81,5 +80,5 @@ export default function CaseDetail() {
     <Suspense fallback={<div>Loading...</div>}>
       <CaseDetailContent />
     </Suspense>
-  );
+  )
 }

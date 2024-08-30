@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import platform from 'platform';
 
 type Inputs = {
   email: string;
@@ -18,13 +19,20 @@ export default function SignIn() {
   const router = useRouter();
 
   const onSubmit: SubmitHandler<Inputs> = async ({ email, password }) => {
+    const deviceInfo:any = {
+      browser: platform.name,
+      version: platform.version,
+      device: platform.product || 'Desktop',
+      userAgent: navigator.userAgent
+  };
+
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password,deviceInfo }),
       });
       const data = await response.json();
       if (response.ok) {
