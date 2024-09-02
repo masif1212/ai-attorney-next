@@ -31,7 +31,7 @@ model User {
 model Session {
   id          String    @id @default(uuid())
   userId      String
-  token       String    @unique
+  token       String    @unique @db.VarChar(512)
   deviceInfo  Json     
   createdAt   DateTime  @default(now())
   expiresAt   DateTime
