@@ -1,4 +1,3 @@
-
 import { type Metadata } from 'next'
 import Image from 'next/image'
 
@@ -24,7 +23,6 @@ import rightarrow from '@/images/clients/arrows/right-arrow.png'
 import TextAnimation from '@/components/TextAnimation'
 import { type CaseStudy, type MDXEntry, loadCaseStudies } from '@/lib/mdx'
 
-
 const clients = [
   ['Phobia', logoPhobiaLight],
   ['Family Fund', logoFamilyFund],
@@ -39,11 +37,9 @@ const clients = [
   ['Case Summary', logoUnseal],
 ]
 
-
-
 function Clients() {
   return (
-    <div className="mt-24 h-auto rounded-4xl bg-neutral-950 py-10  lg:mt-56">
+    <div className="mt-24 h-auto rounded-4xl bg-neutral-950 py-10 lg:mt-56">
       <Container className="h-full w-full px-4 sm:px-6 lg:px-8">
         <FadeIn className="flex items-center gap-x-8">
           {/* <div className="h-px flex-auto bg-neutral-800" /> */}
@@ -66,9 +62,8 @@ function Clients() {
               </p>
             </div>
 
-            <div className="flex w-full items-center justify-center sm:w-2/3 sm:pl-16 sm:py-4 sm:pt-6 sm:pb-6 mt-6 sm:mt-0">
+            <div className="mt-6 flex w-full items-center justify-center sm:mt-0 sm:w-2/3 sm:py-4 sm:pb-6 sm:pl-16 sm:pt-6">
               <video
-                controls
                 preload="metadata"
                 loop
                 autoPlay
@@ -80,7 +75,6 @@ function Clients() {
               </video>
             </div>
           </div>
-
         </FadeInStagger>
       </Container>
     </div>
@@ -114,7 +108,7 @@ function CaseStudies({
                     unoptimized
                   />
                 </h3>
-                <p className="mt-6 font-display text-2xl font-semibold text-neutral-950 h-16">
+                <p className="mt-6 h-16 font-display text-2xl font-semibold text-neutral-950">
                   {caseStudy.title}
                 </p>
                 <p className="mt-4 text-base text-neutral-600">
@@ -156,14 +150,39 @@ function Services() {
           <div>
             <List className="mt-16 lg:mt-0 lg:w-1/2 lg:min-w-[33rem] lg:pl-4">
               <ListItem title="Contract Drafting and Document Review.">
-              AI Attorney is set to redefine how contracts are drafted and reviewed. Our forthcoming AI-powered system will empower you to create contracts that are not only detailed and compliant with laws but are also crafted with meticulous attention to every nuance and detail. The system will meticulously review your existing documents, pinpointing potential issues and suggesting areas for improvement. This upcoming feature is designed to ensure that every agreement you enter into is precise, legally sound, and error-free, giving you the ultimate confidence in your legal affairs.
-
+                AI Attorney is set to redefine how contracts are drafted and
+                reviewed. Our forthcoming AI-powered system will empower you to
+                create contracts that are not only detailed and compliant with
+                laws but are also crafted with meticulous attention to every
+                nuance and detail. The system will meticulously review your
+                existing documents, pinpointing potential issues and suggesting
+                areas for improvement. This upcoming feature is designed to
+                ensure that every agreement you enter into is precise, legally
+                sound, and error-free, giving you the ultimate confidence in
+                your legal affairs.
               </ListItem>
               <ListItem title="Legal Consultation">
-              Get instant, reliable legal advice with AI Attorney’s consultation feature. Our AI-powered bot is trained on an extensive database of legal cases, providing you with accurate and relevant insights tailored to your specific queries. Whether you are a client seeking advice or a lawyer looking for a second opinion, AI Attorney offers accessible, on-demand legal consultation that you can trust.
+                Get instant, reliable legal advice with AI Attorney’s
+                consultation feature. Our AI-powered bot is trained on an
+                extensive database of legal cases, providing you with accurate
+                and relevant insights tailored to your specific queries. Whether
+                you are a client seeking advice or a lawyer looking for a second
+                opinion, AI Attorney offers accessible, on-demand legal
+                consultation that you can trust.
               </ListItem>
               <ListItem title="Digital Enterprise Solutions.">
-              AI Attorney is preparing to introduce Digital Enterprise Solutions designed to transform the way you manage your legal operations. This comprehensive suite will include powerful modules for Finance, Billing, Document Management, and Legal Case Management. Each module will seamlessly integrate into your existing processes, automating routine tasks and enhancing your ability to manage complex legal work with ease. Envision a future where financial tasks are streamlined, billing is handled with precision, documents are effortlessly organized, and legal cases are managed with unparalleled efficiency. AI Attorney will not just simplify your work—it will redefine what’s possible in the legal industry.
+                AI Attorney is preparing to introduce Digital Enterprise
+                Solutions designed to transform the way you manage your legal
+                operations. This comprehensive suite will include powerful
+                modules for Finance, Billing, Document Management, and Legal
+                Case Management. Each module will seamlessly integrate into your
+                existing processes, automating routine tasks and enhancing your
+                ability to manage complex legal work with ease. Envision a
+                future where financial tasks are streamlined, billing is handled
+                with precision, documents are effortlessly organized, and legal
+                cases are managed with unparalleled efficiency. AI Attorney will
+                not just simplify your work—it will redefine what’s possible in
+                the legal industry.
               </ListItem>
               {/* <ListItem title="Summary">
               AI Attorney harnesses advanced AI technology to offer a comprehensive suite of services, including document generation, personalized legal advice, and digital solutions for law firms. Our goal is to make legal processes more efficient, accurate, and cost-effective, enabling individuals and businesses to navigate legal challenges with confidence.
@@ -197,8 +216,12 @@ export default async function Home({ invert }: any) {
           {/* <h1 className="font-display text-5xl font-medium tracking-tight text-neutral-950 [text-wrap:balance] sm:text-7xl">
           Introduction
         </h1> */}
-          <p className="mt-6 text-xl text-neutral-600 ">
-            AI Attorney is a leading legal tech company transforming the legal industry with advanced AI. Our platform generates legal documents, drafts agreements, and offers tailored legal advice for individuals and businesses. We streamline legal processes, boost efficiency, and provide cost-effective legal solutions.
+          <p className="mt-6 text-xl text-neutral-600">
+            AI Attorney is a leading legal tech company transforming the legal
+            industry with advanced AI. Our platform generates legal documents,
+            drafts agreements, and offers tailored legal advice for individuals
+            and businesses. We streamline legal processes, boost efficiency, and
+            provide cost-effective legal solutions.
           </p>
         </FadeIn>
 
@@ -220,9 +243,9 @@ export default async function Home({ invert }: any) {
       <CaseStudies caseStudies={caseStudies} />
 
       <Testimonial
-        className="mt-24 sm:mt-32 lg:mt-40 p-4 sm:p-6  text-xs sm:text-base lg:text-lg"
+        className="mt-24 p-4 text-xs sm:mt-32 sm:p-6 sm:text-base lg:mt-40 lg:text-lg"
 
-      // client={{ name: 'Phobia', logo: logoPhobiaDark }}
+        // client={{ name: 'Phobia', logo: logoPhobiaDark }}
       >
         Combining the power of AI with the profound depth of Pakistani legal
         precedents, our platform transforms legal research into a precise and

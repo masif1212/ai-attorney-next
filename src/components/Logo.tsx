@@ -51,14 +51,14 @@ export function Logo({
         x="5" // Adjusted x-coordinate to reduce gap
         y="25"
         className={clsx(
-          'font-bold text-xl transition-all duration-300',
+          'font-semibold text-xl transition-all duration-300',
           invert ? 'fill-white' : 'fill-neutral-950'
         )}
         fontSize="20"
         fontFamily="sans-serif"
         // fontStyle="italic"
       >
-        AI Attorney
+        AI Attorney 
       </text>
     </svg>
   );

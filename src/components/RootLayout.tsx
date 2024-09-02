@@ -9,11 +9,10 @@ import {
   useState,
 } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import clsx from 'clsx'
 import { motion, MotionConfig, useReducedMotion } from 'framer-motion'
 import { useSession, signOut } from 'next-auth/react'
-
 import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
 import { Footer } from '@/components/Footer'
@@ -25,6 +24,7 @@ import ClientSessionProvider from './ClientSessionProvider'
 import LogoBlack from "@/images/logo/logo-black.png"
 import LogoWhite from "@/images/logo/logo-white.png"
 import Image from 'next/image'
+
 
 
 const RootLayoutContext = createContext<{
@@ -70,10 +70,14 @@ function Header({
   const { data: session } = useSession()
   const pathname = usePathname();
 
+  const router = useRouter();
 
+  const handleSignInClick = () => {
+    router.push('/signin');
+  };
   return (
     <Container>
-      <div className="flex items-center justify-between ">
+      <div className="flex items-center  justify-between ">
         <div className=''>
           <Link
             href="/"
@@ -86,7 +90,7 @@ function Header({
             {invert ? (
               <Image
                 src={LogoWhite}
-                width={36}
+                width={38}
                 height={25}
                 alt="Logo"
                 className={clsx(
@@ -114,11 +118,11 @@ function Header({
             />
           </Link>
         </div>
-        <div className="flex items-center gap-x-8">
+        <div className="flex  items-center gap-x-8">
 
           {
             pathname !== '/signin' && (
-              <Button href="/signin" invert={invert} >
+              <Button onClick={handleSignInClick} invert={invert} >
                 Sign in
               </Button>
             )
