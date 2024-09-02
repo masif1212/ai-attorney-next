@@ -22,10 +22,22 @@ model User {
   isActive       Boolean   @default(true)
   chats          Chat[]
   messages       Message[]
-  settings       Json?  
-
+  sessions  Session[]
+  settings       Json?     
   @@index([email])
   Feedback Feedback[]
+}
+
+model Session {
+  id          String    @id @default(uuid())
+  userId      String
+  token       String    @unique @db.VarChar(512)
+  deviceInfo  Json     
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@index([token])
 }
 
 model Chat {
@@ -87,4 +99,5 @@ enum ChatStatus {
   ENDED
   ARCHIVED
 }
+
 
