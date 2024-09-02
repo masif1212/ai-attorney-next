@@ -50,19 +50,18 @@ const searchClient = typesenseInstantsearchAdapter.searchClient
 // Component to render each hit
 const Hit = ({ hit }: any) => {
   return (
-<Link className="m-0" href={`/casedetail?order_num=${hit.order_num}`}>
-  <div className="mb-4 h-auto transform rounded-lg border border-gray-200 bg-white p-4 duration-300 hover:shadow-lg lg:h-64 sm:max-h-fit">
-    <h2 className="mb-2 lg:text-lg text-base font-semibold text-gray-900 line-clamp-3">
-      {hit.title}
-    </h2>
-    <p className="mb-1 text-sm text-gray-500">Court: {hit.court}</p>
-    <p className="mb-1 text-sm text-gray-500">Year: {hit.year}</p>
-    <p className="line-clamp-1 text-base text-gray-700">
-      {hit.case_description}
-    </p>
-  </div>
-</Link>
-
+    <Link className="m-0" href={`/casedetail?order_num=${hit.order_num}`}>
+      <div className="mb-4 h-auto transform rounded-lg border border-gray-200 bg-white p-4 duration-300 hover:shadow-lg sm:max-h-fit lg:h-64">
+        <h2 className="mb-2 line-clamp-3 text-base font-semibold text-gray-900 lg:text-lg">
+          {hit.title}
+        </h2>
+        <p className="mb-1 text-sm text-gray-500">Court: {hit.court}</p>
+        <p className="mb-1 text-sm text-gray-500">Year: {hit.year}</p>
+        <p className="line-clamp-1 text-base text-gray-700">
+          {hit.case_description}
+        </p>
+      </div>
+    </Link>
   )
 }
 
@@ -110,12 +109,21 @@ const CustomRefinementDropdown = React.memo(
       return null
     }
 
+    // Define custom placeholder text based on the attribute
+    const placeholderText: any = {
+      citation_name: 'Select a Journal',
+      year: 'Select a Year',
+      court: 'Select a Court',
+      page_no: 'Select Page Number',
+      judges: 'Select a Judge',
+    }
+
     return (
       <Select
         options={options}
         value={selectedOption}
         onChange={handleChange}
-        placeholder={` ${attribute}`}
+        placeholder={placeholderText[attribute] || `Select ${attribute}`}
         className="basic-single-select w-full sm:w-48"
         classNamePrefix="select"
         isClearable
@@ -226,7 +234,7 @@ export default function SearchCases() {
             </div>
 
             {/* Display hits */}
-            <div className="w-full border-gray-200 bg-white px-4 py-4 sm:px-6 md:px-8 ">
+            <div className="w-full border-gray-200 bg-white px-4 py-4 sm:px-6 md:px-8">
               <Configure hitsPerPage={4} />
               <Hits hitComponent={Hit} />
             </div>
