@@ -25,7 +25,7 @@ async function createCollection() {
       {
         name: 'citation',
         type: 'string',
-        facet: true, // Ensure this is set to true for faceting
+        facet: true,
       },
       {
         name: 'title',
@@ -60,7 +60,7 @@ async function createCollection() {
       {
         name: 'court',
         type: 'string',
-        facet: true, // Ensure this is set to true for faceting
+        facet: true,
       },
       {
         name: 'judges',
@@ -82,15 +82,25 @@ async function createCollection() {
   }
 
   try {
-    // Delete the existing collection if it exists
-    await client.collections('cases').delete()
+    // Check if the collection exists, then delete
+    try {
+      await client.collections('cases').retrieve()
+      await client.collections('cases').delete()
+      console.log('Existing collection deleted')
+    } catch (err) {
+      if (err instanceof Typesense.Errors.ObjectNotFound) {
+        console.log('Collection does not exist, skipping deletion')
+      } else {
+        throw err
+      }
+    }
 
     // Create the new collection with the correct schema
     const collection = await client.collections().create(schema)
     console.log('Collection created:', collection)
 
     // Load JSON data
-    const jsonData = await fs.readFile('./data/casesdata.json', 'utf8')
+    const jsonData = await fs.readFile('data/casesdata.json', 'utf8')
     const cases = JSON.parse(jsonData)
       .map((doc: any) => JSON.stringify(doc))
       .join('\n')

@@ -6,6 +6,15 @@
 .pnp.js
 .env
 
+
+# Ignore the db, meta, and state directories inside the data folder
+data/db/
+data/meta/
+data/state/
+
+# Ignore the migrations folder inside the prisma folder
+prisma/migrations/
+
 # testing
 /coverage
 
