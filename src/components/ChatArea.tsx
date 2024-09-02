@@ -1,8 +1,8 @@
 'use client'
-
 import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Logo from '@/images/logo/black.svg'
+import loader from '@/images/loaderlogo.png'
 import classes from '../styles/scrolebar.module.css'
 import whitLogo from '@/images/logo/logo-white-white.png'
 import { BsFillSendFill } from 'react-icons/bs'
@@ -13,6 +13,8 @@ import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import DarkModeToggle from './darkmodebutton'
 import WordByWordTypingEffect from './typing-word-response'
+import { useChatMessages, useSendMessage } from '@/pages/api/rtq-query/Messages'
+import { motion } from 'framer-motion'
 const useDropdown = () => {
   const [isOpen, setIsOpen] = useState(false)
   const toggleDropdown = () => setIsOpen(!isOpen)
@@ -36,9 +38,8 @@ const ChatArea: React.FC<{
   const router = useRouter()
   const { isOpen, toggleDropdown, closeDropdown } = useDropdown()
   const [message, setMessage] = useState('')
-  const [chatMessages, setChatMessages] = useState<any[]>([])
-  console.log(chatMessages, 'chatMessages from response ')
-  const [loading, setLoading] = useState(false)
+  const [chatMessges, setChatMessages] = useState<any[]>([])
+  const [loadingBrowser, setLoadingBrowser] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   const userName = localStorage.getItem('name')
   const firstLetter = userName ? userName.charAt(0).toUpperCase() : ''
@@ -48,6 +49,13 @@ const ChatArea: React.FC<{
     }
     return false
   })
+  const {
+    data: chatMessages = [],
+    isLoading: loading,
+    error,
+  } = useChatMessages(activeChatId)
+  const sendMessageMutation = useSendMessage()
+
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark')
@@ -67,48 +75,13 @@ const ChatArea: React.FC<{
     await signOut({ redirect: true })
   }
 
-  const fetchMessages = async (chatId: string) => {
-    if (!chatId) return
-
-    const token = localStorage.getItem('token')
-    try {
-      const response = await fetch(`/api/chat/messages/${chatId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch chat messages: ${response.statusText}`)
-      }
-      const data = await response.json()
-      if (data.chat_history && data.chat_history.length > 0) {
-        setChatMessages(
-          data?.chat_history?.map(
-            (msg: { message: string; type: string; id: string }) => ({
-              content: msg.message,
-              senderType: msg.type,
-              id: msg.id,
-            }),
-          ),
-        )
-      } else {
-        setChatMessages([])
-      }
-    } catch (error) {
-      console.error('Error fetching messages:', error)
-    }
-  }
-
   const handleSendMessage = async () => {
     if (!activeUserId || !message.trim()) return
 
     let chatIdToUse = activeChatId
 
     if (!chatIdToUse) {
-      onNewChatCreated()
+      await onNewChatCreated()
       chatIdToUse = localStorage.getItem('activeChatId')
     }
 
@@ -117,54 +90,37 @@ const ChatArea: React.FC<{
       return
     }
 
-    const token = localStorage.getItem('token')
     const newUserMessage = {
       senderType: 'user',
       content: message,
     }
+    setChatMessages((prevMessages: any) => [...prevMessages, newUserMessage])
 
-    setChatMessages((prev) => [...prev, newUserMessage])
     setMessage('')
-    try {
-      setLoading(true)
-      const response = await fetch('/api/chat/send', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          chatId: chatIdToUse,
-          query: message,
-          userId: activeUserId,
-        }),
-      })
 
-      const result = await response.json()
-      if (result && result.pair) {
-        const { aiMessage } = result.pair
-        setChatMessages((prev) => [
-          ...prev,
-          {
-            senderType: 'AI',
-            content: aiMessage.content || 'Error receiving response.',
-          },
-        ])
-      } else {
-        console.error('Unexpected API response format', result)
-      }
-    } catch (error) {
-      console.error('Error sending message:', error)
-    } finally {
-      setLoading(false)
-    }
+    sendMessageMutation.mutate({
+      chatId: chatIdToUse,
+      query: message,
+      userId: activeUserId,
+    })
   }
 
   useEffect(() => {
-    if (activeChatId) {
-      fetchMessages(activeChatId)
+    scrollToBottom()
+  }, [chatMessages])
+
+  useEffect(() => {
+    if (chatMessages && chatMessages.length > 0) {
+      setChatMessages(
+        chatMessages.map((msg: { message: string; type: string }) => ({
+          content: msg.message,
+          senderType: msg.type,
+        })),
+      )
+    } else {
+      setChatMessages([])
     }
-  }, [activeChatId])
+  }, [activeChatId, chatMessages])
 
   const handleKeyDown = (e: any) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -177,9 +133,6 @@ const ChatArea: React.FC<{
     messagesEndRef?.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  useEffect(() => {
-    scrollToBottom()
-  }, [chatMessages, loading])
   const dropDown = () => (
     <div className="absolute right-0 z-10 mt-2 w-32 rounded-md border border-gray-900 bg-black shadow-lg">
       <button
@@ -205,6 +158,7 @@ const ChatArea: React.FC<{
     e.target.style.height = 'auto'
     e.target.style.height = `${e.target.scrollHeight}px`
   }
+
   function formatResponseText(inputText: string): string {
     const quotesPattern = /"([^"]+)"/g
     const urlPattern = /(https?:\/\/[^\s]+)/g
@@ -226,6 +180,9 @@ const ChatArea: React.FC<{
     return formattedText
   }
 
+  const handlenavigate = () => {
+    setLoadingBrowser(true)
+  }
   return (
     <div className="relative flex h-screen flex-1 flex-col bg-white p-2 text-black dark:bg-gray-900">
       <div className="flex items-center justify-between">
@@ -240,9 +197,12 @@ const ChatArea: React.FC<{
           </div>
         )}
         <Link href="/searchcases">
-          <button className="ml-4 flex h-8 items-center justify-center rounded-full border-black bg-black px-4 hover:bg-buttonHover dark:bg-white sm:ml-0 sm:h-10 sm:px-5">
+          <button
+            onClick={handlenavigate}
+            className="ml-4 flex h-8 items-center justify-center rounded-full border-black bg-black px-4 hover:bg-buttonHover dark:bg-white sm:ml-0 sm:h-10 sm:px-5"
+          >
             <p className="text-xs text-white dark:text-black sm:text-base">
-              Browse Cases
+              {loadingBrowser ? 'Loading...' : 'Browse Cases'}
             </p>
           </button>
         </Link>
@@ -267,7 +227,32 @@ const ChatArea: React.FC<{
       <div
         className={`mt-8 flex w-full flex-1 flex-col items-center gap-y-2 overflow-y-auto pr-2`}
       >
-        {chatMessages?.length === 0 ? (
+        {loading ? (
+          <div className="flex flex-1">
+            <div className="flex h-full flex-col justify-center text-center">
+              <div className="flex items-center justify-center">
+                <motion.div
+                  initial={{ opacity: 0.5 }}
+                  animate={{ opacity: [0, 1, 0.5] }}
+                  transition={{
+                    repeat: Infinity,
+                    repeatType: 'reverse',
+                    duration: 4,
+                    ease: 'easeInOut',
+                  }}
+                  style={{ display: 'inline-block' }} // Ensuring the div behaves like an image element
+                >
+                  <Image
+                    src={isDarkMode ? whitLogo : loader}
+                    alt="Ai-Attorney Logo"
+                    width={200}
+                    height={200}
+                  />
+                </motion.div>
+              </div>
+            </div>
+          </div>
+        ) : chatMessages?.length === 0 ? (
           <div className="flex flex-1">
             <div className="flex h-full flex-col justify-center text-center">
               <div className="flex items-center justify-center">
@@ -285,7 +270,7 @@ const ChatArea: React.FC<{
             className={`${classes.sidebar} flex w-full flex-grow flex-col overflow-y-auto px-4`}
           >
             <div className="w-full flex-col space-y-4">
-              {chatMessages?.map((msg, index) => (
+              {chatMessges?.map((msg, index) => (
                 <div
                   key={index}
                   className={`flex gap-1 ${
@@ -301,7 +286,7 @@ const ChatArea: React.FC<{
                       height={10}
                     />
                   ) : (
-                    <div className="flex flex-shrink-0 h-8 w-8 items-center justify-center rounded-full border-black bg-black hover:bg-buttonHover dark:bg-white sm:h-10 sm:w-10">
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-black bg-black hover:bg-buttonHover dark:bg-white sm:h-10 sm:w-10">
                       <p className="px-1 text-xs font-medium text-white dark:text-black sm:px-2 sm:text-base">
                         {firstLetter}
                       </p>
@@ -314,7 +299,7 @@ const ChatArea: React.FC<{
                         : 'bg-black text-white dark:bg-gray-700 dark:text-white'
                     } text-sm sm:text-base`}
                   >
-                    {msg.senderType === 'AI' ? (
+                    {msg?.senderType === 'AI' ? (
                       <WordByWordTypingEffect
                         text={formatResponseText(msg?.content)}
                         speed={50}
@@ -322,7 +307,7 @@ const ChatArea: React.FC<{
                       />
                     ) : (
                       <div className="first-letter:capitalize">
-                        {msg.content}
+                        {msg?.content}
                       </div>
                     )}
                   </div>

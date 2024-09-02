@@ -73,7 +73,7 @@ function Header({
   const router = useRouter();
 
   const handleSignInClick = () => {
-    router.push('/signin'); // Programmatically navigate to the sign-in page
+    router.push('/signin');
   };
   return (
     <Container>

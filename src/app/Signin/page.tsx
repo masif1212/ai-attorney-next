@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-
+import { useLoginMutation } from '@/pages/api/rtq-query/login'
+import Alert from '@/components/alert'
 type Inputs = {
   email: string
   password: string
@@ -24,63 +25,56 @@ export default function SignIn() {
     isError: boolean
   } | null>(null)
   const router = useRouter()
-
+  const loginMutation = useLoginMutation();
   const onSubmit: SubmitHandler<Inputs> = async ({ email, password }) => {
-    setLoading(true)
+    setLoading(true);
+    setServerResponse(null); 
+
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      })
-      const data = await response.json()
-      if (response.ok) {
-        router.push('/chat')
-        localStorage.setItem('token', data?.token)
-        localStorage.setItem('name', data?.username)
-        localStorage.setItem('activeChatId', data?.chatId)
-        localStorage.setItem('activeUserId', data?.userId)
-        setLoading(false)
-        document.cookie = `token=${data?.token}; path=/`
+      router.prefetch('/chat');
+      const response = await loginMutation.mutateAsync({ email, password });
+      
+      if (response) {
+        
+        const { token, username, chatId, userId } = response;
+        
+        localStorage.setItem('token', token);
+        localStorage.setItem('name', username);
+        localStorage.setItem('activeChatId', chatId);
+        localStorage.setItem('activeUserId', userId);
+        document.cookie = `token=${token}; path=/`;
         setServerResponse({
           message: 'Logged in successfully!',
           isError: false,
-        })
+        });
+        router.push('/chat'); 
 
-      
       } else {
-        setServerResponse({ message: data.message, isError: true })
+        setServerResponse({ message: response || 'Login failed', isError: true });
       }
     } catch (error) {
       setServerResponse({
-        message: 'An error occurred. Please try again.',
+        message: (error as { message: string }).message || 'An error occurred. Please try again.',
         isError: true,
-      })
+      });
+    } finally {
+      setLoading(false);
     }
-  }
+  };
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
   }
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        {serverResponse && (
-          <div className="flex justify-center">
-            <div
-              className={`mt-4 rounded-md p-2 ${
-                serverResponse.isError ? 'bg-red-500' : 'bg-green-500'
-              } max-w-sm text-center text-white`}
-            >
-              {serverResponse.message}
-            </div>
-          </div>
+      <div className="sm:mx-auto absolute  left-1/2 top-10 -translate-x-1/2  sm:w-full w-full sm:px-0 px-4 sm:max-w-md">
+      {serverResponse && (
+          <Alert serverResponse={serverResponse} setServerResponse={setServerResponse} />
         )}
+      </div>
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Sign in to your account
         </h2>
-      </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

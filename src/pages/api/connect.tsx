@@ -1,4 +1,3 @@
-// src/pages/api/connect.js
 import type { NextApiRequest, NextApiResponse } from 'next';
 import connectToDatabase from '../../lib/db';
 

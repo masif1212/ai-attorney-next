@@ -4,8 +4,8 @@ import { RiMenu2Line } from 'react-icons/ri'
 import { MdOutlineAddComment } from 'react-icons/md'
 import ButtonForBlackScreen from './ButtonForBlackScreen'
 import '../styles/custom.css'
-import { useRouter } from 'next/navigation'
 import capitalizeFirstLetter from '@/app/utilies/capital-first-letter'
+import SidebarChatSkeleton from './skeleton/sidebarChatSkeleton'
 
 // Interface for chat items
 interface ChatItem {
@@ -16,14 +16,12 @@ interface ChatItem {
   fullContext: { content: string }[]
 }
 
-// Interface for messages within chat items
 interface Message {
   senderId: string
   content: string
   timestamp: string
 }
 
-// Props interface for Sidebar component
 interface SidebarProps {
   sidebarVisible: boolean
   toggleSidebar: () => void
@@ -41,12 +39,12 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [error, setError] = useState<string | null>(null)
   const [todayChats, setTodayChats] = useState<ChatItem[]>([])
   const [previousChats, setPreviousChats] = useState<ChatItem[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
   const token = localStorage.getItem('token')
   const userId = localStorage.getItem('activeUserId')
   const completeMsg = localStorage.getItem('completedMessages')
 
   const fetchChatHistory = useCallback(async () => {
-    console.log('fetching chat history')
     if (!chats) return
 
     try {
@@ -71,6 +69,9 @@ const Sidebar: React.FC<SidebarProps> = ({
       } else {
         setError('An unknown error occurred')
       }
+    }
+    finally {
+      setLoading(false)
     }
   }, [userId, token, chats, completeMsg])
 
@@ -104,7 +105,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           fullContext: [{ content: '' }],
         }
 
-        setActiveChatId(data.chatId)
+        setActiveChatId(data?.chatId)
         localStorage.setItem('activeChatId', data.chatId)
 
         setChatItems((prevChats) => [newChat, ...prevChats])
@@ -123,11 +124,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         setError('An unknown error occurred')
       }
     }
+   
   }
 
   useEffect(() => {
     fetchChatHistory()
-    console.log('fetching chat history when we send an message') 
   }, [fetchChatHistory, chats,completeMsg])
 
   if (!sidebarVisible) {
@@ -147,66 +148,79 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       <div className="custom-scrollbar flex-1 overflow-y-auto py-3">
-        {todayChats?.length > 0 && (
-          <div className="mt-5">
-            <div className="gap-y-2 border-b-2 border-zinc-400 text-sm font-bold">
-              Today
-            </div>
-            <ul>
-              {todayChats?.map((item, index) => (
-                <li
-                  key={index}
-                  className="mb-1 mr-1 rounded px-1 py-1 hover:bg-gray-900"
-                >
-                  <button
-                    className="w-full rounded text-sm text-gray-400"
-                    onClick={() => setActiveChatId(item?.id)}
-                  >
-                    <span className="flex w-full justify-start px-1 text-white">
-                    {capitalizeFirstLetter(
-                        item?.fullContext[0]?.content?.length <= 25
-                          ? item.fullContext[0]?.content
-                          : item.fullContext[0]?.content.substring(0, 25) +
-                              '...',
-                      )}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        {loading ? (
+          <SidebarChatSkeleton />  
+        ) : (
+          <>
+            {todayChats.length > 0 && (
+              <div className="mt-5">
+                <div className="gap-y-2 border-b-2 border-zinc-400 text-sm font-bold">
+                  Today
+                </div>
+                <ul>
+                  {todayChats.map((item, index) => (
+                    <li
+                      key={index}
+                      className="mb-1 mr-1 rounded px-1 py-1 hover:bg-gray-900"
+                    >
+                      <button
+                        className="w-full rounded text-sm text-gray-400"
+                        onClick={() => setActiveChatId(item?.id)}
+                      >
+                        <span className="flex w-full justify-start px-1 text-white">
+                          {capitalizeFirstLetter(
+                            item?.fullContext[0]?.content?.length <= 25
+                              ? item.fullContext[0]?.content
+                              : item.fullContext[0]?.content.substring(0, 25) +
+                                  '...',
+                          )}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-        {previousChats?.length > 0 && (
-          <div className="mt-5">
-            <div className="gap-y-2 border-b-2 border-zinc-400 text-sm font-bold">
-              Previous Day
-            </div>
-            <ul className="space-y-2">
-              {previousChats?.map((item, index) => (
-                <li
-                  key={index}
-                  className="mb-1 mr-1 rounded px-1 py-1 hover:bg-gray-900"
-                >
-                  <button
-                    className="w-full rounded text-sm text-gray-400"
-                    onClick={() => setActiveChatId(item?.id)}
-                  >
-                    <span className="flex w-full justify-start px-1 text-white ">
-                    {capitalizeFirstLetter(
-                        item?.fullContext[0]?.content?.length <= 25
-                          ? item.fullContext[0]?.content
-                          : item.fullContext[0]?.content.substring(0, 25) +
-                              '...',
-                      )}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
+            {previousChats.length > 0 && (
+              <div className="mt-5">
+                <div className="gap-y-2 border-b-2 border-zinc-400 text-sm font-bold">
+                  Yesterday
+                </div>
+                <ul className="space-y-2">
+                  {previousChats.map((item, index) => (
+                    <li
+                      key={index}
+                      className="mb-1 mr-1 rounded px-1 py-1 hover:bg-gray-900"
+                    >
+                      <button
+                        className="w-full rounded text-sm text-gray-400"
+                        onClick={() => setActiveChatId(item?.id)}
+                      >
+                        <span className="flex w-full justify-start px-1 text-white">
+                          {capitalizeFirstLetter(
+                            item?.fullContext[0]?.content?.length <= 25
+                              ? item.fullContext[0]?.content
+                              : item.fullContext[0]?.content.substring(0, 25) +
+                                  '...',
+                          )}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {todayChats.length === 0 && previousChats.length === 0 && (
+              <div className="text-center text-gray-400">
+                No chats available.
+              </div>
+            )}
+          </>
         )}
       </div>
+
     </div>
   )
 }
