@@ -66,8 +66,7 @@ const Hit = ({ hit }: any) => {
 }
 
 // Custom Refinement Dropdown
-const CustomRefinementDropdown = React.memo(
-  ({ items, currentRefinement, refine, attribute }: any) => {
+const CustomRefinementDropdown = React.memo(function CustomRefinementDropdown({ items, currentRefinement, refine, attribute }: any) {
     const [selectedOption, setSelectedOption] = useState<any>(null)
     const [isClient, setIsClient] = useState(false)
 
