@@ -30,54 +30,36 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Check for any active sessions
     const activeSession = await prisma.session.findFirst({
       where: {
         userId: user.id,
         expiresAt: {
-          gt: new Date(), // Active sessions only
+          gt: new Date(),
         },
       },
     });
 
     if (activeSession) {
-      // If an active session exists, return an error message
       return res.status(400).json({ message: 'User is already logged in from another device.' });
     }
 
-    // Create a new chat if none exists
-    let chat = await prisma.chat.findFirst({
-      where: { userId: user.id },
-      orderBy: { createdAt: 'desc' },
-    });
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1m' });
 
-    if (!chat) {
-      chat = await prisma.chat.create({
-        data: {
-          userId: user.id,
-        },
-      });
-    }
-
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-
-    // Calculate the expiration time of the token
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 1);
-
-    // Create a new session in the database
     await prisma.session.create({
       data: {
         userId: user.id,
         token: token,
         deviceInfo: deviceInfo,
-        expiresAt: expiresAt,
+        isLoggedIn: true,
+        createdAt: new Date(),
       },
     });
 
-    res.status(200).json({ message: 'Logged in successfully', userId: user.id, token, chatId: chat.id });
+    res.status(200).json({
+      message: 'Login successful',
+      token,
+    });
   } catch (error) {
-    console.error('Error logging in:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: 'Internal server error', error });
   }
 }

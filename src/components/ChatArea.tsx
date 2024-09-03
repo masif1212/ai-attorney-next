@@ -15,6 +15,7 @@ import DarkModeToggle from './darkmodebutton'
 import WordByWordTypingEffect from './typing-word-response'
 import { useChatMessages, useSendMessage } from '@/pages/api/rtq-query/Messages'
 import { motion } from 'framer-motion'
+import { useLogoutMutation } from '@/pages/api/rtq-query/logout'
 const useDropdown = () => {
   const [isOpen, setIsOpen] = useState(false)
   const toggleDropdown = () => setIsOpen(!isOpen)
@@ -43,6 +44,7 @@ const ChatArea: React.FC<{
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   const userName = localStorage.getItem('name')
   const firstLetter = userName ? userName.charAt(0).toUpperCase() : ''
+  const logoutMutation = useLogoutMutation();
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') === 'dark'
@@ -71,9 +73,24 @@ const ChatArea: React.FC<{
   }
 
   const handleSignOut = async () => {
-    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;'
-    await signOut({ redirect: true })
-  }
+    try {
+      document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;';
+      const sessionToken = localStorage.getItem('token');
+      
+      if (sessionToken) {
+        await logoutMutation.mutateAsync({ token: sessionToken });
+      }
+  
+      localStorage.removeItem('token');
+      
+      await signOut({ redirect: true });
+  
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  };
+  
+  
 
   const handleSendMessage = async () => {
     if (!activeUserId || !message.trim()) return
@@ -110,15 +127,15 @@ const ChatArea: React.FC<{
   }, [chatMessages])
 
   useEffect(() => {
-    if (chatMessages && chatMessages.length > 0) {
+    if (chatMessages && chatMessages?.length > 0) {
       setChatMessages(
         chatMessages.map((msg: { message: string; type: string }) => ({
-          content: msg.message,
-          senderType: msg.type,
+          content: msg?.message,
+          senderType: msg?.type,
         })),
       )
     } else {
-      setChatMessages([])
+      // setChatMessages([])
     }
   }, [activeChatId, chatMessages])
 

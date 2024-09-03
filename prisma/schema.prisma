@@ -33,8 +33,9 @@ model Session {
   userId      String
   token       String    @unique @db.VarChar(512)
   deviceInfo  Json     
+  isLoggedIn  Boolean
   createdAt   DateTime  @default(now())
-  expiresAt   DateTime
+  expiresAt   DateTime?
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([userId])
   @@index([token])

@@ -5,68 +5,45 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import platform from 'platform';
+import { useLoginMutation } from '@/pages/api/rtq-query/login';
+import Alert from '@/components/alert';
 
-import { useState } from 'react'
-import { useForm, SubmitHandler } from 'react-hook-form'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useLoginMutation } from '@/pages/api/rtq-query/login'
-import Alert from '@/components/alert'
 type Inputs = {
-  email: string
-  password: string
-}
+  email: string;
+  password: string;
+};
 
 export default function SignIn() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Inputs>()
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [signUpLoading, setSignUpLoading] = useState(false)
+  } = useForm<Inputs>();
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [signUpLoading, setSignUpLoading] = useState(false);
   const [serverResponse, setServerResponse] = useState<{
-    message: string
-    isError: boolean
-  } | null>(null)
-  const router = useRouter()
+    message: string;
+    isError: boolean;
+  } | null>(null);
+  const router = useRouter();
   const loginMutation = useLoginMutation();
+
   const onSubmit: SubmitHandler<Inputs> = async ({ email, password }) => {
-    const deviceInfo:any = {
+    const deviceInfo: any = {
       browser: platform.name,
       version: platform.version,
       device: platform.product || 'Desktop',
-      userAgent: navigator.userAgent
-  };
+      userAgent: navigator.userAgent,
+    };
 
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password,deviceInfo }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        localStorage.setItem('token', data?.token)
-        localStorage.setItem('name', data?.username)
-        localStorage.setItem('activeChatId', data?.chatId)
-        localStorage.setItem('activeUserId', data?.userId)
-        document.cookie = `token=${data?.token}; path=/`
-        console.log('cookies')
     setLoading(true);
-    setServerResponse(null); 
+    setServerResponse(null);
 
     try {
-      router.prefetch('/chat');
-      const response = await loginMutation.mutateAsync({ email, password });
-      
+      const response = await loginMutation.mutateAsync({ email, password,deviceInfo,isLoggedIn: true });
       if (response) {
-        
         const { token, username, chatId, userId } = response;
-        
         localStorage.setItem('token', token);
         localStorage.setItem('name', username);
         localStorage.setItem('activeChatId', chatId);
@@ -76,10 +53,9 @@ export default function SignIn() {
           message: 'Logged in successfully!',
           isError: false,
         });
-        router.push('/chat'); 
-
+        router.push('/chat');
       } else {
-        setServerResponse({ message: response || 'Login failed', isError: true });
+        setServerResponse({ message: 'Login failed', isError: true });
       }
     } catch (error) {
       setServerResponse({
@@ -92,18 +68,19 @@ export default function SignIn() {
   };
 
   const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword)
-  }
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto absolute  left-1/2 top-10 -translate-x-1/2  sm:w-full w-full sm:px-0 px-4 sm:max-w-md">
-      {serverResponse && (
+      <div className="sm:mx-auto absolute left-1/2 top-10 -translate-x-1/2 sm:w-full w-full sm:px-0 px-4 sm:max-w-md">
+        {serverResponse && (
           <Alert serverResponse={serverResponse} setServerResponse={setServerResponse} />
         )}
       </div>
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Sign in to your account
-        </h2>
+      <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+        Sign in to your account
+      </h2>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -176,7 +153,7 @@ export default function SignIn() {
           <Link
             href="/signup"
             onLoad={() => {
-              setSignUpLoading(true)
+              setSignUpLoading(true);
             }}
             className="font-normal leading-6 text-black hover:text-indigo-500"
           >
@@ -185,5 +162,5 @@ export default function SignIn() {
         </p>
       </div>
     </div>
-  )
+  );
 }
