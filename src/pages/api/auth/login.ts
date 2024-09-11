@@ -30,22 +30,19 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Check for any active sessions
     const activeSession = await prisma.session.findFirst({
       where: {
         userId: user.id,
         expiresAt: {
-          gt: new Date(), // Active sessions only
+          gt: new Date(), 
         },
       },
     });
 
     if (activeSession) {
-      // If an active session exists, return an error message
       return res.status(400).json({ message: 'User is already logged in from another device.' });
     }
 
-    // Create a new chat if none exists
     let chat = await prisma.chat.findFirst({
       where: { userId: user.id },
       orderBy: { createdAt: 'desc' },
@@ -61,11 +58,9 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
 
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
 
-    // Calculate the expiration time of the token
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 1);
 
-    // Create a new session in the database
     await prisma.session.create({
       data: {
         userId: user.id,

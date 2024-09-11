@@ -1,5 +1,5 @@
-import { promises as fs } from 'fs'
-import Typesense from 'typesense'
+import { promises as fs } from 'fs';
+import Typesense from 'typesense';
 
 async function createCollection() {
   const client = new Typesense.Client({
@@ -12,7 +12,7 @@ async function createCollection() {
     ],
     apiKey: 'qxfa25ROV2MmKOE',
     connectionTimeoutSeconds: 2,
-  })
+  });
 
   const schema: any = {
     name: 'cases',
@@ -25,7 +25,7 @@ async function createCollection() {
       {
         name: 'citation',
         type: 'string',
-        facet: true, // Ensure this is set to true for faceting
+        facet: true,
       },
       {
         name: 'title',
@@ -60,7 +60,7 @@ async function createCollection() {
       {
         name: 'court',
         type: 'string',
-        facet: true, // Ensure this is set to true for faceting
+        facet: true,
       },
       {
         name: 'judges',
@@ -79,31 +79,38 @@ async function createCollection() {
         optional: true,
       },
     ],
-  }
+  };
 
   try {
-    // Delete the existing collection if it exists
-    await client.collections('cases').delete()
+    // Check if the collection already exists
+    const existingCollection = await client.collections('cases').retrieve().catch(() => null);
 
-    // Create the new collection with the correct schema
-    const collection = await client.collections().create(schema)
-    console.log('Collection created:', collection)
+    // If it exists, delete it
+    if (existingCollection) {
+      await client.collections('cases').delete();
+      console.log('Existing collection deleted.');
+    }
+
+    // Create the new collection with the schema
+    const collection = await client.collections().create(schema);
+    console.log('Collection created:', collection);
 
     // Load JSON data
-    const jsonData = await fs.readFile('./data/casesdata.json', 'utf8')
+    const jsonData = await fs.readFile('./data/casesdata.json', 'utf8');
     const cases = JSON.parse(jsonData)
       .map((doc: any) => JSON.stringify(doc))
-      .join('\n')
+      .join('\n');
 
     // Import data into the collection
     const results = await client
       .collections('cases')
       .documents()
-      .import(cases, { action: 'upsert' })
-    console.log('Data import results:', results)
+      .import(cases, { action: 'upsert' });
+
+    console.log('Data import results:', results);
   } catch (error) {
-    console.error('Error creating collection or importing data:', error)
+    console.error('Error creating collection or importing data:', error);
   }
 }
 
-createCollection()
+createCollection();
